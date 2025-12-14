@@ -9,7 +9,6 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
-    <script src="https://unpkg.com/@tonconnect/sdk@2.0.0/dist/tonconnect-sdk.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
@@ -392,13 +391,15 @@ input[type="range"] {
 
 </div>
 
+<script src="https://unpkg.com/@tonconnect/sdk@2.0.0/dist/tonconnect-sdk.min.js"></script>
+
 <script>
 // !!! window.onload အစား DOMContentLoaded ကို သုံးပါ (Performance/Init Fix) !!!
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Check if TonConnect SDK is loaded
+    // Check if TonConnect SDK is loaded (ယခု SDK ကို Body ပြီးမှ Load ထားသောကြောင့် ပိုသေချာသည်)
     if (typeof TonConnectSDK === 'undefined') {
-        console.error("TonConnect SDK is not loaded. Cannot initialize the game.");
+        console.error("TonConnect SDK is still not loaded. There is a network/caching issue with the SDK URL.");
         const connectBtn = document.getElementById('connect-wallet-btn');
         if(connectBtn) {
             connectBtn.textContent = "Initialization Error (Reload)";
@@ -414,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const GITHUB_USERNAME = 'phyothetnaing985'; 
     const YOUR_RAW_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/ton-connect.json`;
 
-    // Smart Contract မရှိသေးသော်လည်း Transaction Logic အလုပ်လုပ်ရန် Address ကို ထားရှိသည်
+    // Smart Contract Address
     const GAME_CONTRACT_ADDRESS = "UQAPTqWqxoLqiAangF4qFAPsi8c1imCoyJWtpALBq2i_y3Q4"; 
     const OP_BET = 1; 
     const GAS_FEE_TON = 0.02; 
@@ -450,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmBetBtn = document.getElementById('confirm-bet-btn');
     const betShortcutBtns = document.querySelectorAll('.bet-shortcut-btn');
 
-    let currentBalance = 10.00; // Simulated TON Balance
+    let currentBalance = 10.00; 
     let selectedPrediction = null; 
     let currentScreen = null; 
 
@@ -504,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
         balanceDisplay.innerHTML = `<span class="diamond-icon">💎</span> ${currentBalance.toFixed(2)} TON`;
         if (currentBalanceDisplay) currentBalanceDisplay.innerHTML = `<span class="diamond-icon">💎</span> ${currentBalance.toFixed(2)} TON`;
         
-        // Update Withdraw Balance Display (Fix: h3 element ID changed from h1)
+        // Update Withdraw Balance Display 
         const withdrawBal = document.getElementById('withdraw-current-balance');
         if (withdrawBal) {
             withdrawBal.textContent = `${currentBalance.toFixed(2)} TON`;
@@ -579,9 +580,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Transaction sent successfully.");
             alert(`Bet of ${betAmount} TON placed on ${prediction}. Check transaction status! (Simulated deduction)`);
             
-                        // Simulate balance update
+            // Simulate balance update
             currentBalance = Math.max(0, currentBalance - betAmount);
-            updateWalletUI(); // Balance update
+            updateWalletUI(); 
 
         } catch (error) {
             console.error("Transaction failed:", error);
@@ -671,11 +672,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize UI
     switchScreen(lobbyContent); 
-    updateBetAmount(0.10); // Initialize bet amount display
+    updateBetAmount(0.10); 
 
 
 }); // End of DOMContentLoaded
 </script>
 </body> 
 </html>
-
