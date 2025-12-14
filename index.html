@@ -580,4 +580,102 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(`Bet of ${betAmount} TON placed on ${prediction}. Check transaction status! (Simulated deduction)`);
             
             // Simulate balance update
-            currentBalance = Math.max(0, curr
+            currentBalance = Math.max(0, curr            // Simulate balance update
+            currentBalance = Math.max(0, currentBalance - betAmount);
+            updateWalletUI(); // Balance update
+
+        } catch (error) {
+            console.error("Transaction failed:", error);
+            alert("Transaction failed or was rejected. Please check your wallet.");
+        }
+    }
+    
+    // =========================================================
+    //                  *** 6. EVENT LISTENERS ***
+    // =========================================================
+
+    // Wallet Connection/Disconnection Listener
+    tonConnect.onStatusChange(wallet => {
+        console.log('Wallet status changed:', wallet);
+        updateWalletUI();
+    });
+
+    // Connect Wallet Button
+    if (connectWalletBtn) {
+        connectWalletBtn.addEventListener('click', async () => {
+            try {
+                await tonConnect.connect();
+            } catch (error) {
+                console.error("Wallet connection failed:", error);
+                alert("Could not connect to wallet.");
+            }
+        });
+    }
+
+    // Navigation and Screen Switching
+    if (playButton) playButton.addEventListener('click', () => switchScreen(gameContent));
+    
+    // Footer Navigation
+    if (document.getElementById('nav-game')) document.getElementById('nav-game').addEventListener('click', () => switchScreen(lobbyContent));
+    if (document.getElementById('nav-profile')) document.getElementById('nav-profile').addEventListener('click', () => switchScreen(profileContent));
+    if (document.getElementById('nav-withdraw')) document.getElementById('nav-withdraw').addEventListener('click', () => switchScreen(withdrawContent));
+
+    // Back Buttons
+    if (document.getElementById('back-to-lobby-from-game')) document.getElementById('back-to-lobby-from-game').addEventListener('click', () => switchScreen(lobbyContent));
+    if (document.getElementById('back-to-lobby-from-withdraw')) document.getElementById('back-to-lobby-from-withdraw').addEventListener('click', () => switchScreen(lobbyContent));
+    if (document.getElementById('back-to-lobby-from-profile')) document.getElementById('back-to-lobby-from-profile').addEventListener('click', () => switchScreen(lobbyContent));
+
+    // Bet Selection
+    function selectPrediction(prediction) {
+        selectedPrediction = prediction;
+        oddBtn.classList.remove('active');
+        evenBtn.classList.remove('active');
+        if (prediction === 'ODD') {
+            oddBtn.classList.add('active');
+        } else if (prediction === 'EVEN') {
+            evenBtn.classList.add('active');
+        }
+        updateBetAmount(parseFloat(betRange.value)); 
+    }
+
+    if (oddBtn) oddBtn.addEventListener('click', () => selectPrediction('ODD'));
+    if (evenBtn) evenBtn.addEventListener('click', () => selectPrediction('EVEN'));
+
+    // Bet Amount Control
+    if (betRange) {
+        betRange.addEventListener('input', () => updateBetAmount(null));
+    }
+    
+    // Bet Shortcuts
+    betShortcutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const val = btn.getAttribute('data-value');
+            if (val === 'max') {
+                updateBetAmount(MAX_BET_TON);
+            } else {
+                updateBetAmount(parseFloat(val));
+            }
+        });
+    });
+
+    // Confirm Bet Button
+    if (confirmBetBtn) {
+        confirmBetBtn.addEventListener('click', () => {
+            if (tonConnect.connected && selectedPrediction) {
+                const betAmount = parseFloat(betRange.value);
+                sendBetTransaction(betAmount, selectedPrediction);
+            } else {
+                alert("Please select ODD/EVEN and ensure wallet is connected.");
+            }
+        });
+    }
+
+    // Initialize UI
+    switchScreen(lobbyContent); 
+    updateBetAmount(0.10); // Initialize bet amount display
+
+
+}); // End of DOMContentLoaded
+</script>
+</body> 
+</html>
