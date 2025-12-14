@@ -43,6 +43,7 @@ body {
     font-family: 'Arial', sans-serif;
     touch-action: manipulation; 
 }
+ 
 #app-container {
     display: flex;
     flex-direction: column;
@@ -50,6 +51,7 @@ body {
     padding-bottom: var(--footer-height); 
     box-sizing: border-box;
 }
+
 .screen {
     flex-grow: 1;
     display: none; 
@@ -272,7 +274,7 @@ input[type="range"] {
 
     <div id="game-content" class="screen" style="display:none;">
         <div class="header">
-            <button id="back-to-lobby" class="back-btn">BACK</button>
+            <button id="back-to-lobby-from-game" class="back-btn">BACK</button>
             <h2>ODD & EVEN</h2>
             <div id="current-balance" class="balance-small">💎 0.00 TON</div>
         </div>
@@ -328,7 +330,7 @@ input[type="range"] {
         </div>
         <div class="content-area">
             <p class="text-secondary">Your Current Balance</p>
-            <h3 id="withdraw-current-balance" class="h1">10.00 TON</h3>
+            <h3 id="withdraw-current-balance">10.00 TON</h3>
             <p class="text-secondary small">Minimum withdraw amount is 0.5 TON.</p>
             
             <div class="form-group">
@@ -382,12 +384,17 @@ input[type="range"] {
             <i class="fas fa-user"></i>
             <small>Profile</small>
         </div>
+        <div id="nav-withdraw" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <small>Withdraw</small>
+        </div>
     </div>
 
 </div>
 
 <script>
-window.onload = function() {
+// !!! window.onload အစား DOMContentLoaded ကို သုံးပါ (Performance/Init Fix) !!!
+document.addEventListener('DOMContentLoaded', function() {
 
     // Check if TonConnect SDK is loaded
     if (typeof TonConnectSDK === 'undefined') {
@@ -403,17 +410,14 @@ window.onload = function() {
     // =========================================================
     //                  *** 1. CONFIGURATION & CONSTANTS ***
     // =========================================================
-    // !!! ဤနေရာတွင် သင့် GitHub Repository Name ကို ပြောင်းလဲရန် လိုအပ်သည် !!!
-    // သင့် Username: phyothetnaing985
     const REPO_NAME = 'ton-odd-even-game-live'; 
     const GITHUB_USERNAME = 'phyothetnaing985'; 
-    
-    // Manifest URL ကို သင့် GitHub Pages ၏ Raw Link ဖြင့် အစားထိုးသည်။
     const YOUR_RAW_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/ton-connect.json`;
 
-    const GAME_CONTRACT_ADDRESS = "UQAPTqWqxoLqiAangF4qFAPsi8c1imCoyJWtpALBq2i_y3Q4"; // *** သင့် Master Wallet Address ဖြင့် ပြင်ဆင်ပြီး ဖြစ်သည်။ ***
-    const OP_BET = 1; // Operation code for placing a bet
-    const GAS_FEE_TON = 0.02; // Estimated gas fee to add to the transaction
+    // Smart Contract မရှိသေးသော်လည်း Transaction Logic အလုပ်လုပ်ရန် Address ကို ထားရှိသည်
+    const GAME_CONTRACT_ADDRESS = "UQAPTqWqxoLqiAangF4qFAPsi8c1imCoyJWtpALBq2i_y3Q4"; 
+    const OP_BET = 1; 
+    const GAS_FEE_TON = 0.02; 
     const MAX_BET_TON = 1.00;
 
     // =========================================================
@@ -473,6 +477,8 @@ window.onload = function() {
             document.getElementById('nav-game').classList.add('active');
         } else if (currentScreen === profileContent) {
             document.getElementById('nav-profile').classList.add('active');
+        } else if (currentScreen === withdrawContent) {
+            document.getElementById('nav-withdraw').classList.add('active');
         }
     }
 
@@ -497,33 +503,31 @@ window.onload = function() {
         // Update all balance displays
         balanceDisplay.innerHTML = `<span class="diamond-icon">💎</span> ${currentBalance.toFixed(2)} TON`;
         if (currentBalanceDisplay) currentBalanceDisplay.innerHTML = `<span class="diamond-icon">💎</span> ${currentBalance.toFixed(2)} TON`;
-        if (document.getElementById('withdraw-current-balance')) {
-            document.getElementById('withdraw-current-balance').textContent = `${currentBalance.toFixed(2)} TON`;
+        
+        // Update Withdraw Balance Display (Fix: h3 element ID changed from h1)
+        const withdrawBal = document.getElementById('withdraw-current-balance');
+        if (withdrawBal) {
+            withdrawBal.textContent = `${currentBalance.toFixed(2)} TON`;
         }
     }
 
     function updateBetAmount(amount) {
         if (!betRange) return;
         
-        // Handle input from shortcuts/initial load
         if (amount) {
             betRange.value = amount;
         }
         let currentRangeAmount = parseFloat(betRange.value);
         
-        // Min/Max constraints
         if (currentRangeAmount < 0.10) currentRangeAmount = 0.10; 
         if (currentRangeAmount > MAX_BET_TON) currentRangeAmount = MAX_BET_TON; 
         
-        // Update display text
         if (betAmountDisplay) betAmountDisplay.textContent = currentRangeAmount.toFixed(2);
         
-        // Update Confirm Button Text
         const predictionText = selectedPrediction ? selectedPrediction : 'ODD/EVEN';
         const totalTransactionAmount = (currentRangeAmount + GAS_FEE_TON).toFixed(3); 
         if (confirmBetBtn) confirmBetBtn.textContent = `CONFIRM ${predictionText} & SEND ${totalTransactionAmount} TON`;
 
-        // Update Confirm Button state
         if (confirmBetBtn) {
             if (selectedPrediction && currentRangeAmount >= 0.10) {
                 confirmBetBtn.disabled = false;
@@ -539,17 +543,12 @@ window.onload = function() {
     // =========================================================
 
     function createBetMessage(prediction) {
-        // ODD = 0, EVEN = 1
         const predictionBit = prediction === 'ODD' ? 0 : 1; 
         
-        // Custom message body (standard for simple contract calls)
         const builder = new TonConnectSDK.Cell.Builder();
-        builder.storeUint(OP_BET, 32); // Operation code
-        builder.storeBit(predictionBit); // Prediction data
+        builder.storeUint(OP_BET, 32); 
+        builder.storeBit(predictionBit); 
         
-        // In this simple implementation, we append an empty reference slice 
-        // to conform to typical contract message structure, allowing 
-        // the contract to successfully parse the external message.
         builder.storeSlice(new TonConnectSDK.Slice.empty()); 
 
         return builder.build().toBoc().toString('base64');
@@ -562,15 +561,23 @@ window.onload = function() {
         }
 
         const totalAmount = betAmount + GAS_FEE_TON;
-        // Convert TON to nanograms
         const totalAmountNanograms = (totalAmount * 1e9).toFixed(0); 
 
         const transaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes validity
+            validUntil: Math.floor(Date.now() / 1000) + 300, 
             messages: [
                 {
                     address: GAME_CONTRACT_ADDRESS, 
                     amount: totalAmountNanograms, 
                     payload: createBetMessage(prediction), 
                 }
-           
+            ]
+        };
+        
+        try {
+            await tonConnect.sendTransaction(transaction);
+            console.log("Transaction sent successfully.");
+            alert(`Bet of ${betAmount} TON placed on ${prediction}. Check transaction status! (Simulated deduction)`);
+            
+            // Simulate balance update
+            currentBalance = Math.max(0, curr
