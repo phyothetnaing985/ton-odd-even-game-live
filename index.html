@@ -7,27 +7,27 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>TON Odd & Even Game</title>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
     <style>
 /* ========================================================= */
-/* 1. GLOBAL VARIABLES                     */
+/* 1. GLOBAL VARIABLES & THEME             */
 /* ========================================================= */
 :root {
     /* Telegram Web App Theme Colors */
-    --tg-theme-bg: #1e1e1e;
-    --tg-theme-secondary-bg: #2a2a2a; 
-    --tg-theme-text: #ffffff; 
-    --tg-theme-hint: #808080;
-    --tg-theme-button: #007bff; 
-    --tg-theme-button-text: #ffffff;
+    --tg-theme-bg: var(--tg-color-bg, #1e1e1e); 
+    --tg-theme-secondary-bg: var(--tg-color-secondary-bg, #2a2a2a); 
+    --tg-theme-text: var(--tg-color-text, #ffffff); 
+    --tg-theme-hint: var(--tg-color-hint, #808080);
+    --tg-theme-button: var(--tg-color-button, #007bff); 
+    --tg-theme-button-text: var(--tg-color-button-text, #ffffff);
 
     /* Custom App Colors */
     --accent-color: #4CAF50; 
     --danger-color: #E74C3C; 
-    --card-bg: #2a2a2a;
+    --card-bg: var(--tg-theme-secondary-bg);
     --footer-height: 60px;
 }
 
@@ -41,6 +41,12 @@ body {
     color: var(--tg-theme-text);
     font-family: 'Arial', sans-serif;
     touch-action: manipulation; 
+    /* Hide scrollbar for cleaner look */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
 }
  
 #app-container {
@@ -110,7 +116,7 @@ body {
     margin-bottom: 15px;
 }
 
-.connect-btn, .play-button, .confirm-btn, .bet-btn, .back-btn {
+.connect-btn, .play-button, .confirm-btn, .bet-btn, .back-btn, .copy-btn {
     padding: 12px 20px;
     border-radius: 8px;
     border: none;
@@ -144,6 +150,14 @@ body {
     width: 100%;
     font-size: 1em;
     margin-top: 20px;
+}
+
+.back-btn {
+    background-color: transparent;
+    color: var(--tg-theme-hint);
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
 }
 
 .bet-selection-group {
@@ -189,9 +203,10 @@ input[type="range"] {
     margin-bottom: 20px;
 }
 
+/* History Section */
 .history-section {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 .history-table {
     width: 100%;
@@ -208,6 +223,48 @@ input[type="range"] {
 }
 .positive-payout { color: var(--accent-color); font-weight: bold; }
 .negative-payout { color: var(--danger-color); }
+
+/* Withdraw & Profile Styles */
+.content-area {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px 0;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: var(--tg-theme-hint);
+}
+.form-group input[type="number"],
+.form-group input[type="text"],
+.referral-input-group input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--tg-theme-hint);
+    background-color: var(--tg-theme-secondary-bg);
+    color: var(--tg-theme-text);
+    box-sizing: border-box;
+}
+.referral-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.copy-btn {
+    background-color: var(--tg-theme-hint);
+    color: white;
+    padding: 10px 15px;
+    margin-top: 0;
+}
+.referral-stats p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
 
 /* Footer Navigation */
 .footer {
@@ -272,7 +329,7 @@ input[type="range"] {
     </div>
 
     <div id="game-content" class="screen" style="display:none;">
-        <div class="header">
+        <div class="header" style="justify-content: flex-start; gap: 20px; box-shadow: none; background: transparent; padding-left: 0;">
             <button id="back-to-lobby-from-game" class="back-btn">BACK</button>
             <h2>ODD & EVEN</h2>
             <div id="current-balance" class="balance-small">💎 0.00 TON</div>
@@ -323,13 +380,13 @@ input[type="range"] {
     </div>
 
     <div id="withdraw-content" class="screen" style="display:none;">
-        <div class="header">
+        <div class="header" style="justify-content: flex-start; gap: 20px; box-shadow: none; background: transparent; padding-left: 0;">
             <button id="back-to-lobby-from-withdraw" class="back-btn">BACK</button>
             <h2>💰 Withdraw</h2>
         </div>
         <div class="content-area">
             <p class="text-secondary">Your Current Balance</p>
-            <h3 id="withdraw-current-balance">10.00 TON</h3>
+            <h3 id="withdraw-current-balance">0.00 TON</h3>
             <p class="text-secondary small">Minimum withdraw amount is 0.5 TON.</p>
             
             <div class="form-group">
@@ -341,13 +398,13 @@ input[type="range"] {
                 <input type="text" id="withdraw-address" placeholder="EQB...ton wallet">
             </div>
             
-            <button id="confirm-withdraw-btn" class="confirm-btn">CONFIRM WITHDRAW</button>
-            <p class="text-secondary small mt-10">Minimum withdraw amount is 0.5 TON.</p>
+            <button id="confirm-withdraw-btn" class="confirm-btn" disabled>CONFIRM WITHDRAW</button>
+            <p class="text-secondary small mt-10">Note: Minimum withdraw amount is 0.5 TON.</p>
         </div>
     </div>
 
     <div id="profile-content" class="screen" style="display:none;">
-        <div class="header">
+        <div class="header" style="justify-content: flex-start; gap: 20px; box-shadow: none; background: transparent; padding-left: 0;">
             <button id="back-to-lobby-from-profile" class="back-btn">BACK</button>
             <h2>👤 My Profile</h2>
         </div>
@@ -355,7 +412,7 @@ input[type="range"] {
             <h3 class="card-title">Level 1</h3>
             <p class="text-secondary">250 / 1000 XP to next level</p>
             <div class="progress-bar-container">
-                <div class="progress-bar" style="width: 25%;"></div>
+                <div class="progress-bar" style="width: 25%; height: 8px; background-color: var(--accent-color); border-radius: 4px; margin-bottom: 15px;"></div>
             </div>
             
             <div class="referral-section">
@@ -370,10 +427,10 @@ input[type="range"] {
                     <p>Total Commission Earned: <span id="total-commission">2.50</span> TON</p>
                 </div>
             </div>
-            <button class="settings-btn">Settings / Help</button>
+            <button class="connect-btn" style="width: 100%;">Settings / Help</button>
         </div>
     </div>
-
+    
     <div class="footer">
         <div id="nav-game" class="nav-item active">
             <i class="fas fa-gamepad"></i>
@@ -394,12 +451,11 @@ input[type="range"] {
 <script src="https://unpkg.com/@tonconnect/sdk@2.0.0/dist/tonconnect-sdk.min.js"></script>
 
 <script>
-// !!! window.onload အစား DOMContentLoaded ကို သုံးပါ (Performance/Init Fix) !!!
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Check if TonConnect SDK is loaded (ယခု SDK ကို Body ပြီးမှ Load ထားသောကြောင့် ပိုသေချာသည်)
+    // Check if TonConnect SDK is loaded 
     if (typeof TonConnectSDK === 'undefined') {
-        console.error("TonConnect SDK is still not loaded. There is a network/caching issue with the SDK URL.");
+        console.error("TonConnect SDK is not loaded. Initialization failed.");
         const connectBtn = document.getElementById('connect-wallet-btn');
         if(connectBtn) {
             connectBtn.textContent = "Initialization Error (Reload)";
@@ -411,22 +467,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================================================
     //                  *** 1. CONFIGURATION & CONSTANTS ***
     // =========================================================
-    const REPO_NAME = 'ton-odd-even-game-live'; 
+    
+    // *** CRITICAL FIX: Direct Manifest URL for reliable loading on GitHub Pages ***
     const GITHUB_USERNAME = 'phyothetnaing985'; 
+    const REPO_NAME = 'ton-odd-even-game-live'; 
+    // This direct URL fixes the manifest path issue for GitHub pages
     const YOUR_RAW_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/ton-connect.json`;
 
-    // Smart Contract Address
+    // Smart Contract Address (Owner/Game Master Wallet)
     const GAME_CONTRACT_ADDRESS = "UQAPTqWqxoLqiAangF4qFAPsi8c1imCoyJWtpALBq2i_y3Q4"; 
-    const OP_BET = 1; 
+    const OP_BET = 1; // Standard OP code for 'Bet' message
     const GAS_FEE_TON = 0.02; 
     const MAX_BET_TON = 1.00;
+    const MIN_BET_TON = 0.10;
 
     // =========================================================
     //                  *** 2. TON CONNECT SETUP ***
     // =========================================================
     const tonConnect = new TonConnectSDK.TonConnect({
         manifestUrl: YOUR_RAW_MANIFEST_URL, 
-        connector: new TonConnectSDK.InjectedConnector(),
     });
 
 
@@ -451,9 +510,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmBetBtn = document.getElementById('confirm-bet-btn');
     const betShortcutBtns = document.querySelectorAll('.bet-shortcut-btn');
 
-    let currentBalance = 10.00; 
+    let currentBalance = 10.00; // Simulated Game Balance
     let selectedPrediction = null; 
     let currentScreen = null; 
+    let currentBetAmount = MIN_BET_TON;
 
     // =========================================================
     //                  *** 4. UTILITY & UI FUNCTIONS ***
@@ -501,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
             playButton.textContent = 'Connect Wallet to Play';
         }
         
-        // Update all balance displays
+        // Update all balance displays (Simulated)
         balanceDisplay.innerHTML = `<span class="diamond-icon">💎</span> ${currentBalance.toFixed(2)} TON`;
         if (currentBalanceDisplay) currentBalanceDisplay.innerHTML = `<span class="diamond-icon">💎</span> ${currentBalance.toFixed(2)} TON`;
         
@@ -510,27 +570,39 @@ document.addEventListener('DOMContentLoaded', function() {
         if (withdrawBal) {
             withdrawBal.textContent = `${currentBalance.toFixed(2)} TON`;
         }
+        
+        // Update Withdraw Button state
+        const confirmWithdrawBtn = document.getElementById('confirm-withdraw-btn');
+        if (confirmWithdrawBtn) {
+            confirmWithdrawBtn.disabled = currentBalance < 0.50;
+        }
     }
 
     function updateBetAmount(amount) {
         if (!betRange) return;
         
-        if (amount) {
-            betRange.value = amount;
+        if (amount === 'max') {
+            currentBetAmount = MAX_BET_TON;
+        } else if (amount !== null) {
+            currentBetAmount = parseFloat(amount);
+        } else {
+            currentBetAmount = parseFloat(betRange.value);
         }
-        let currentRangeAmount = parseFloat(betRange.value);
         
-        if (currentRangeAmount < 0.10) currentRangeAmount = 0.10; 
-        if (currentRangeAmount > MAX_BET_TON) currentRangeAmount = MAX_BET_TON; 
+        // Ensure bet amount is within limits
+        currentBetAmount = Math.max(MIN_BET_TON, Math.min(currentBetAmount, MAX_BET_TON)); 
+        betRange.value = currentBetAmount.toFixed(2);
         
-        if (betAmountDisplay) betAmountDisplay.textContent = currentRangeAmount.toFixed(2);
+        if (betAmountDisplay) betAmountDisplay.textContent = currentBetAmount.toFixed(2);
         
         const predictionText = selectedPrediction ? selectedPrediction : 'ODD/EVEN';
-        const totalTransactionAmount = (currentRangeAmount + GAS_FEE_TON).toFixed(3); 
+        const totalTransactionAmount = (currentBetAmount + GAS_FEE_TON).toFixed(3); 
+        
         if (confirmBetBtn) confirmBetBtn.textContent = `CONFIRM ${predictionText} & SEND ${totalTransactionAmount} TON`;
 
+        // Enable/Disable Confirm Bet Button
         if (confirmBetBtn) {
-            if (selectedPrediction && currentRangeAmount >= 0.10) {
+            if (selectedPrediction && currentBetAmount >= MIN_BET_TON) {
                 confirmBetBtn.disabled = false;
             } else {
                 confirmBetBtn.disabled = true;
@@ -544,12 +616,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================================================
 
     function createBetMessage(prediction) {
+        // ODD: 0, EVEN: 1 (This needs to match your Smart Contract logic)
         const predictionBit = prediction === 'ODD' ? 0 : 1; 
         
+        // Create an internal message body (Cell)
         const builder = new TonConnectSDK.Cell.Builder();
-        builder.storeUint(OP_BET, 32); 
-        builder.storeBit(predictionBit); 
+        builder.storeUint(OP_BET, 32); // Operation Code for Bet (1)
+        builder.storeBit(predictionBit); // Prediction bit (0 or 1)
         
+        // Add padding (optional, depends on contract)
         builder.storeSlice(new TonConnectSDK.Slice.empty()); 
 
         return builder.build().toBoc().toString('base64');
@@ -560,33 +635,47 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Please connect your wallet!");
             return;
         }
+        if (betAmount > currentBalance) {
+            alert("Insufficient game balance! Please deposit or lower your bet.");
+            return;
+        }
 
         const totalAmount = betAmount + GAS_FEE_TON;
+        // Convert TON to Nanograms (1 TON = 1e9 Nanograms)
         const totalAmountNanograms = (totalAmount * 1e9).toFixed(0); 
 
         const transaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 300, 
+            validUntil: Math.floor(Date.now() / 1000) + 300, // Valid for 5 minutes
             messages: [
                 {
-                    address: GAME_CONTRACT_ADDRESS, 
-                    amount: totalAmountNanograms, 
-                    payload: createBetMessage(prediction), 
+                    address: GAME_CONTRACT_ADDRESS, // Your Game Master Wallet
+                    amount: totalAmountNanograms, // Bet amount + gas fee
+                    payload: createBetMessage(prediction), // The encoded message for the contract
                 }
             ]
         };
         
         try {
+            // Show loading state/UX feedback here
+            alert("Sending transaction to wallet...");
             await tonConnect.sendTransaction(transaction);
             console.log("Transaction sent successfully.");
-            alert(`Bet of ${betAmount} TON placed on ${prediction}. Check transaction status! (Simulated deduction)`);
             
-            // Simulate balance update
+            // Handle successful transaction feedback (e.g., waiting for contract result)
+            alert(`Bet of ${betAmount.toFixed(2)} TON placed on ${prediction}. Waiting for contract result...`);
+            
+             // Simulate balance deduction immediately
             currentBalance = Math.max(0, currentBalance - betAmount);
             updateWalletUI(); 
 
         } catch (error) {
             console.error("Transaction failed:", error);
-            alert("Transaction failed or was rejected. Please check your wallet.");
+            // Check if error is due to user rejection
+            if (error.code === 3) {
+                 alert("Transaction rejected by the user.");
+            } else {
+                 alert("Transaction failed or was rejected. Please check your wallet.");
+            }
         }
     }
     
@@ -598,16 +687,20 @@ document.addEventListener('DOMContentLoaded', function() {
     tonConnect.onStatusChange(wallet => {
         console.log('Wallet status changed:', wallet);
         updateWalletUI();
+        if (wallet && wallet.account && wallet.account.address) {
+            console.log("Connected Address:", wallet.account.address);
+        }
     });
 
     // Connect Wallet Button
     if (connectWalletBtn) {
         connectWalletBtn.addEventListener('click', async () => {
             try {
+                // Open a window for connection
                 await tonConnect.connect();
             } catch (error) {
                 console.error("Wallet connection failed:", error);
-                alert("Could not connect to wallet.");
+                alert("Could not connect to wallet. Make sure you have a TON wallet installed.");
             }
         });
     }
@@ -635,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (prediction === 'EVEN') {
             evenBtn.classList.add('active');
         }
-        updateBetAmount(parseFloat(betRange.value)); 
+        updateBetAmount(null); // Recalculate button text
     }
 
     if (oddBtn) oddBtn.addEventListener('click', () => selectPrediction('ODD'));
@@ -651,7 +744,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', () => {
             const val = btn.getAttribute('data-value');
             if (val === 'max') {
-                updateBetAmount(MAX_BET_TON);
+                updateBetAmount('max');
             } else {
                 updateBetAmount(parseFloat(val));
             }
@@ -662,17 +755,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (confirmBetBtn) {
         confirmBetBtn.addEventListener('click', () => {
             if (tonConnect.connected && selectedPrediction) {
-                const betAmount = parseFloat(betRange.value);
+                const betAmount = currentBetAmount; 
                 sendBetTransaction(betAmount, selectedPrediction);
             } else {
                 alert("Please select ODD/EVEN and ensure wallet is connected.");
             }
         });
     }
+    
+    // Withdraw Button Logic (Simulated)
+    const confirmWithdrawBtn = document.getElementById('confirm-withdraw-btn');
+    if(confirmWithdrawBtn) {
+        confirmWithdrawBtn.addEventListener('click', () => {
+             alert("Withdrawal initiated. This process requires Smart Contract execution and is currently simulated.");
+        });
+    }
 
     // Initialize UI
     switchScreen(lobbyContent); 
-    updateBetAmount(0.10); 
+    updateBetAmount(MIN_BET_TON); 
+
+    // Attempt to restore session
+    tonConnect.restoreConnection();
 
 
 }); // End of DOMContentLoaded
