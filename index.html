@@ -468,13 +468,11 @@ document.addEventListener('DOMContentLoaded', function() {
     //                  *** 1. CONFIGURATION & CONSTANTS ***
     // =========================================================
     
-    // *** CRITICAL FIX: Direct Manifest URL for reliable loading on GitHub Pages ***
-    const GITHUB_USERNAME = 'phyothetnaing985'; 
-    const REPO_NAME = 'ton-odd-even-game-live'; 
-    // This direct URL fixes the manifest path issue for GitHub pages
-    const YOUR_RAW_MANIFEST_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/ton-connect.json`;
+    // *** FINAL FIX: Manifest URL to Live Site Domain (This MUST be the final URL) ***
+    // GitHub Pages Server Cache and Security will accept this URL correctly.
+    const YOUR_RAW_MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/ton-connect.json";
 
-    // Smart Contract Address (Owner/Game Master Wallet)
+    // Smart Contract Address (Owner/Game Master Wallet) - As provided by user
     const GAME_CONTRACT_ADDRESS = "UQAPTqWqxoLqiAangF4qFAPsi8c1imCoyJWtpALBq2i_y3Q4"; 
     const OP_BET = 1; // Standard OP code for 'Bet' message
     const GAS_FEE_TON = 0.02; 
@@ -548,6 +546,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const userWalletAddress = isConnected ? tonConnect.account.address : null;
 
         if (isConnected) {
+            // Address needs to be converted to user-friendly format (e.g., base64 to bounceable/non-bounceable)
+            // For simplicity, we are displaying the raw address here
             const shortAddress = userWalletAddress.substring(0, 4) + '...' + userWalletAddress.substring(userWalletAddress.length - 4);
             userAddressDisplay.textContent = shortAddress;
             userInfoContainer.style.display = 'flex';
