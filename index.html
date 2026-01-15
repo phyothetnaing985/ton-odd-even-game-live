@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>TON Odd & Even - Official Game</title>
+    <title>TON Odd & Even - Vault Integrated</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -11,50 +11,33 @@
     
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
+            --bg-color: #0b0e11;
+            --card-bg: #1e2329;
             --accent-blue: #38bdf8;
-            --accent-green: #22c55e;
-            --footer-bg: #111827;
+            --accent-green: #02c076;
+            --text-main: #eaecef;
         }
 
-        body { margin: 0; padding: 0; background: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow-x: hidden; }
-        #app-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 80px; }
+        body { margin: 0; background: var(--bg-color); color: var(--text-main); font-family: sans-serif; }
+        #app-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 75px; }
+        .header { display: flex; justify-content: space-between; padding: 15px; background: var(--card-bg); align-items: center; }
+        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; }
         
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--card-bg); border-bottom: 1px solid #334155; }
-        #balance-display { font-weight: bold; color: var(--accent-blue); }
-
-        /* Screens */
-        .screen { display: none; flex-direction: column; align-items: center; padding: 20px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Game Card */
-        .game-card { background: var(--card-bg); border-radius: 20px; padding: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid #334155; }
-        .game-banner { width: 100%; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        /* Game Cards & Images */
+        .game-card { background: var(--card-bg); border-radius: 15px; padding: 20px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #333; }
+        .banner-img { width: 100%; border-radius: 12px; margin-bottom: 15px; border: 2px solid var(--accent-blue); }
         
-        /* Bet Controls */
-        .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .bet-btn { padding: 15px; border-radius: 12px; border: 2px solid #334155; background: #0f172a; color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .bet-btn.active { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.1); box-shadow: 0 0 10px var(--accent-blue); }
+        .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .btn-bet { padding: 20px; border-radius: 12px; border: 2px solid #333; background: #0b0e11; color: white; font-weight: bold; cursor: pointer; }
+        .btn-bet.active { border-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
         
-        .slider-container { margin: 25px 0; text-align: left; }
-        input[type=range] { width: 100%; margin: 10px 0; accent-color: var(--accent-blue); }
-        
-        .action-btn { width: 100%; padding: 18px; border-radius: 12px; border: none; background: var(--accent-green); color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: transform 0.1s; }
-        .action-btn:active { transform: scale(0.98); }
-        .action-btn:disabled { background: #475569; cursor: not-allowed; }
+        .confirm-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--accent-green); color: white; font-weight: bold; cursor: pointer; }
+        .confirm-btn:disabled { background: #444; color: #888; }
 
-        /* Referral Box */
-        .ref-box { background: #0f172a; border-radius: 12px; padding: 15px; width: 100%; margin-top: 15px; border: 1px dashed #475569; }
-        .ref-link-input { width: 100%; background: transparent; border: none; color: var(--accent-blue); font-size: 0.8rem; margin-top: 10px; outline: none; }
-
-        /* Footer Navigation */
-        .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--footer-bg); display: flex; border-top: 1px solid #334155; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #94a3b8; font-size: 0.75rem; cursor: pointer; }
+        /* Footer */
+        .footer { position: fixed; bottom: 0; width: 100%; height: 65px; background: var(--card-bg); display: flex; border-top: 1px solid #333; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.7rem; color: #848e9c; }
         .nav-item.active { color: var(--accent-blue); }
-        .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -62,149 +45,135 @@
 <div id="app-container">
     <div class="header">
         <div id="ton-connect-btn"></div>
-        <div id="balance-display">💎 0.00 TON</div>
+        <div style="color:var(--accent-green)">Bal: <span id="user-display-bal">0.00</span> T</div>
     </div>
 
     <div id="lobby-screen" class="screen" style="display: flex;">
         <div class="game-card">
-            <img src="https://picsum.photos/400/250?grayscale" class="game-banner" alt="Game Banner">
-            <h2 style="margin: 0; color: var(--accent-blue);">ODD & EVEN</h2>
-            <p style="color: #94a3b8; font-size: 0.9rem;">Win x1.9 Payout Instantly</p>
-            
-            <div id="game-controls" style="display: none;">
+            <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="banner-img" alt="Lobby">
+            <h3>ODD & EVEN x1.9</h3>
+            <div id="game-ui" style="display:none;">
                 <div class="bet-grid">
-                    <button class="bet-btn" onclick="setBetType('ODD')">ODD<br>x1.9</button>
-                    <button class="bet-btn" onclick="setBetType('EVEN')">EVEN<br>x1.9</button>
+                    <button class="btn-bet" onclick="selectType('ODD')">ODD</button>
+                    <button class="btn-bet" onclick="selectType('EVEN')">EVEN</button>
                 </div>
-                <div class="slider-container">
-                    <label>Amount: <span id="bet-val" style="color: var(--accent-blue); font-weight: bold;">0.1</span> TON</label>
-                    <input type="range" min="0.1" max="10" step="0.1" value="0.1" oninput="updateBet(this.value)">
-                </div>
-                <button id="main-action-btn" class="action-btn" onclick="handleBet()">PLACE BET</button>
+                <input type="range" id="bet-range" min="0.1" max="5" step="0.1" value="0.1" style="width:100%" oninput="document.getElementById('amt').innerText=this.value">
+                <p>Bet: <span id="amt" style="color:var(--accent-blue)">0.1</span> TON</p>
+                <button id="place-bet-btn" class="confirm-btn" onclick="handleBet()">PLACE BET</button>
             </div>
-            <p id="connect-hint" style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">Connect Wallet to start playing</p>
-        </div>
-    </div>
-
-    <div id="referral-screen" class="screen">
-        <div class="game-card">
-            <i class="fas fa-users-rays" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 15px;"></i>
-            <h3>Refer & Earn 10%</h3>
-            <p style="color: #94a3b8; font-size: 0.85rem;">Get 10% of every friend's net loss. Rewards are sent automatically to your wallet.</p>
-            
-            <div class="ref-box">
-                <span style="font-size: 0.7rem; color: #64748b; text-transform: uppercase;">Your Referral Link</span>
-                <input type="text" id="ref-url" class="ref-link-input" readonly value="Connect wallet to generate link">
-                <button class="action-btn" style="padding: 10px; margin-top: 10px; font-size: 0.9rem;" onclick="copyRef()">COPY LINK</button>
-            </div>
+            <p id="connect-msg">Please connect wallet to play</p>
         </div>
     </div>
 
     <div id="withdraw-screen" class="screen">
         <div class="game-card">
-            <h3>Withdrawals</h3>
-            <div style="background: #0f172a; padding: 20px; border-radius: 12px; margin: 15px 0;">
-                <span style="color: #94a3b8;">Pending Balance</span>
-                <h2 style="margin: 10px 0;">0.00 TON</h2>
+            <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="banner-img" alt="Wallet">
+            <h3>Withdrawal Vault</h3>
+            <div style="background:#0b0e11; padding:15px; border-radius:10px; margin-bottom:15px;">
+                <p style="margin:0; font-size:0.8rem;">Withdrawable Balance</p>
+                <h2 id="withdrawable-bal">0.00 TON</h2>
             </div>
-            <button class="action-btn" disabled>WITHDRAW NOW</button>
-            <p style="font-size: 0.7rem; color: #64748b; margin-top: 15px;">Minimum withdrawal: 0.5 TON</p>
+            <button id="withdraw-now-btn" class="confirm-btn" style="background:var(--accent-blue)" onclick="handleWithdraw()" disabled>WITHDRAW NOW</button>
+            <hr style="border:0.5px solid #333; margin:20px 0;">
+            <p style="font-size:0.8rem;">Referral Bonus: 10% from friend's loss</p>
+            <input type="text" id="ref-link" readonly style="width:100%; background:#0b0e11; color:var(--accent-blue); border:1px solid #333; padding:10px; border-radius:5px;" onclick="this.select()">
         </div>
     </div>
 
     <div class="footer">
-        <div class="nav-item active" onclick="tab('lobby-screen', this)"><i class="fas fa-dice"></i>Game</div>
-        <div class="nav-item" onclick="tab('referral-screen', this)"><i class="fas fa-share-nodes"></i>Invite</div>
-        <div class="nav-item" onclick="tab('withdraw-screen', this)"><i class="fas fa-wallet"></i>Wallet</div>
+        <div class="nav-item active" id="nav-lobby" onclick="showScreen('lobby-screen')"><i class="fas fa-dice"></i><br>Play</div>
+        <div class="nav-item" id="nav-withdraw" onclick="showScreen('withdraw-screen')"><i class="fas fa-wallet"></i><br>Vault</div>
     </div>
 </div>
 
 <script>
-    // --- Config & Master Wallet ---
-    const MASTER_WALLET = "UQD9H1vhA2_NrmjtFOnVv0Jv3rP1a1lxUkhRtbh5wbaFXbec";
-    let currentBetType = null;
-    let currentBetAmount = 0.1;
+    // --- Config ---
+    const VAULT_CONTRACT = "EQAmXMpzRq4JSSI4ak_eJEn_tv9ZMVYxGB5S68UWFZKyuT3I";
+    let userBalance = 0.00; // Frontend tracking
+    let selectedType = null;
 
-    // --- TonConnect Initialization ---
+    // --- TonConnect UI (Using a standard Manifest to fix connection issue) ---
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/ton-connect.json',
+        manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json',
         buttonRootId: 'ton-connect-btn'
     });
 
-    // --- Navigation Logic ---
-    function tab(id, el) {
+    // --- Navigation ---
+    function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).style.display = 'flex';
-        el.classList.add('active');
+        document.getElementById('nav-' + id.split('-')[0]).classList.add('active');
     }
 
     // --- Game Logic ---
-    function updateBet(v) {
-        currentBetAmount = parseFloat(v);
-        document.getElementById('bet-val').innerText = currentBetAmount.toFixed(1);
-    }
-
-    function setBetType(type) {
-        currentBetType = type;
-        document.querySelectorAll('.bet-btn').forEach(b => {
-            b.classList.remove('active');
-            if(b.innerHTML.includes(type)) b.classList.add('active');
-        });
+    function selectType(t) {
+        selectedType = t;
+        document.querySelectorAll('.btn-bet').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
     }
 
     async function handleBet() {
-        if (!currentBetType) return alert("Please select ODD or EVEN!");
+        if(!selectedType) return alert("Select ODD or EVEN");
+        const amount = document.getElementById('bet-range').value;
         
         const tx = {
             validUntil: Math.floor(Date.now() / 1000) + 300,
             messages: [{
-                address: MASTER_WALLET,
-                amount: (currentBetAmount * 1000000000).toString(),
-                payload: "" // Transaction payload can be added for backend tracking
+                address: VAULT_CONTRACT,
+                amount: (amount * 1000000000).toString(),
+                payload: "" // Bet logic is handled by Vault's receive()
             }]
         };
 
         try {
             await tonConnectUI.sendTransaction(tx);
-            Telegram.WebApp.showAlert("Bet Successful! Result will be updated soon.");
-        } catch (e) {
-            console.error(e);
-        }
+            Telegram.WebApp.showAlert("Bet Placed! Waiting for result...");
+            // Logic: If lost, 10% goes to Referrer balance (Simulated for Frontend)
+        } catch (e) { alert("Tx Cancelled"); }
     }
 
-    // --- Referral Logic (10%) ---
-    function updateReferralLink(address) {
-        const botUsername = "YourBotUsername"; // ပြောင်းရန်
-        const refLink = `https://t.me/${botUsername}?start=${address}`;
-        document.getElementById('ref-url').value = refLink;
+    // --- Withdraw Logic (Vault Integration) ---
+    async function handleWithdraw() {
+        if(userBalance <= 0) return alert("No balance to withdraw");
+
+        // Tact Message: WithdrawRequest { amount: Int }
+        // We send a transaction with a comment/payload that the contract understands
+        const tx = {
+            validUntil: Math.floor(Date.now() / 1000) + 300,
+            messages: [{
+                address: VAULT_CONTRACT,
+                amount: "50000000", // 0.05 TON for gas
+                payload: "te6ccgEBAQEADgAAGFdpdGhkcmF3UmVxdWVzdA==" // Base64 for WithdrawRequest
+            }]
+        };
+
+        try {
+            await tonConnectUI.sendTransaction(tx);
+            userBalance = 0;
+            updateUI();
+            Telegram.WebApp.showAlert("Withdrawal Request Sent to Vault!");
+        } catch (e) { alert("Withdraw failed"); }
     }
 
-    function copyRef() {
-        const copyText = document.getElementById("ref-url");
-        copyText.select();
-        document.execCommand("copy");
-        Telegram.WebApp.showScanQrPopup({ text: "Link Copied!" });
-        setTimeout(() => Telegram.WebApp.closeScanQrPopup(), 1000);
+    function updateUI() {
+        document.getElementById('user-display-bal').innerText = userBalance.toFixed(2);
+        document.getElementById('withdrawable-bal').innerText = userBalance.toFixed(2) + " TON";
+        document.getElementById('withdraw-now-btn').disabled = userBalance <= 0;
     }
 
-    // --- Status Watcher ---
+    // --- Connection Watcher ---
     tonConnectUI.onStatusChange(wallet => {
-        const controls = document.getElementById('game-controls');
-        const hint = document.getElementById('connect-hint');
-        
-        if (wallet) {
-            controls.style.display = 'block';
-            hint.style.display = 'none';
-            updateReferralLink(wallet.account.address);
+        if(wallet) {
+            document.getElementById('game-ui').style.display = 'block';
+            document.getElementById('connect-msg').style.display = 'none';
+            document.getElementById('ref-link').value = "https://t.me/YourBot?start=" + wallet.account.address;
         } else {
-            controls.style.display = 'none';
-            hint.style.display = 'block';
-            document.getElementById('ref-url').value = "Connect wallet to generate link";
+            document.getElementById('game-ui').style.display = 'none';
+            document.getElementById('connect-msg').style.display = 'block';
         }
     });
 
-    // Start Telegram WebApp
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 </script>
