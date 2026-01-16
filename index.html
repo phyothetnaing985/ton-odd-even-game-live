@@ -3,111 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>67 TON GAME - Professional v7</title>
+    <title>67 TON GAME - Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #58a6ff; --green: #238636; --red: #da3633; --text: #c9d1d9; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding-bottom: 80px; }
-        .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); align-items: center; border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 100; }
-        .bal-badge { background: #21262d; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--accent); cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        .screen { display: none; flex-direction: column; align-items: center; padding: 20px; min-height: 80vh; animation: fadeIn 0.4s ease; }
+        :root { --bg: #0b0e14; --card: #151921; --accent: #00d2ff; --green: #00f2fe; --red: #ff416c; --text: #e0e6ed; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; padding-bottom: 80px; }
+        .header { display: flex; justify-content: space-between; padding: 15px; background: rgba(21, 25, 33, 0.95); backdrop-filter: blur(10px); sticky; top: 0; z-index: 100; border-bottom: 1px solid #2d333b; }
+        .bal-badge { background: linear-gradient(45deg, #1e2530, #2d333b); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--accent); font-weight: bold; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+        
+        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; animation: slideIn 0.3s ease-out; }
         .active-screen { display: flex; }
-        .game-card { background: var(--card); border-radius: 20px; padding: 20px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #30363d; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .banner-img { width: 100%; border-radius: 15px; margin-bottom: 20px; border: 1px solid #444; }
-        .dice-box { font-size: 80px; margin: 20px 0; color: var(--accent); min-height: 120px; display: flex; align-items: center; justify-content: center; }
-        .rolling { animation: spin 0.6s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .banner-img { width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; }
+        .play-btn-large { background: linear-gradient(45deg, #00c6ff, #0072ff); color: white; border: none; padding: 20px 60px; border-radius: 50px; font-size: 1.5rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 5px 20px rgba(0, 114, 255, 0.4); }
+
+        /* Play Screen Components */
+        .game-area { width: 100%; max-width: 450px; background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #2d333b; }
         .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .btn-bet { padding: 18px; border-radius: 12px; border: 2px solid #30363d; background: #0d1117; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        .btn-bet.active { border-color: var(--accent); background: rgba(88, 166, 255, 0.1); transform: scale(1.05); }
-        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
-        .history-table th { color: #8b949e; border-bottom: 1px solid #30363d; padding: 10px; }
-        .history-table td { padding: 12px 10px; border-bottom: 1px solid #21262d; }
-        .win { color: var(--green); font-weight: bold; }
-        .loss { color: var(--red); }
-        .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--card); display: flex; border-top: 1px solid #30363d; box-shadow: 0 -4px 12px rgba(0,0,0,0.3); z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.75rem; color: #8b949e; cursor: pointer; transition: 0.3s; }
-        .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
-        .nav-item.active { color: var(--accent); transform: translateY(-3px); }
-        .btn-main { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-bet { padding: 15px; border-radius: 15px; border: 2px solid #2d333b; background: #0b0e14; color: white; font-weight: bold; font-size: 1.2rem; transition: 0.2s; }
+        .btn-bet.active { border-color: var(--accent); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        
+        .dice-box { font-size: 100px; margin: 20px 0; min-height: 150px; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 20px var(--accent); }
+        .rolling { animation: bounce 0.4s infinite alternate, spin 0.5s infinite linear; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .history-card { width: 100%; max-width: 450px; margin-top: 20px; background: #1a1f29; border-radius: 20px; padding: 15px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .history-table td { padding: 10px 5px; border-bottom: 1px solid #2d333b; text-align: center; }
+        .win-text { color: var(--green); text-shadow: 0 0 5px var(--green); }
+        .loss-text { color: var(--red); }
+
+        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: #151921; display: flex; border-top: 1px solid #2d333b; z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #8b949e; font-size: 0.7rem; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <div class="bal-badge" onclick="showScreen('vault-screen')">
-        <i class="fas fa-coins" style="color:#f3ba2f"></i>
-        <span id="top-bal">0.00</span> <small>T</small>
+    <div class="bal-badge">
+        <span id="top-bal">0.00</span> <small>TON</small>
     </div>
 </div>
 
 <div id="lobby-screen" class="screen active-screen">
-    <div class="game-card">
-        <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="banner-img">
-        <h2 style="margin:0 0 10px 0">ODD & EVEN <span style="color:var(--accent)">x1.9</span></h2>
-        <div id="game-ui" style="display:none;">
+    <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="banner-img">
+    <h1 style="letter-spacing: 3px; color: var(--accent);">ODD & EVEN</h1>
+    <p style="color: #8b949e; margin-bottom: 40px;">Predict the number and double your TON!</p>
+    <button class="play-btn-large" id="main-play-btn" onclick="showScreen('play-screen')" style="display:none;">PLAY NOW</button>
+    <p id="connect-hint" style="color: var(--red);">Please connect wallet to start</p>
+</div>
+
+<div id="play-screen" class="screen">
+    <div class="game-area">
+        <h3 id="game-status" style="margin:0; color:var(--accent)">CHOOSE YOUR TARGET</h3>
+        <div class="dice-box" id="dice-container"><i class="fas fa-dice-five"></i></div>
+        
+        <div id="bet-controls">
             <div class="bet-grid">
                 <button class="btn-bet" onclick="selectType('ODD', this)">ODD</button>
                 <button class="btn-bet" onclick="selectType('EVEN', this)">EVEN</button>
             </div>
-            <p style="margin-bottom:5px">Amount: <span id="amt" style="color:var(--accent)">0.5</span> TON</p>
-            <input type="range" min="0.1" max="5" step="0.1" value="0.5" style="width:100%" oninput="document.getElementById('amt').innerText=this.value">
-            <button class="btn-main" style="margin-top:20px" onclick="handleBet()">PLACE BET</button>
+            <div style="margin: 20px 0;">
+                <p>Amount: <span id="amt" style="color:var(--accent); font-weight:bold;">0.5</span> TON</p>
+                <input type="range" min="0.1" max="5" step="0.1" value="0.5" style="width:100%; accent-color: var(--accent);" oninput="document.getElementById('amt').innerText=this.value">
+            </div>
+            <button class="play-btn-large" style="width:100%; padding:15px; font-size:1.2rem;" onclick="handleBet()">PLACE BET</button>
         </div>
-        <p id="connect-msg">Please connect wallet to play</p>
     </div>
-</div>
 
-<div id="play-screen" class="screen">
-    <div class="game-card">
-        <h2 id="play-status">ROLLING...</h2>
-        <div class="dice-box" id="dice-container"><i class="fas fa-dice-five rolling"></i></div>
-        <p id="play-msg">Waiting for result...</p>
-    </div>
-</div>
-
-<div id="history-screen" class="screen">
-    <div class="game-card" style="max-width: 100%;">
-        <h3><i class="fas fa-history"></i> Betting History</h3>
+    <div class="history-card">
+        <h4 style="margin:0 0 10px 0;"><i class="fas fa-history"></i> Recent Games</h4>
         <table class="history-table">
             <thead>
-                <tr><th>Time</th><th>Target</th><th>Result</th><th>Amount</th></tr>
+                <tr style="color:#8b949e;"><th>Target</th><th>Result</th><th>Amt</th></tr>
             </thead>
             <tbody id="history-list"></tbody>
         </table>
     </div>
 </div>
 
-<div id="invite-screen" class="screen">
-    <div class="game-card">
-        <i class="fas fa-users" style="font-size: 50px; color: var(--accent); margin-bottom: 15px;"></i>
-        <h3>Invite Friends</h3>
-        <p style="font-size: 0.9rem; color: #8b949e;">Get 10% bonus from every friend's loss!</p>
-        <div style="background:#0d1117; padding:15px; border-radius:10px; border:1px solid #30363d; margin:15px 0; word-break: break-all;">
-            <span id="ref-link" style="color:var(--accent); font-size:0.8rem">Connect wallet to get link</span>
-        </div>
-        <button class="btn-main" onclick="copyRef()">COPY LINK</button>
+<div id="vault-screen" class="screen">
+    <div class="game-area" style="text-align:center;">
+        <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" style="width:80px; margin-bottom:15px;">
+        <h2>Vault Balance</h2>
+        <h1 id="v-bal" style="color:var(--accent); font-size:3rem; margin:10px 0;">0.00</h1>
+        <p style="color:#8b949e;">Ref Bonus: <span id="ref-bal" style="color:var(--green)">0.00</span> TON</p>
+        <button class="play-btn-large" style="width:100%; margin-top:20px;" onclick="handleWithdraw()">WITHDRAW</button>
     </div>
 </div>
 
-<div id="vault-screen" class="screen">
-    <div class="game-card">
-        <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="banner-img">
-        <h3>Vault Balance</h3>
-        <h1 id="v-bal" style="color:var(--accent); margin:10px 0">0.00 <small>TON</small></h1>
-        <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 20px;">Ref Bonus: <span id="ref-bal" style="color:var(--green)">0.00</span> TON</p>
-        <button id="withdraw-btn" class="btn-main" onclick="handleWithdraw()" disabled>WITHDRAW NOW</button>
+<div id="invite-screen" class="screen">
+    <div class="game-area">
+        <i class="fas fa-gift" style="font-size: 50px; color: var(--accent); margin-bottom: 15px;"></i>
+        <h2>Invite & Earn</h2>
+        <p>Get 10% commission on every friend's bet!</p>
+        <div style="background:#0b0e14; padding:15px; border-radius:15px; border:1px solid #2d333b; word-break:break-all; margin:20px 0;">
+            <span id="ref-link" style="color:var(--accent); font-size:0.8rem;">Loading link...</span>
+        </div>
+        <button class="play-btn-large" style="width:100%;" onclick="copyRef()">COPY LINK</button>
     </div>
 </div>
 
 <div class="footer">
-    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-gamepad"></i>Play</div>
-    <div class="nav-item" onclick="showScreen('history-screen')"><i class="fas fa-list"></i>History</div>
+    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-home"></i>Home</div>
+    <div class="nav-item" onclick="showScreen('play-screen')"><i class="fas fa-gamepad"></i>Play</div>
     <div class="nav-item" onclick="showScreen('vault-screen')"><i class="fas fa-vault"></i>Vault</div>
     <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-user-plus"></i>Invite</div>
 </div>
@@ -131,8 +137,8 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const navIndex = { 'lobby':0, 'history':1, 'vault':2, 'invite':3 };
-        document.querySelectorAll('.nav-item')[navIndex[id.split('-')[0]]].classList.add('active');
+        const idx = { 'lobby':0, 'play':1, 'vault':2, 'invite':3 };
+        document.querySelectorAll('.nav-item')[idx[id.split('-')[0]]].classList.add('active');
     }
 
     function selectType(t, btn) {
@@ -142,7 +148,7 @@
     }
 
     async function handleBet() {
-        if(!selected) return Telegram.WebApp.showAlert("Please select ODD or EVEN!");
+        if(!selected) return Telegram.WebApp.showAlert("Select ODD or EVEN first!");
         const amt = parseFloat(document.getElementById('amt').innerText);
         try {
             await tonConnectUI.sendTransaction({
@@ -150,44 +156,51 @@
                 messages: [{ address: VAULT_ADDR, amount: (amt * 1e9).toString() }]
             });
             startDiceAnimation(amt);
-        } catch (e) { Telegram.WebApp.showAlert("Transaction Cancelled"); }
+        } catch (e) { Telegram.WebApp.showAlert("Bet Cancelled"); }
     }
 
     function startDiceAnimation(amt) {
-        showScreen('play-screen');
         const dice = document.getElementById('dice-container');
+        const status = document.getElementById('game-status');
         dice.innerHTML = '<i class="fas fa-dice-five rolling"></i>';
+        status.innerText = "ROLLING...";
+        
         setTimeout(() => {
             const isWin = Math.random() < 0.48;
-            const result = isWin ? selected : (selected === "ODD" ? "EVEN" : "ODD");
-            const diceIcons = {1:'one', 2:'two', 3:'three', 4:'four', 5:'five', 6:'six'};
-            const randNum = isWin ? (selected === "EVEN" ? 2 : 3) : (selected === "EVEN" ? 1 : 4);
-            dice.innerHTML = `<i class="fas fa-dice-${diceIcons[randNum]}"></i>`;
+            const resVal = isWin ? (selected === "EVEN" ? 2 : 3) : (selected === "EVEN" ? 1 : 4);
+            const resType = resVal % 2 === 0 ? "EVEN" : "ODD";
+            const icons = {1:'one', 2:'two', 3:'three', 4:'four', 5:'five', 6:'six'};
+            
+            dice.innerHTML = `<i class="fas fa-dice-${icons[resVal]}"></i>`;
+            
             if(isWin) {
                 userBal += (amt * 0.9);
-                document.getElementById('play-status').innerText = "YOU WON!";
-                document.getElementById('play-status').style.color = "var(--green)";
+                status.innerText = "WINNER! +"+(amt * 0.9).toFixed(2);
+                status.style.color = "var(--green)";
+                Telegram.WebApp.HapticFeedback.notificationOccurred('success');
             } else {
                 refBal += (amt * 0.1);
-                document.getElementById('play-status').innerText = "YOU LOST!";
-                document.getElementById('play-status').style.color = "var(--red)";
+                status.innerText = "TRY AGAIN!";
+                status.style.color = "var(--red)";
+                Telegram.WebApp.HapticFeedback.notificationOccurred('error');
             }
-            saveHistory(selected, result, amt, isWin);
+            
+            saveHistory(selected, resType, amt, isWin);
             updateData();
-            setTimeout(() => showScreen('lobby-screen'), 3000);
-        }, 3000);
+            setTimeout(() => { status.innerText = "CHOOSE YOUR TARGET"; status.style.color = "var(--accent)"; }, 3000);
+        }, 2500);
     }
 
     function saveHistory(target, result, amt, isWin) {
-        history.unshift({ time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), target, result, amt, isWin });
-        if(history.length > 10) history.pop();
+        history.unshift({ target, result, amt, isWin });
+        if(history.length > 5) history.pop();
         localStorage.setItem('betHistory', JSON.stringify(history));
         renderHistory();
     }
 
     function renderHistory() {
         document.getElementById('history-list').innerHTML = history.map(h => `
-            <tr><td>${h.time}</td><td>${h.target}</td><td>${h.result}</td><td class="${h.isWin ? 'win' : 'loss'}">${h.isWin ? '+' : '-'}${h.amt}</td></tr>
+            <tr><td>${h.target}</td><td>${h.result}</td><td class="${h.isWin ? 'win-text' : 'loss-text'}">${h.isWin ? '+' : '-'}${h.amt}</td></tr>
         `).join('');
     }
 
@@ -199,8 +212,8 @@
                 validUntil: Math.floor(Date.now() / 1000) + 60,
                 messages: [{ address: VAULT_ADDR, amount: "50000000", payload: WITHDRAW_OP + nanoAmt }]
             });
-            userBal = 0; updateData(); Telegram.WebApp.showAlert("Withdrawal Request Sent!");
-        } catch (e) { alert("Failed"); }
+            userBal = 0; updateData(); Telegram.WebApp.showAlert("Withdrawal successful!");
+        } catch (e) { Telegram.WebApp.showAlert("Withdrawal Failed"); }
     }
 
     function updateData() {
@@ -209,18 +222,19 @@
         document.getElementById('top-bal').innerText = userBal.toFixed(2);
         document.getElementById('v-bal').innerText = userBal.toFixed(2);
         document.getElementById('ref-bal').innerText = refBal.toFixed(2);
-        document.getElementById('withdraw-btn').disabled = userBal <= 0;
     }
 
     function copyRef() {
-        const link = document.getElementById('ref-link').innerText;
-        if(link.includes("http")) { navigator.clipboard.writeText(link); Telegram.WebApp.showAlert("Link Copied!"); }
+        navigator.clipboard.writeText(document.getElementById('ref-link').innerText);
+        Telegram.WebApp.showScanQrPopup({ text: "Link Copied!" });
     }
 
     tonConnectUI.onStatusChange(wallet => {
-        document.getElementById('game-ui').style.display = wallet ? 'block' : 'none';
-        document.getElementById('connect-msg').style.display = wallet ? 'none' : 'block';
-        if(wallet) document.getElementById('ref-link').innerText = "https://t.me/YourBotName?start=" + wallet.account.address;
+        document.getElementById('main-play-btn').style.display = wallet ? 'block' : 'none';
+        document.getElementById('connect-hint').style.display = wallet ? 'none' : 'block';
+        if(wallet) {
+            document.getElementById('ref-link').innerText = "https://t.me/YourBotName?start=" + wallet.account.address;
+        }
     });
 
     Telegram.WebApp.ready(); updateData(); renderHistory();
