@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>TON Odd & Even - Vault Pro v4</title>
+    <title>TON Odd & Even - Vault Pro v3</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -75,11 +75,9 @@
 </div>
 
 <script>
-    // --- 🏛️ CONFIGURATION (မိတ်ဆွေ ပြင်ဆင်ရန် အပိုင်း) ---
     const VAULT_ADDR = "EQAmXMpzRq4JSSI4ak_eJEn_tv9ZMVYxGB5S68UWFZKyuT3I";
-    const BOT_USERNAME = "YourBotName"; // မိတ်ဆွေရဲ့ Telegram Bot Username ကို ဒီမှာထည့်ပါ
-
-    // --- 💾 DATA STORAGE ---
+    
+    // ၁။ LocalStorage မှ Data ပြန်ဖတ်ခြင်း
     let userBal = parseFloat(localStorage.getItem('userBal')) || 0.00;
     let refBal = parseFloat(localStorage.getItem('refBal')) || 0.00;
     let selected = null;
@@ -89,13 +87,13 @@
         buttonRootId: 'ton-connect-btn'
     });
 
+    // ဒေတာသိမ်းဆည်းသည့် Function
     function saveData() {
-        localStorage.setItem('userBal', userBal.toFixed(2));
-        localStorage.setItem('refBal', refBal.toFixed(2));
+        localStorage.setItem('userBal', userBal.toString());
+        localStorage.setItem('refBal', refBal.toString());
         updateUI();
     }
 
-    // --- 🎮 GAME LOGIC ---
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -120,42 +118,44 @@
 
         try {
             await tonConnectUI.sendTransaction(tx);
-            Telegram.WebApp.showAlert("Bet Placed! Waiting 3 seconds for result...");
+            Telegram.WebApp.showConfirm("Processing Bet...", (ok) => {});
             
             setTimeout(() => {
-                const winChance = 0.48; // ၄၈% နိုင်ခြေ
+                // ၃။ နိုင်ခြေ (Win Probability) ကို ၄၈% ထားခြင်း
+                const winChance = 0.48; 
                 const isWin = Math.random() < winChance;
                 
                 if(isWin) {
-                    userBal += (betAmt * 0.9); // အမြတ် 0.9 (စုစုပေါင်း 1.9x)
-                    Telegram.WebApp.showAlert(`WINNER! You got ${(betAmt * 1.9).toFixed(2)} TON`);
+                    userBal += (betAmt * 0.9); // Profit 0.9 (Total 1.9x payout logic)
+                    Telegram.WebApp.showAlert(`WINNER! +${(betAmt * 1.9).toFixed(2)} TON`);
                 } else {
-                    refBal += (betAmt * 0.1); // ၁၀% Referral ပေးခြင်း
-                    Telegram.WebApp.showAlert(`LOST! Better luck next time.`);
+                    refBal += (betAmt * 0.1); 
+                    Telegram.WebApp.showAlert(`LOST! 10% added to Referral.`);
                 }
-                saveData();
+                saveData(); // သိမ်းဆည်းမည်
             }, 3000);
-        } catch (e) { alert("Bet cancelled"); }
+        } catch (e) { alert("Transaction Cancelled"); }
     }
 
-    // --- 💰 WITHDRAWAL LOGIC (အမတ်ကြီး ပြင်ဆင်ပေးထားသော အပိုင်း) ---
+    // ၂။ Withdraw Payload တည်ဆောက်ခြင်း (amount: Int အား Hex ပြောင်းခြင်း)
     async function handleWithdraw() {
-        if(userBal <= 0) return alert("No balance to withdraw");
+        if(userBal <= 0) return;
         
-        const amountInNano = BigInt(Math.floor(userBal * 1e9));
+        const amountInNano = Math.floor(userBal * 1e9);
         
-        // Tact OpCode for WithdrawRequest{amount: Int}
-        // 0x277431e5 သည် Tact ၏ CRC32 standard ဖြစ်ပါသည်
-        const opCode = "277431e5"; 
+        // Tact WithdrawRequest OpCode (Example: 0x480d9944)
+        // Manual BOC structure for WithdrawRequest{amount: Int}
+        // OpCode(32bit) + Amount(64bit)
+        const opCode = "480d9944"; 
         const amountHex = amountInNano.toString(16).padStart(16, '0');
         const payloadHex = opCode + amountHex;
 
         const tx = {
-            validUntil: Math.floor(Date.now() / 1000) + 300,
+            validUntil: Math.floor(Date.now() / 1000) + 60,
             messages: [{
                 address: VAULT_ADDR,
-                amount: "50000000", // 0.05 TON for Gas
-                payload: payloadHex
+                amount: "50000000", // 0.05 TON for gas
+                payload: payloadHex // Hex payload string
             }]
         };
 
@@ -163,7 +163,7 @@
             await tonConnectUI.sendTransaction(tx);
             userBal = 0;
             saveData();
-            Telegram.WebApp.showAlert("Withdrawal Request Sent to Vault!");
+            Telegram.WebApp.showAlert("Withdrawal successful! Vault will send TON soon.");
         } catch (e) { alert("Withdraw failed"); }
     }
 
@@ -176,8 +176,7 @@
 
     function copyRef() {
         const wallet = tonConnectUI.account?.address;
-        if(!wallet) return alert("Please connect wallet first");
-        const link = `https://t.me/${BOT_USERNAME}?start=${wallet}`;
+        const link = "https://t.me/YourBot?start=" + wallet;
         navigator.clipboard.writeText(link);
         Telegram.WebApp.showAlert("Referral Link Copied!");
     }
@@ -193,4 +192,3 @@
 </script>
 </body>
 </html>
-
