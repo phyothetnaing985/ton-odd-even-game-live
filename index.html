@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>67 TON GAME - Global Elite v12</title>
+    <title>67 TON GAME - Future Hub v13</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,54 +15,44 @@
         .screen { display: none; flex-direction: column; align-items: center; padding: 20px; animation: fadeIn 0.3s; width: 100%; box-sizing: border-box; }
         .active-screen { display: flex; }
         
-        /* LOBBY & INFO ICON */
-        .game-bar { width: 100%; max-width: 450px; background: var(--card); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #30363d; margin-bottom: 10px; box-sizing: border-box; }
-        .game-info { display: flex; align-items: center; gap: 12px; }
-        .game-icon-small { width: 50px; height: 50px; border-radius: 10px; border: 1px solid #444; }
-        .info-trigger { color: var(--accent); font-size: 1.2rem; cursor: pointer; margin: 0 10px; transition: 0.3s; }
-        .info-trigger:hover { transform: scale(1.2); }
-        .play-btn-small { background: var(--accent); color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        /* LOBBY STYLE */
+        .game-card { width: 100%; max-width: 450px; background: var(--card); border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #30363d; margin-bottom: 15px; }
+        .game-thumb { width: 60px; height: 60px; border-radius: 12px; margin-right: 15px; }
+        .info-icon { color: var(--accent); font-size: 1.1rem; cursor: pointer; margin-right: 15px; }
+        .btn-play-now { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
 
-        /* DICE & PLAY SCREEN */
-        .dice-box { font-size: 85px; margin: 15px 0; color: var(--accent); min-height: 120px; display: flex; align-items: center; justify-content: center; }
+        /* PLAY SCREEN */
+        .dice-display { font-size: 100px; margin: 20px 0; color: var(--accent); min-height: 120px; display: flex; align-items: center; justify-content: center; }
+        .bet-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; width: 100%; max-width: 400px; }
+        .side-btn { padding: 18px; border-radius: 12px; border: 2px solid #30363d; background: #0d1117; color: white; font-weight: bold; font-size: 1rem; }
+        .side-btn.active { border-color: var(--accent); background: rgba(88, 166, 255, 0.1); }
+        
+        .bet-stats { background: #1c2128; border-radius: 12px; border: 1px solid #444; padding: 15px; margin: 15px 0; width: 90%; display: flex; justify-content: space-around; }
+        .stat-item { text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #8b949e; display: block; margin-bottom: 5px; }
+        .stat-value { font-size: 1.3rem; font-weight: bold; }
+
+        .action-btn { width: 100%; max-width: 400px; padding: 18px; border-radius: 14px; border: none; background: var(--green); color: white; font-weight: bold; font-size: 1.1rem; }
+        
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-body { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-width: 400px; width: 100%; line-height: 1.5; font-size: 0.9rem; }
+
+        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card); display: flex; border-top: 1px solid #30363d; z-index: 1000; }
+        .nav-link { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #8b949e; text-decoration: none; font-size: 0.75rem; }
+        .nav-link.active { color: var(--accent); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .rolling { animation: spin 0.4s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
-        .btn-bet { padding: 18px; border-radius: 12px; border: 2px solid #30363d; background: #0d1117; color: white; font-weight: bold; }
-        .btn-bet.active { border-color: var(--accent); background: rgba(88, 166, 255, 0.1); }
-        .btn-main { width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--green); color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-        
-        /* MODAL STYLE */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-width: 400px; width: 100%; position: relative; max-height: 80vh; overflow-y: auto; }
-        .close-modal { position: absolute; top: 15px; right: 15px; color: #8b949e; font-size: 1.5rem; cursor: pointer; }
-
-        .bet-info-box { display: flex; justify-content: space-around; width: 95%; margin: 20px auto 15px; background: #1c2128; padding: 15px 10px; border-radius: 12px; border: 1px solid #444; }
-        .info-col { text-align: center; }
-        .history-card { width: 100%; max-width: 450px; margin-top: 25px; background: var(--card); border-radius: 15px; padding: 15px; border: 1px solid #30363d; box-sizing: border-box; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .history-table td { padding: 12px 8px; border-bottom: 1px solid #21262d; text-align: center; }
-        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card); display: flex; border-top: 1px solid #30363d; z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #8b949e; font-size: 0.75rem; text-decoration: none; }
-        .nav-item.active { color: var(--accent); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="info-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeInfo()">&times;</span>
-        <h2 style="color:var(--accent); margin-top: 0;"><i class="fas fa-shield-alt"></i> Fair Play Guide</h2>
-        <p style="font-size: 0.9rem; line-height: 1.6;">
-            <strong>1. Decentralized Gaming:</strong> Our game runs on the <b>TON Blockchain</b>. All transactions are transparent and traceable via Tonviewer.<br><br>
-            <strong>2. Provably Fair:</strong> The dice results are generated using a cryptographically secure random algorithm. No one can predict or alter the outcome.<br><br>
-            <strong>3. Instant Payouts:</strong> Winners receive their TON directly into their wallets through our secure Vault smart contract.<br><br>
-            <strong>4. Security First:</strong> We use industry-standard encryption. Your wallet connection is handled safely via <b>TonConnect</b>.<br><br>
-            <span style="color: var(--green);">✔ Verified Contract</span><br>
-            <span style="color: var(--green);">✔ No Hidden Fees</span><br>
-            <span style="color: var(--green);">✔ Community Trusted</span>
-        </p>
+<div id="fair-modal" class="modal-overlay">
+    <div class="modal-body">
+        <h3 style="color:var(--accent); margin-top:0;"><i class="fas fa-shield-alt"></i> Provably Fair Gaming</h3>
+        <p>1. Results are blockchain-verified.<br>2. Encrypted random generation.<br>3. Instant smart contract payouts.</p>
+        <button class="action-btn" style="padding:10px; font-size:0.9rem;" onclick="closeHelp()">UNDERSTOOD</button>
     </div>
 </div>
 
@@ -72,139 +62,145 @@
 </div>
 
 <div id="lobby-screen" class="screen active-screen">
-    <h3 style="align-self: flex-start; margin-left: 5%; color: #8b949e;">Game Lobby</h3>
-    <div class="game-bar">
-        <div class="game-info">
-            <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="game-icon-small">
+    <h3 style="align-self: flex-start; color: #8b949e; margin-bottom: 20px;">Available Games</h3>
+    <div class="game-card">
+        <div style="display: flex; align-items: center;">
+            <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="game-thumb">
             <div>
                 <div style="font-weight: bold;">ODD & EVEN</div>
-                <div style="font-size: 0.75rem; color: #8b949e;">Multiplier: x1.90</div>
+                <div style="font-size: 0.75rem; color: #8b949e;">Multi: x1.90</div>
             </div>
         </div>
         <div style="display: flex; align-items: center;">
-            <i class="fas fa-file-alt info-trigger" onclick="openInfo()" title="How to play"></i>
-            <button class="play-btn-small" onclick="showScreen('play-screen')">Play</button>
+            <i class="fas fa-file-alt info-icon" onclick="openHelp()"></i>
+            <button class="btn-play-now" onclick="showScreen('play-screen')">PLAY</button>
         </div>
     </div>
-</div>
+    </div>
 
 <div id="play-screen" class="screen">
-    <div class="game-area">
-        <div class="dice-box" id="dice-container"><i class="fas fa-dice"></i></div>
-        <h2 id="game-status" style="margin-bottom: 10px;">SELECT SIDE</h2>
-        <div id="game-ui" style="display:none;">
-            <div class="bet-grid">
-                <button class="btn-bet" id="btn-odd" onclick="selectType('ODD', this)">ODD</button>
-                <button class="btn-bet" id="btn-even" onclick="selectType('EVEN', this)">EVEN</button>
-            </div>
-            <div class="bet-info-box">
-                <div class="info-col">
-                    <span style="display:block; color:#8b949e; font-size:0.75rem;">BET</span>
-                    <span id="amt-val" style="color:var(--accent); font-weight:bold; font-size:1.2rem;">0.10</span> <small>TON</small>
-                </div>
-                <div class="info-col">
-                    <span style="display:block; color:#3fb950; font-size:0.75rem;">WIN</span>
-                    <span id="win-val" style="color:#3fb950; font-weight:bold; font-size:1.2rem;">0.19</span> <small>TON</small>
-                </div>
-            </div>
-            <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" style="width:90%; margin-bottom: 25px;" oninput="updateBetDisplay(this.value)">
-            <button class="btn-main" onclick="handleBet()">PLACE BET</button>
+    <div class="dice-display" id="dice-box"><i class="fas fa-dice"></i></div>
+    <h3 id="status-msg">SELECT SIDE</h3>
+    
+    <div id="game-controls" style="display:none; width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="bet-selector">
+            <button class="side-btn" id="odd-opt" onclick="setSide('ODD', this)">ODD</button>
+            <button class="side-btn" id="even-opt" onclick="setSide('EVEN', this)">EVEN</button>
         </div>
-        <p id="connect-msg" style="color:var(--red); font-weight: bold;">Connect Wallet to Start</p>
+
+        <div class="bet-stats">
+            <div class="stat-item">
+                <span class="stat-label">YOU BET</span>
+                <span id="cur-bet" class="stat-value" style="color:var(--accent);">0.10</span> <small>TON</small>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">YOU WIN</span>
+                <span id="cur-win" class="stat-value" style="color:#3fb950;">0.19</span> <small>TON</small>
+            </div>
+        </div>
+
+        <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" style="width:90%; margin-bottom:25px;" oninput="updateBet(this.value)">
+        <button class="action-btn" onclick="placeBet()">PLACE BET</button>
     </div>
-    <div class="history-card">
-        <h4 style="margin: 0 0 10px 0; color: #8b949e;"><i class="fas fa-history"></i> Recent Bets</h4>
-        <table class="history-table"><thead><tr><th>Target</th><th>Result</th><th>Win/Loss</th></tr></thead><tbody id="history-list"></tbody></table>
+    <p id="wallet-alert" style="color:var(--red); font-weight: bold;">Please connect wallet in header</p>
+
+    <div style="width:100%; max-width:450px; margin-top:30px; background:var(--card); border-radius:12px; padding:15px; border:1px solid #30363d;">
+        <h4 style="margin:0 0 10px 0; color:#8b949e;">HISTORY</h4>
+        <div id="hist-list" style="font-size: 0.85rem;"></div>
     </div>
 </div>
 
 <div id="vault-screen" class="screen">
-    <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" style="width:160px; margin-bottom:20px; border-radius:15px;">
-    <h3>Vault Balance</h3>
-    <h1 id="v-bal" style="color:var(--accent); font-size: 2.5rem; margin: 0;">0.00</h1>
-    <p style="color:#8b949e; margin-bottom: 30px;">Bonus: <span id="ref-bal">0.00</span> TON</p>
-    <button class="btn-main" onclick="handleWithdraw()">WITHDRAW</button>
+    <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" style="width:140px; border-radius:15px; margin-bottom:20px;">
+    <h3 style="color:#8b949e; margin:0;">VAULT BALANCE</h3>
+    <h1 id="vault-val" style="font-size:3rem; color:var(--accent); margin:10px 0;">0.00</h1>
+    <button class="action-btn" onclick="handleWithdraw()">WITHDRAW</button>
 </div>
 
 <div id="invite-screen" class="screen">
-    <i class="fas fa-users" style="font-size: 70px; color: var(--accent); margin: 30px 0;"></i>
-    <h2>Invite & Earn</h2>
-    <div style="background:#0d1117; padding:18px; border-radius:12px; border:1px solid #30363d; margin:20px 0; width: 90%; word-break: break-all;">
-        <span id="ref-link" style="color:var(--accent); font-size:0.85rem; font-family: monospace;">Connect Wallet...</span>
-    </div>
-    <button class="btn-main" id="copy-btn" style="background:#21262d; width: 90%;" onclick="copyRef()">COPY LINK</button>
+    <i class="fas fa-user-plus" style="font-size:60px; color:var(--accent); margin:30px 0;"></i>
+    <h2>Affiliate Program</h2>
+    <div id="ref-box" style="background:#0d1117; padding:20px; border-radius:12px; border:1px solid #30363d; width:90%; word-break:break-all; font-family:monospace; color:var(--accent); text-align:center;">Connect Wallet...</div>
+    <button class="action-btn" style="margin-top:20px; background:#21262d;" onclick="copyRef()">COPY LINK</button>
 </div>
 
 <div class="footer">
-    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-home"></i>Lobby</div>
-    <div class="nav-item" onclick="showScreen('play-screen')"><i class="fas fa-gamepad"></i>Play</div>
-    <div class="nav-item" onclick="showScreen('vault-screen')"><i class="fas fa-vault"></i>Vault</div>
-    <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i>Invite</div>
+    <a href="#" class="nav-link active" onclick="showScreen('lobby-screen')"><i class="fas fa-th-large"></i>Lobby</a>
+    <a href="#" class="nav-link" onclick="showScreen('play-screen')"><i class="fas fa-gamepad"></i>Play</a>
+    <a href="#" class="nav-link" onclick="showScreen('vault-screen')"><i class="fas fa-vault"></i>Vault</a>
+    <a href="#" class="nav-link" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i>Invite</a>
 </div>
 
 <script>
-    const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
-    const VAULT_ADDR = "EQAmXMpzRq4JSSI4ak_eJEn_tv9ZMVYxGB5S68UWFZKyuT3I";
-    let history = JSON.parse(localStorage.getItem('betHistory')) || [];
-    let selected = null;
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: MANIFEST_URL, buttonRootId: 'ton-connect-btn' });
+    const MANIFEST = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
+    const VAULT = "EQAmXMpzRq4JSSI4ak_eJEn_tv9ZMVYxGB5S68UWFZKyuT3I";
+    let side = null, history = JSON.parse(localStorage.getItem('logs')) || [];
+    const tonUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: MANIFEST, buttonRootId: 'ton-connect-btn' });
 
-    function openInfo() { document.getElementById('info-modal').style.display = 'flex'; }
-    function closeInfo() { document.getElementById('info-modal').style.display = 'none'; }
+    function openHelp() { document.getElementById('fair-modal').style.display='flex'; }
+    function closeHelp() { document.getElementById('fair-modal').style.display='none'; }
+    
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
-        document.querySelectorAll('.nav-item').forEach((n, i) => {
+        document.querySelectorAll('.nav-link').forEach((n, i) => {
             n.classList.remove('active');
             if(['lobby','play','vault','invite'][i] === id.split('-')[0]) n.classList.add('active');
         });
     }
-    function updateBetDisplay(val) {
-        const b = parseFloat(val);
-        document.getElementById('amt-val').innerText = b.toFixed(2);
-        document.getElementById('win-val').innerText = (b * 1.9).toFixed(2);
+
+    function updateBet(v) {
+        document.getElementById('cur-bet').innerText = parseFloat(v).toFixed(2);
+        document.getElementById('cur-win').innerText = (v * 1.9).toFixed(2);
     }
-    function selectType(t, btn) {
-        selected = t;
-        document.querySelectorAll('.btn-bet').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+
+    function setSide(s, b) {
+        side = s;
+        document.querySelectorAll('.side-btn').forEach(btn => btn.classList.remove('active'));
+        b.classList.add('active');
     }
-    async function handleBet() {
-        if(!selected) return Telegram.WebApp.showAlert("Please select ODD or EVEN!");
-        const amt = parseFloat(document.getElementById('amt-val').innerText);
+
+    async function placeBet() {
+        if(!side) return Telegram.WebApp.showAlert("Please select ODD or EVEN!");
+        const amt = document.getElementById('cur-bet').innerText;
         try {
-            await tonConnectUI.sendTransaction({
-                validUntil: Math.floor(Date.now() / 1000) + 60,
-                messages: [{ address: VAULT_ADDR, amount: (amt * 1e9).toString() }]
+            await tonUI.sendTransaction({
+                validUntil: Math.floor(Date.now()/1000)+60,
+                messages: [{ address: VAULT, amount: (amt*1e9).toString() }]
             });
-            const dice = document.getElementById('dice-container');
-            dice.innerHTML = '<i class="fas fa-dice rolling"></i>';
+            const box = document.getElementById('dice-box');
+            box.innerHTML = '<i class="fas fa-dice rolling"></i>';
             setTimeout(() => {
-                const res = Math.floor(Math.random() * 6) + 1;
-                const resType = res % 2 === 0 ? "EVEN" : "ODD";
-                const isWin = selected === resType;
-                const icons = ['one', 'two', 'three', 'four', 'five', 'six'];
-                dice.innerHTML = `<i class="fas fa-dice-${icons[res-1]}"></i>`;
-                history.unshift({ target: selected, result: resType, amt, isWin });
+                const roll = Math.floor(Math.random()*6)+1;
+                const type = roll%2===0 ? "EVEN":"ODD";
+                const win = side === type;
+                box.innerHTML = `<i class="fas fa-dice-${['one','two','three','four','five','six'][roll-1]}"></i>`;
+                history.unshift({ side, type, amt, win });
                 if(history.length > 5) history.pop();
-                localStorage.setItem('betHistory', JSON.stringify(history));
-                renderHistory();
-                Telegram.WebApp.showAlert(isWin ? "🎉 YOU WIN!" : "❌ YOU LOST!");
+                localStorage.setItem('logs', JSON.stringify(history));
+                renderHist();
+                Telegram.WebApp.showAlert(win ? "🎉 WINNER!" : "❌ TRY AGAIN");
             }, 1800);
-        } catch (e) { Telegram.WebApp.showAlert("Cancelled"); }
+        } catch(e) {}
     }
-    function renderHistory() {
-        document.getElementById('history-list').innerHTML = history.map(h => `
-            <tr><td>${h.target}</td><td>${h.result}</td><td style="color:${h.isWin ? '#3fb950' : '#f85149'}">${h.isWin ? '+' : '-'}${h.amt.toFixed(2)}</td></tr>
+
+    function renderHist() {
+        document.getElementById('hist-list').innerHTML = history.map(h => `
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #21262d;">
+                <span>Target: ${h.side}</span><span>Result: ${h.type}</span>
+                <span style="color:${h.win?'#3fb950':'#f85149'}">${h.win?'+':'-'}${parseFloat(h.amt).toFixed(2)}</span>
+            </div>
         `).join('');
     }
-    tonConnectUI.onStatusChange(wallet => {
-        document.getElementById('game-ui').style.display = wallet ? 'block' : 'none';
-        document.getElementById('connect-msg').style.display = wallet ? 'none' : 'block';
-        if(wallet) document.getElementById('ref-link').innerText = "https://t.me/YourBotName?start=" + wallet.account.address.substring(0,10) + "...";
+
+    tonUI.onStatusChange(w => {
+        document.getElementById('game-controls').style.display = w ? 'flex' : 'none';
+        document.getElementById('wallet-alert').style.display = w ? 'none' : 'block';
+        if(w) document.getElementById('ref-box').innerText = "https://t.me/Bot?start=" + w.account.address.substring(0,12)+"...";
     });
+
     Telegram.WebApp.ready();
-    renderHistory();
+    renderHist();
 </script>
 </body>
 </html>
