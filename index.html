@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>67 TON GAME - Ultimate v10</title>
+    <title>67 TON GAME - Ultimate v10 (Updated)</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,44 +12,29 @@
         body { margin: 0; background: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 80px; overflow-x: hidden; }
         .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); align-items: center; border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 100; }
         .bal-badge { background: #21262d; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--accent); display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        
         .screen { display: none; flex-direction: column; align-items: center; padding: 20px; animation: fadeIn 0.3s; width: 100%; box-sizing: border-box; }
         .active-screen { display: flex; }
-
-        /* LOBBY LIST STYLE */
         .game-bar { width: 100%; max-width: 450px; background: var(--card); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #30363d; margin-bottom: 10px; box-sizing: border-box; }
         .game-info { display: flex; align-items: center; gap: 12px; }
         .game-icon-small { width: 50px; height: 50px; border-radius: 10px; border: 1px solid #444; }
         .play-btn-small { background: var(--accent); color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-
-        /* PLAY SCREEN & DICE */
         .game-area { width: 100%; max-width: 450px; text-align: center; }
         .dice-box { font-size: 85px; margin: 15px 0; color: var(--accent); min-height: 120px; display: flex; align-items: center; justify-content: center; }
         .rolling { animation: spin 0.4s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        
         .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
         .btn-bet { padding: 18px; border-radius: 12px; border: 2px solid #30363d; background: #0d1117; color: white; font-weight: bold; font-size: 1rem; transition: 0.2s; }
         .btn-bet.active { border-color: var(--accent); background: rgba(88, 166, 255, 0.1); transform: scale(0.98); }
         .btn-main { width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--green); color: white; font-weight: bold; font-size: 1.1rem; transition: 0.3s; cursor: pointer; }
-        .btn-main:active { transform: scale(0.96); opacity: 0.8; }
-
-        /* VAULT IMAGE */
         .vault-img { width: 160px; height: auto; margin-bottom: 20px; border-radius: 15px; }
-
-        /* HISTORY TABLE */
         .history-card { width: 100%; max-width: 450px; margin-top: 25px; background: var(--card); border-radius: 15px; padding: 15px; border: 1px solid #30363d; box-sizing: border-box; }
         .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .history-table th { padding: 8px; color: #8b949e; border-bottom: 1px solid #30363d; }
         .history-table td { padding: 12px 8px; border-bottom: 1px solid #21262d; text-align: center; }
         .win { color: #3fb950; font-weight: bold; } .loss { color: #f85149; }
-
-        /* FOOTER */
         .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card); display: flex; border-top: 1px solid #30363d; z-index: 1000; }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #8b949e; font-size: 0.75rem; text-decoration: none; }
         .nav-item.active { color: var(--accent); }
         .nav-item i { font-size: 1.4rem; margin-bottom: 5px; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -80,19 +65,17 @@
     <div class="game-area">
         <div class="dice-box" id="dice-container"><i class="fas fa-dice"></i></div>
         <h2 id="game-status" style="margin-bottom: 20px;">CHOOSE ODD OR EVEN</h2>
-        
         <div id="game-ui" style="display:none;">
             <div class="bet-grid">
                 <button class="btn-bet" id="btn-odd" onclick="selectType('ODD', this)">ODD (1,3,5)</button>
                 <button class="btn-bet" id="btn-even" onclick="selectType('EVEN', this)">EVEN (2,4,6)</button>
             </div>
-            <p style="margin-top: 20px;">Amount: <span id="amt-val" style="color:var(--accent); font-weight: bold;">0.50</span> TON</p>
-            <input type="range" min="0.1" max="10" step="0.1" value="0.5" style="width:90%" oninput="document.getElementById('amt-val').innerText=Number(this.value).toFixed(2)">
+            <p style="margin-top: 20px;">Amount: <span id="amt-val" style="color:var(--accent); font-weight: bold;">0.10</span> TON</p>
+            <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" style="width:90%" oninput="document.getElementById('amt-val').innerText=Number(this.value).toFixed(2)">
             <button class="btn-main" style="margin-top: 25px;" onclick="handleBet()">PLACE BET</button>
         </div>
         <p id="connect-msg" style="color:var(--red); font-weight: bold;">Please Connect Wallet to Play</p>
     </div>
-
     <div class="history-card">
         <h4 style="margin: 0 0 10px 0; color: #8b949e;"><i class="fas fa-history"></i> Recent Bets</h4>
         <table class="history-table">
@@ -114,11 +97,9 @@
     <i class="fas fa-user-plus" style="font-size: 70px; color: var(--accent); margin: 30px 0;"></i>
     <h2 style="margin: 0;">Invite & Earn</h2>
     <p style="text-align:center; color:#8b949e; padding: 0 20px;">Get 10% commission from your friends' activity instantly!</p>
-    
     <div style="background:#0d1117; padding:18px; border-radius:12px; border:1px solid #30363d; margin:20px 0; width: 90%; word-break: break-all;">
         <span id="ref-link" style="color:var(--accent); font-size:0.85rem; font-family: monospace;">Connect Wallet to get Link...</span>
     </div>
-    
     <button class="btn-main" id="copy-btn" style="background:#21262d; width: 90%;" onclick="copyRef()">
         <i class="fas fa-copy"></i> COPY LINK
     </button>
@@ -134,66 +115,35 @@
 <script>
     const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
     const VAULT_ADDR = "EQAmXMpzRq4JSSI4ak_eJEn_tv9ZMVYxGB5S68UWFZKyuT3I";
-    
     let userBal = 0.00;
     let history = JSON.parse(localStorage.getItem('betHistory')) || [];
     let selected = null;
-
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: MANIFEST_URL,
-        buttonRootId: 'ton-connect-btn'
-    });
-
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: MANIFEST_URL, buttonRootId: 'ton-connect-btn' });
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const tabName = id.split('-')[0];
         const idxMap = { 'lobby':0, 'play':1, 'vault':2, 'invite':3 };
-        document.querySelectorAll('.nav-item')[idxMap[tabName]].classList.add('active');
+        document.querySelectorAll('.nav-item')[idxMap[id.split('-')[0]]].classList.add('active');
     }
-
     function selectType(t, btn) {
         selected = t;
         document.querySelectorAll('.btn-bet').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         if (window.Telegram && Telegram.WebApp.HapticFeedback) Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
-
-    // COPY LINK ခလုတ် အသစ်စက်စက် Logic
     function copyRef() {
         const linkText = document.getElementById('ref-link').innerText;
         const btn = document.getElementById('copy-btn');
-        
-        if (linkText.includes("Connect Wallet")) {
-            Telegram.WebApp.showAlert("ကျေးဇူးပြု၍ Wallet အရင်ချိတ်ပေးပါခင်ဗျာ။");
-            return;
-        }
-
+        if (linkText.includes("Connect Wallet")) { Telegram.WebApp.showAlert("ကျေးဇူးပြု၍ Wallet အရင်ချိတ်ပေးပါခင်ဗျာ။"); return; }
         navigator.clipboard.writeText(linkText).then(() => {
-            // ၁။ ဖုန်းကို တုန်ခါစေခြင်း
-            if (window.Telegram && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-            }
-
-            // ၂။ ခလုတ်၏ စာသားနှင့် အရောင်ကို ပြောင်းလဲခြင်း (Feedback)
+            if (window.Telegram && Telegram.WebApp.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-check"></i> COPIED! ✅';
-            btn.style.background = "#238636"; // အစိမ်းရောင်
-            btn.style.transform = "scale(0.95)";
-
-            // ၃။ ၁.၅ စက္ကန့်အကြာတွင် မူလအတိုင်း ပြန်ဖြစ်စေခြင်း
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.style.background = "#21262d";
-                btn.style.transform = "scale(1)";
-            }, 1500);
-
-        }).catch(() => {
-            Telegram.WebApp.showAlert("Copy မရဖြစ်သွားပါပြီ။ ထပ်စမ်းကြည့်ပါ။");
+            btn.style.background = "#238636";
+            setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = "#21262d"; }, 1500);
         });
     }
-
     async function handleBet() {
         if(!selected) return Telegram.WebApp.showAlert("ODD သို့မဟုတ် EVEN ကို အရင်ရွေးချယ်ပါ!");
         const amt = parseFloat(document.getElementById('amt-val').innerText);
@@ -205,7 +155,6 @@
             runAnimation(amt);
         } catch (e) { Telegram.WebApp.showAlert("Betting Cancelled"); }
     }
-
     function runAnimation(amt) {
         const dice = document.getElementById('dice-container');
         dice.innerHTML = '<i class="fas fa-dice rolling"></i>';
@@ -213,29 +162,20 @@
             const result = Math.floor(Math.random() * 6) + 1;
             const resType = result % 2 === 0 ? "EVEN" : "ODD";
             const isWin = selected === resType;
-            
             const icons = ['one', 'two', 'three', 'four', 'five', 'six'];
             dice.innerHTML = `<i class="fas fa-dice-${icons[result-1]}"></i>`;
-            
             history.unshift({ target: selected, result: resType, amt, isWin });
             if(history.length > 8) history.pop();
             localStorage.setItem('betHistory', JSON.stringify(history));
-            
             renderHistory();
-            Telegram.WebApp.showAlert(isWin ? "🎉 နိုင်ပါပြီ! အမြတ်ငွေ ရောက်လာပါလိမ့်မယ်။" : "❌ ကံမကောင်းပါဘူး။ ထပ်မံကြိုးစားကြည့်ပါ။");
+            Telegram.WebApp.showAlert(isWin ? "🎉 နိုင်ပါပြီ!" : "❌ ကံမကောင်းပါဘူး။");
         }, 1800);
     }
-
     function renderHistory() {
         document.getElementById('history-list').innerHTML = history.map(h => `
-            <tr>
-                <td>${h.target}</td>
-                <td>${h.result}</td>
-                <td class="${h.isWin ? 'win' : 'loss'}">${h.isWin ? '+' : '-'}${h.amt.toFixed(2)}</td>
-            </tr>
+            <tr><td>${h.target}</td><td>${h.result}</td><td class="${h.isWin ? 'win' : 'loss'}">${h.isWin ? '+' : '-'}${h.amt.toFixed(2)}</td></tr>
         `).join('');
     }
-
     tonConnectUI.onStatusChange(wallet => {
         document.getElementById('game-ui').style.display = wallet ? 'block' : 'none';
         document.getElementById('connect-msg').style.display = wallet ? 'none' : 'block';
@@ -244,15 +184,7 @@
             document.getElementById('ref-link').innerText = "https://t.me/YourBotName?start=" + addr.substring(0,8) + "..." + addr.slice(-8);
         }
     });
-
-    function updateUI() {
-        document.getElementById('top-bal').innerText = userBal.toFixed(2);
-        document.getElementById('v-bal').innerText = userBal.toFixed(2);
-    }
-
-    Telegram.WebApp.ready();
-    updateUI();
-    renderHistory();
+    Telegram.WebApp.ready(); renderHistory();
 </script>
 </body>
 </html>
