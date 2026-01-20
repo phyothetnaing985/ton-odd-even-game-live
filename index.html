@@ -3,54 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Game v15.1</title>
+    <title>Golden Game - Professional Edition</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
-        :root { --bg: #f0f2f5; --card: #ffffff; --text: #1a1a1a; --primary: #0088cc; }
-        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --primary: #00aaff; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; transition: 0.3s; }
-        .top-bar { width: 100%; max-width: 400px; display: flex; justify-content: space-between; padding: 20px; }
-        #theme-btn { background: var(--card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 20px; cursor: pointer; }
-        .game-card { background: var(--card); padding: 30px; border-radius: 24px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; background: var(--card); color: var(--text); box-sizing: border-box; }
-        .btn-play { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-history { background: none; border: 1px solid #666; color: #666; padding: 10px; border-radius: 10px; width: 100%; margin-top: 10px; cursor: pointer; }
+        :root { --bg: #f5f7fa; --card: #ffffff; --text: #1d1d1f; --accent: #007aff; --secondary: #8e8e93; }
+        [data-theme="dark"] { --bg: #000000; --card: #1c1c1e; --text: #ffffff; --accent: #0a84ff; --secondary: #a1a1a6; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; transition: 0.3s; padding-bottom: 50px; }
+        .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 20px; box-sizing: border-box; }
+        .theme-toggle { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; }
+        .main-container { width: 90%; max-width: 420px; background: var(--card); border-radius: 30px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; }
+        .icon-box { font-size: 50px; margin-bottom: 10px; }
+        .input-group { text-align: left; margin-top: 20px; }
+        label { font-size: 14px; color: var(--secondary); margin-left: 5px; }
+        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid var(--secondary); background: var(--bg); color: var(--text); font-size: 16px; margin-top: 8px; box-sizing: border-box; }
+        .btn-play { background: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 18px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: 0.2s; }
+        .referral-section { margin-top: 30px; background: var(--bg); padding: 15px; border-radius: 15px; }
+        .copy-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 10px; cursor: pointer; font-size: 12px; margin-top: 5px; }
+        .history-section { width: 90%; max-width: 420px; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 20px; overflow: hidden; font-size: 13px; }
+        th { background: var(--accent); color: white; padding: 12px; }
+        td { padding: 12px; text-align: center; border-bottom: 1px solid var(--bg); }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <h3>Golden Game</h3>
-        <button id="theme-btn" onclick="toggleTheme()">Night Mode</button>
+    <div class="header">
+        <h2 style="margin:0;">🎰 Golden Game</h2>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Day/Night</button>
     </div>
-    <div id="ton-connect" style="margin-bottom: 20px;"></div>
-    <div class="game-card">
+    <div id="ton-connect" style="margin-bottom: 25px;"></div>
+    <div class="main-container">
+        <div class="icon-box">🎲</div>
         <div class="input-group">
-            <label>Amount (TON):</label>
-            <input type="number" id="betAmount" placeholder="0.5">
+            <label>Enter Bet Amount (TON)</label>
+            <input type="number" id="betAmount" placeholder="Min 0.1">
         </div>
         <div class="input-group">
-            <label>Select Side:</label>
+            <label>Choose Your Side</label>
             <select id="betSide">
-                <option value="true">Even</option>
-                <option value="false">Odd</option>
+                <option value="true">🔵 EVEN (စုံ)</option>
+                <option value="false">🔴 ODD (မ)</option>
             </select>
         </div>
-        <button class="btn-play" onclick="playGame()">PLAY NOW</button>
-        <button class="btn-history" onclick="window.open('https://tonviewer.com/EQCVwJNztxr7Ia1TuTxwsz8Iqe6DbDpdxcpjPoCcCnRKHotR')">View History</button>
-        <p id="status" style="font-size: 0.8rem; margin-top: 15px;">Connect Wallet to start</p>
+        <button class="btn-play" onclick="playGame()">PLACE BET NOW</button>
+        <div class="referral-section">
+            <div style="font-size: 13px; font-weight: 600;">🔗 Invite Friends & Earn 10%</div>
+            <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy My Referral Link</button>
+        </div>
+        <p id="status" style="font-size: 12px; color: var(--secondary); margin-top: 15px;">Waiting for Wallet...</p>
+    </div>
+    <div class="history-section">
+        <h4 style="margin-left: 10px;">📊 Last 5 Results</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Side</th>
+                    <th>Result</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                <tr><td colspan="3">No history yet</td></tr>
+            </tbody>
+        </table>
     </div>
     <script>
         function toggleTheme() {
             const root = document.documentElement;
-            const btn = document.getElementById('theme-btn');
-            if (root.getAttribute('data-theme') === 'dark') {
-                root.setAttribute('data-theme', 'light');
-                btn.innerText = 'Night Mode';
-            } else {
-                root.setAttribute('data-theme', 'dark');
-                btn.innerText = 'Day Mode';
-            }
+            const current = root.getAttribute('data-theme');
+            root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
         }
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://raw.githubusercontent.com/ton-connect/demo-dapp-with-react/master/public/tonconnect-manifest.json',
@@ -58,22 +78,41 @@
         });
         async function playGame() {
             const amount = document.getElementById('betAmount').value;
-            const side = document.getElementById('betSide').value === "true";
+            const sideSelection = document.getElementById('betSide').value;
             const status = document.getElementById('status');
-            if (!tonConnectUI.connected) { alert("Connect Wallet First"); return; }
-            status.innerText = "Sending Transaction...";
+            if (!tonConnectUI.connected) { alert("Please connect wallet!"); return; }
+            if (amount < 0.1) { alert("Min bet is 0.1 TON"); return; }
+            status.innerText = "Processing Transaction...";
+            // Dynamic Payload for Tact v2.8 (True/False matching)
+            const payload = sideSelection === "true" 
+                ? "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8I" 
+                : "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8J";
             try {
                 const transaction = {
                     validUntil: Math.floor(Date.now() / 1000) + 60,
                     messages: [{
-                        address: "EQCVwJNztxr7Ia1TuTxwsz8Iqe6DbDpdxcpjPoCcCnRKHotR",
+                        address: "EQCVwJNztxr7Ia1TuTxwsz8Iqe6DbDpdxcpjPoCcCnRKHotR", // အမတ်ကြီး၏ Address အသစ်ဖြင့် အစားထိုးရန်
                         amount: (parseFloat(amount) * 1000000000).toString(),
-                        payload: "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8I"
+                        payload: payload
                     }]
                 };
                 await tonConnectUI.sendTransaction(transaction);
-                status.innerText = "Success! Check result in History.";
-            } catch (e) { status.innerText = "Transaction failed"; }
+                status.innerText = "Bet Placed! Wait for Payout.";
+                updateHistory(sideSelection === "true");
+            } catch (e) { status.innerText = "Transaction Cancelled"; }
+        }
+        function copyLink() {
+            const link = window.location.origin + window.location.pathname + "?ref=" + (tonConnectUI.account?.address || "");
+            navigator.clipboard.writeText(link);
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = "✅ Link Copied!";
+            setTimeout(() => { btn.innerText = "Copy My Referral Link"; }, 2000);
+        }
+        function updateHistory(side) {
+            const body = document.getElementById('historyBody');
+            if (body.innerText.includes("No history yet")) body.innerHTML = "";
+            const newRow = `<tr><td>${side ? 'EVEN' : 'ODD'}</td><td>Pending</td><td>⏳</td></tr>`;
+            body.innerHTML = newRow + body.innerHTML;
         }
     </script>
 </body>
