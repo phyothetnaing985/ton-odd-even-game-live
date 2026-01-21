@@ -24,7 +24,6 @@
         }
         .game-bg-large { width: 100%; height: 100%; object-fit: cover; filter: brightness(1.2); }
 
-        /* ODD/EVEN Selection - High Visibility */
         .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; }
         .side-btn { 
             padding: 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); 
@@ -39,16 +38,13 @@
 
         .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
         
-        /* Global History Table */
         .history-container { width: 100%; max-width: 450px; background: var(--card); border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
         .history-header { background: rgba(255,255,255,0.03); padding: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 0.7rem; font-weight: bold; color: var(--accent); text-align: center; }
         .history-row { padding: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 0.75rem; border-top: 1px solid rgba(255,255,255,0.02); text-align: center; }
 
-        /* Referral UI */
         .ref-card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); width: 100%; max-width: 400px; text-align: center; margin-top: 20px; }
         .ref-bonus-badge { background: var(--accent); color: #000; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; margin-bottom: 15px; display: inline-block; }
 
-        /* Footer - Lobby and Invite only */
         .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.05); }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
@@ -137,7 +133,7 @@
         <div style="margin:20px 0;">
             <div style="font-size:0.7rem; opacity:0.6;">AVAILABLE REWARDS</div>
             <div style="font-size:2rem; font-weight:bold; color:var(--accent);">0.00 TON</div>
-            <button class="btn-main" style="margin-top:10px; padding:12px;">CLAIM REWARDS</button>
+            <button class="btn-main" style="margin-top:10px; padding:12px;" onclick="claimRewards()">CLAIM REWARDS</button>
         </div>
 
         <div id="ref-link" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; font-size:0.7rem; word-break:break-all; border:1px dashed #444; color: #888;">Connect wallet to generate link</div>
@@ -151,7 +147,8 @@
 </div>
 
 <script>
-    const CONTRACT_ADDRESS = "PASTE_YOUR_TACT_ADDRESS_HERE";
+    // ✅ ADDRESS IS SECURELY INTEGRATED
+    const CONTRACT_ADDRESS = "EQAjzi31ql7IRCil4GGDi7joS99owrImCZ_Wasybdaxz7CVn";
     let selectedSide = null;
 
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ 
@@ -189,13 +186,30 @@
         setTimeout(() => { document.getElementById('copy-btn').innerText = "COPY REFERRAL LINK"; }, 2000);
     }
 
-    // 🛡️ Finalized handleBet for Tact v2.8
+    // 💰 Claim Referral Rewards Logic
+    async function claimRewards() {
+        if (!tonConnectUI.connected) return alert("Please connect wallet!");
+        const transaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 60,
+            messages: [{
+                address: CONTRACT_ADDRESS,
+                amount: "50000000", // 0.05 TON for Gas
+                payload: "te6ccgEBAQEADgAAGFdpdGhkcmF3UmVm86p2Sg==" // "WithdrawRef" Comment Payload
+            }]
+        };
+        try {
+            await tonConnectUI.sendTransaction(transaction);
+            alert("Reward Claim Processed!");
+        } catch (e) { alert("Claim Failed."); }
+    }
+
+    // 🛡️ Finalized handleBet for Tact v2.8 (SYNCED WITH CONTRACT)
     async function handleBet() {
         if (!tonConnectUI.connected) return alert("Please connect wallet!");
         if (!selectedSide) return alert("Please select ODD or EVEN first!");
         
         const amount = document.getElementById('amt-val').innerText;
-        // Tact Payload Matching
+        // EXACT PAYLOADS FOR TACT V2.8
         const payload = selectedSide === "EVEN" 
             ? "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8I" 
             : "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8J";
