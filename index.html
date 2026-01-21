@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN GAME - V1.7 GLOBAL MASTER</title>
+    <title>GOLDEN GAME - V1.8 GLOBAL UX MASTER</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,30 +17,26 @@
         .screen { display: none; flex-direction: column; align-items: center; padding: 20px; animation: fadeIn 0.3s; width: 100%; box-sizing: border-box; }
         .active-screen { display: flex; }
 
-        /* UI Elements */
-        .mode-btn { background: var(--btn); border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
-        .fair-play-icon { color: var(--accent); font-size: 1.3rem; cursor: pointer; margin-right: 15px; }
-
-        /* Game Visuals */
+        /* Game UI Visuals */
         .dice-area { position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; margin: 10px 0; }
         .game-bg { position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: 0.5; z-index: 1; border-radius: 20px; }
         .dice-box { font-size: 90px; color: var(--accent); z-index: 2; text-shadow: 0 0 25px rgba(240,185,11,0.4); }
 
-        /* History Table */
+        /* Global History Table */
         .history-container { width: 100%; max-width: 450px; background: var(--card); border-radius: 15px; margin-top: 25px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
         .history-header { background: rgba(255,255,255,0.05); padding: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 0.7rem; font-weight: bold; text-align: center; color: var(--accent); }
         .history-row { padding: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 0.75rem; border-top: 1px solid rgba(255,255,255,0.03); text-align: center; }
 
-        /* Buttons & Footer */
         .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
-        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.1); box-shadow: 0 -5px 15px rgba(0,0,0,0.2); }
+        
+        /* Footer Navigation - Updated to only Lobby and Invite */
+        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.1); }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #8b949e; font-size: 0.75rem; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
 
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-width: 420px; width: 100%; }
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-width: 420px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .rolling { animation: spin 0.25s infinite linear; }
@@ -53,28 +49,29 @@
     <div class="modal-content">
         <h2 style="color:var(--accent); text-align:center; margin-top:0;"><i class="fas fa-shield-check"></i> WHY TRUST US?</h2>
         <div style="font-size:0.85rem; line-height:1.7; text-align:left; opacity: 0.9;">
-            <p><strong>1. Fully Decentralized:</strong> This game is governed by a <b>Smart Contract</b> on the TON Blockchain. No central authority can change results.</p>
-            <p><strong>2. Verifiable Fairness:</strong> We use on-chain <code>random()</code> functions. Every roll is transparent and traceable via Tonviewer.</p>
-            <p><strong>3. Non-Custodial Payouts:</strong> Your winnings are sent to your <b>Personal Vault</b> instantly. You have 100% control over your funds.</p>
-            <p><strong>4. Security First:</strong> Logic is written in <b>Tact</b>, audited for safety, ensuring zero human intervention.</p>
+            <p><strong>1. Fully Decentralized:</strong> Smart Contract based logic on TON Blockchain.</p>
+            <p><strong>2. Verifiable Fairness:</strong> On-chain <code>random()</code> generation.</p>
+            <p><strong>3. Instant Payouts:</strong> Winnings sent to your <b>Vault</b> instantly.</p>
         </div>
-        <button class="btn-main" style="margin-top:15px;" onclick="closeModal()">I TRUST & START PLAYING</button>
+        <button class="btn-main" style="margin-top:15px;" onclick="closeModal()">I UNDERSTAND</button>
     </div>
 </div>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <button class="mode-btn" onclick="toggleMode()"><i class="fas fa-adjust"></i> MODE</button>
+    <button class="mode-btn" onclick="toggleMode()" style="background:var(--btn); border:1px solid var(--accent); color:var(--accent); padding:5px 12px; border-radius:20px;">MODE</button>
 </div>
 
 <div id="lobby-screen" class="screen active-screen">
-    <div style="width: 100%; max-width: 450px; background: var(--card); border-radius: 15px; padding: 18px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05);">
+    <h3 style="align-self: flex-start; margin-bottom: 20px; color: var(--accent);">Available Games</h3>
+    
+    <div style="width: 100%; max-width: 450px; background: var(--card); border-radius: 15px; padding: 18px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
         <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" style="width: 55px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            <div><div style="font-weight:bold; font-size:1.1rem;">ODD & EVEN</div><div style="font-size:0.75rem; color:var(--accent);">Win Multiplier: x1.90</div></div>
+            <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" style="width: 55px; border-radius: 12px;">
+            <div><div style="font-weight:bold; font-size:1.1rem;">ODD & EVEN</div><div style="font-size:0.75rem; color:var(--accent);">Multiplier: x1.90</div></div>
         </div>
         <div style="display: flex; align-items: center;">
-            <i class="fas fa-file-invoice fair-play-icon" onclick="openModal()"></i>
+            <i class="fas fa-file-invoice" style="color:var(--accent); margin-right:15px; cursor:pointer;" onclick="openModal()"></i>
             <button style="background:var(--accent); border:none; padding:12px 22px; border-radius:10px; font-weight:bold; color:#000; cursor:pointer;" onclick="showScreen('play-screen')">PLAY</button>
         </div>
     </div>
@@ -88,35 +85,27 @@
 
     <div id="game-ui" style="width:100%; max-width:400px; display:none;">
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; gap:12px;">
-            <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                <span style="font-size:0.65rem; opacity:0.6; display:block; margin-bottom:4px;">STAKE</span>
-                <span style="color:var(--accent); font-weight:bold; font-size:1.2rem;" id="amt-val">0.10</span> <small>TON</small>
+            <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center;">
+                <span style="font-size:0.65rem; opacity:0.6; display:block;">STAKE</span>
+                <span style="color:var(--accent); font-weight:bold;" id="amt-val">0.10</span> <small>TON</small>
             </div>
-            <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                <span style="font-size:0.65rem; opacity:0.6; display:block; margin-bottom:4px;">WIN PAYOUT</span>
-                <span style="color:var(--green); font-weight:bold; font-size:1.2rem;" id="win-val">0.19</span> <small>TON</small>
+            <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center;">
+                <span style="font-size:0.65rem; opacity:0.6; display:block;">WIN PAYOUT</span>
+                <span style="color:var(--green); font-weight:bold;" id="win-val">0.19</span> <small>TON</small>
             </div>
         </div>
         
         <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" style="width:100%; accent-color:var(--accent); margin-bottom:20px;" oninput="updateBet(this.value)">
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
-            <button class="btn-main" id="btn-odd" style="background:var(--btn); border:2px solid rgba(255,255,255,0.1);" onclick="selectType('ODD', this)">ODD</button>
-            <button class="btn-main" id="btn-even" style="background:var(--btn); border:2px solid rgba(255,255,255,0.1);" onclick="selectType('EVEN', this)">EVEN</button>
+            <button class="btn-main" id="btn-odd" style="background:var(--btn); border:1px solid rgba(255,255,255,0.1);" onclick="selectType('ODD', this)">ODD</button>
+            <button class="btn-main" id="btn-even" style="background:var(--btn); border:1px solid rgba(255,255,255,0.1);" onclick="selectType('EVEN', this)">EVEN</button>
         </div>
         <button class="btn-main" onclick="handleBet()">PLACE BET NOW</button>
 
         <div class="history-container">
-            <div style="padding:12px; font-size:0.85rem; font-weight:bold; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:8px;">
-                <i class="fas fa-globe-americas" style="color:var(--accent);"></i> GLOBAL HISTORY
-            </div>
-            <div class="history-header">
-                <div>PLAYER</div><div>SIDE</div><div>RESULT</div><div>PAYOUT</div>
-            </div>
-            <div id="history-list">
-                <div class="history-row"><div>UQAn...k92</div><div>EVEN</div><div>EVEN</div><div style="color:var(--green)">+1.90</div></div>
-                <div class="history-row"><div>UQD9...Xbec</div><div>ODD</div><div>EVEN</div><div style="color:#ff4d4d">-0.50</div></div>
-            </div>
+            <div class="history-header"><div>PLAYER</div><div>SIDE</div><div>RESULT</div><div>PAYOUT</div></div>
+            <div id="history-list"><div class="history-row"><div>UQAn...k92</div><div>EVEN</div><div>EVEN</div><div style="color:var(--green)">+1.90</div></div></div>
         </div>
     </div>
     <p id="connect-msg" style="color:var(--accent); font-weight:bold; margin-top:30px; text-align:center;">
@@ -126,37 +115,21 @@
 
 <div id="invite-screen" class="screen">
     <i class="fas fa-handshake" style="font-size:60px; color:var(--accent); margin-bottom:15px;"></i>
-    <h2 style="margin-bottom:8px;">Affiliate Program</h2>
-    <p style="opacity:0.8; font-size:0.85rem; text-align:center; padding:0 25px; line-height:1.5;">
-        Earn <b>10% LIFETIME Commission</b> from every game your friends play!
-    </p>
+    <h2>Affiliate Program</h2>
+    <p style="opacity:0.8; font-size:0.85rem; text-align:center;">Earn <b>10% LIFETIME Commission</b> from every friend's loss!</p>
 
-    <div style="background:var(--card); padding:25px; border-radius:20px; border:1px solid var(--accent); text-align:center; width:100%; max-width:360px; margin:20px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
-        <div style="font-size:0.7rem; opacity:0.6; letter-spacing:1px; margin-bottom:8px;">AVAILABLE REWARDS</div>
+    <div style="background:var(--card); padding:25px; border-radius:20px; border:1px solid var(--accent); text-align:center; width:100%; max-width:360px; margin:20px 0;">
+        <div style="font-size:0.7rem; opacity:0.6;">AVAILABLE REWARDS</div>
         <div style="font-size:2.4rem; font-weight:bold; color:var(--accent); margin-bottom:15px;"><span id="ref-bal">0.00</span> <small style="font-size:1rem;">TON</small></div>
-        <button class="btn-main" style="padding:14px; font-size:0.9rem;" onclick="withdrawRef()">CLAIM MY 10% REWARDS</button>
+        <button class="btn-main" onclick="withdrawRef()">CLAIM REWARDS</button>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr; gap:12px; width:100%; max-width:360px; margin-bottom:25px; font-size:0.8rem;">
-        <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; display:flex; align-items:center; gap:12px; border:1px solid rgba(255,255,255,0.05);">
-            <i class="fas fa-coins" style="color:var(--accent)"></i>
-            <span>Get 10% from net loss of invited players.</span>
-        </div>
-        <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; display:flex; align-items:center; gap:12px; border:1px solid rgba(255,255,255,0.05);">
-            <i class="fas fa-bolt" style="color:var(--green)"></i>
-            <span>Instant withdrawal to your wallet.</span>
-        </div>
-    </div>
-
-    <div id="ref-link" style="background:var(--btn); padding:15px; border-radius:10px; font-size:0.75rem; width:100%; word-break:break-all; border:1px dashed var(--accent); color:var(--accent); text-align:center;">
-        Connecting...
-    </div>
+    <div id="ref-link" style="background:var(--btn); padding:15px; border-radius:10px; font-size:0.75rem; width:100%; word-break:break-all; border:1px dashed var(--accent); color:var(--accent); text-align:center;">Connecting...</div>
     <button class="btn-main" id="copy-btn" style="background:transparent; border:2px solid var(--accent); color:var(--accent); margin-top:18px;" onclick="copyRef()">COPY REFERRAL LINK</button>
 </div>
 
 <div class="footer">
     <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-th-large"></i>Lobby</div>
-    <div class="nav-item" onclick="showScreen('play-screen')"><i class="fas fa-gamepad"></i>Play</div>
     <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i>Invite</div>
 </div>
 
@@ -166,12 +139,7 @@
         buttonRootId: 'ton-connect-btn' 
     });
 
-    let selectedSide = null;
-
-    function toggleMode() {
-        document.body.classList.toggle('light-mode');
-    }
-
+    function toggleMode() { document.body.classList.toggle('light-mode'); }
     function openModal() { document.getElementById('fair-modal').style.display = 'flex'; }
     function closeModal() { document.getElementById('fair-modal').style.display = 'none'; }
 
@@ -190,48 +158,28 @@
     }
 
     function selectType(type, btn) {
-        selectedSide = type;
-        document.querySelectorAll('#btn-odd, #btn-even').forEach(b => {
-            b.style.borderColor = 'rgba(255,255,255,0.1)';
-            b.style.color = 'white';
-            b.style.background = 'var(--btn)';
-        });
+        document.querySelectorAll('#btn-odd, #btn-even').forEach(b => b.style.borderColor = 'rgba(255,255,255,0.1)');
         btn.style.borderColor = 'var(--accent)';
-        btn.style.color = 'var(--accent)';
-        btn.style.background = 'rgba(240,185,11,0.05)';
     }
 
     function copyRef() {
         const link = document.getElementById('ref-link').innerText;
         navigator.clipboard.writeText(link);
-        const btn = document.getElementById('copy-btn');
-        btn.innerText = "COPIED ✅";
-        setTimeout(() => { btn.innerText = "COPY REFERRAL LINK"; }, 2000);
+        document.getElementById('copy-btn').innerText = "COPIED ✅";
+        setTimeout(() => { document.getElementById('copy-btn').innerText = "COPY REFERRAL LINK"; }, 2000);
     }
 
-    async function handleBet() {
-        if(!selectedSide) return Telegram.WebApp.showAlert("Please select ODD or EVEN first!");
-        startDiceAnimation();
-        // Add TonConnect Transaction logic here
-    }
-
-    function startDiceAnimation() {
+    function handleBet() {
         const container = document.getElementById('dice-container');
         container.innerHTML = '<i class="fas fa-dice rolling"></i>';
-        setTimeout(() => {
-            const res = Math.floor(Math.random() * 6) + 1;
-            const icons = ['one', 'two', 'three', 'four', 'five', 'six'];
-            container.innerHTML = `<i class="fas fa-dice-${icons[res-1]}"></i>`;
-        }, 1500);
+        setTimeout(() => { container.innerHTML = `<i class="fas fa-dice-five"></i>`; }, 1500);
     }
 
     tonConnectUI.onStatusChange(wallet => {
         const connected = !!wallet;
         document.getElementById('game-ui').style.display = connected ? 'block' : 'none';
         document.getElementById('connect-msg').style.display = connected ? 'none' : 'block';
-        if(wallet) {
-            document.getElementById('ref-link').innerText = "https://t.me/YourBot?start=" + wallet.account.address;
-        }
+        if(wallet) document.getElementById('ref-link').innerText = "https://t.me/YourBot?start=" + wallet.account.address;
     });
 </script>
 </body>
