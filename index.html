@@ -3,116 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Game - Professional Edition</title>
+    <title>Golden Game - Decentralized Gaming</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #f5f7fa; --card: #ffffff; --text: #1d1d1f; --accent: #007aff; --secondary: #8e8e93; }
-        [data-theme="dark"] { --bg: #000000; --card: #1c1c1e; --text: #ffffff; --accent: #0a84ff; --secondary: #a1a1a6; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; transition: 0.3s; padding-bottom: 50px; }
-        .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 20px; box-sizing: border-box; }
-        .theme-toggle { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; }
-        .main-container { width: 90%; max-width: 420px; background: var(--card); border-radius: 30px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; }
-        .icon-box { font-size: 50px; margin-bottom: 10px; }
-        .input-group { text-align: left; margin-top: 20px; }
-        label { font-size: 14px; color: var(--secondary); margin-left: 5px; }
-        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid var(--secondary); background: var(--bg); color: var(--text); font-size: 16px; margin-top: 8px; box-sizing: border-box; }
-        .btn-play { background: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 18px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: 0.2s; }
-        .referral-section { margin-top: 30px; background: var(--bg); padding: 15px; border-radius: 15px; }
-        .copy-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 10px; cursor: pointer; font-size: 12px; margin-top: 5px; }
-        .history-section { width: 90%; max-width: 420px; margin-top: 30px; }
-        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 20px; overflow: hidden; font-size: 13px; }
-        th { background: var(--accent); color: white; padding: 12px; }
-        td { padding: 12px; text-align: center; border-bottom: 1px solid var(--bg); }
+        :root { --bg: #0b0e11; --card: #181a20; --text: #eaecef; --accent: #f0b90b; --btn: #2b2f36; }
+        [data-theme="light"] { --bg: #ffffff; --card: #f5f5f5; --text: #1e2329; --accent: #c99400; --btn: #eaecef; }
+        
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; padding-bottom: 90px; }
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .ton-balance { background: var(--card); padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 1px solid var(--accent); }
+
+        /* Multi-Screen System */
+        .screen { display: none; width: 95%; max-width: 450px; margin: 20px auto; animation: slideIn 0.3s ease-out; }
+        .active-screen { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Lobby UI */
+        .game-banner { background: linear-gradient(45deg, #181a20, #2b2f36); border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border: 1px solid rgba(240, 185, 11, 0.2); }
+        .play-tag { background: var(--accent); color: #000; padding: 8px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; text-decoration: none; }
+
+        /* Play UI & Animation */
+        .dice-container { height: 120px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }
+        .dice { font-size: 80px; transition: 0.5s; color: var(--accent); }
+        .rolling { animation: spin 0.15s infinite linear; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .bet-box { background: var(--card); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .side-selector { display: flex; gap: 10px; margin: 20px 0; }
+        .side-btn { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--btn); background: var(--btn); color: var(--text); cursor: pointer; font-weight: bold; }
+        .side-btn.selected { border-color: var(--accent); background: rgba(240, 185, 11, 0.1); color: var(--accent); }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-item { opacity: 0.5; text-align: center; font-size: 11px; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--accent); }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
+
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--btn); background: var(--bg); color: var(--text); box-sizing: border-box; font-size: 16px; text-align: center; }
+        .btn-main { background: #22c55e; color: #fff; border: none; width: 100%; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <h2 style="margin:0;">🎰 Golden Game</h2>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 Day/Night</button>
+        <h3 style="margin:0; color:var(--accent);">GOLDEN GAME</h3>
+        <div class="ton-balance" id="walletBalance">0.00 TON</div>
     </div>
-    <div id="ton-connect" style="margin-bottom: 25px;"></div>
-    <div class="main-container">
-        <div class="icon-box">🎲</div>
-        <div class="input-group">
-            <label>Enter Bet Amount (TON)</label>
-            <input type="number" id="betAmount" placeholder="Min 0.1">
+
+    <div id="ton-connect" style="display: flex; justify-content: center; margin-top: 15px;"></div>
+
+    <div id="screen-lobby" class="screen active-screen">
+        <h4 style="margin-left: 10px; opacity: 0.7;">Available Games</h4>
+        <div class="game-banner">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/575/575409.png" width="50">
+                <div>
+                    <div style="font-weight:bold; font-size: 18px;">ODD & EVEN</div>
+                    <div style="font-size:12px; color:var(--accent);">Multi: x1.90</div>
+                </div>
+            </div>
+            <div class="play-tag" onclick="changeScreen('screen-play', 1)">PLAY</div>
         </div>
-        <div class="input-group">
-            <label>Choose Your Side</label>
-            <select id="betSide">
-                <option value="true">🔵 EVEN (စုံ)</option>
-                <option value="false">🔴 ODD (မ)</option>
-            </select>
+        
+        <div class="bet-box" style="margin-top: 20px; text-align: left;">
+            <h4 style="margin:0 0 15px 0;"><i class="fas fa-shield-halved"></i> Global Fair Play</h4>
+            <div style="font-size: 13px; line-height: 1.6; opacity: 0.8;">
+                1. Decentralized on TON Blockchain.<br>
+                2. Provably Fair random generation.<br>
+                3. Instant Payouts to your wallet.
+            </div>
         </div>
-        <button class="btn-play" onclick="playGame()">PLACE BET NOW</button>
-        <div class="referral-section">
-            <div style="font-size: 13px; font-weight: 600;">🔗 Invite Friends & Earn 10%</div>
-            <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy My Referral Link</button>
-        </div>
-        <p id="status" style="font-size: 12px; color: var(--secondary); margin-top: 15px;">Waiting for Wallet...</p>
     </div>
-    <div class="history-section">
-        <h4 style="margin-left: 10px;">📊 Last 5 Results</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Side</th>
-                    <th>Result</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="historyBody">
-                <tr><td colspan="3">No history yet</td></tr>
-            </tbody>
-        </table>
+
+    <div id="screen-play" class="screen">
+        <div class="dice-container">
+            <div id="dice-icon" class="dice"><i class="fas fa-dice-six"></i></div>
+        </div>
+
+        <div class="bet-box">
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 13px; opacity: 0.6;">BET AMOUNT</label>
+                <input type="number" id="betAmount" value="0.10" step="0.1">
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-size: 13px; opacity: 0.6;">SELECT SIDE</label>
+                <div class="side-selector">
+                    <button class="side-btn" id="btn-odd" onclick="selectSide(false)">ODD</button>
+                    <button class="side-btn selected" id="btn-even" onclick="selectSide(true)">EVEN</button>
+                </div>
+            </div>
+
+            <button class="btn-main" id="playBtn" onclick="playGame()">PLACE BET</button>
+            <p id="status" style="font-size: 12px; margin-top: 10px; opacity: 0.6;">History will be updated below</p>
+        </div>
+
+        <div style="margin-top: 20px; opacity: 0.8; font-size: 13px;">
+            <h4 style="text-align: left;"><i class="fas fa-history"></i> Recent Bets</h4>
+            <div id="historyList" style="background:var(--card); padding:10px; border-radius:15px; min-height: 50px;">
+                No recent activity.
+            </div>
+        </div>
     </div>
+
+    <div id="screen-invite" class="screen">
+        <div class="bet-box" style="padding: 40px 20px;">
+            <i class="fas fa-user-plus" style="font-size: 50px; color: var(--accent); margin-bottom: 15px;"></i>
+            <h2>Affiliate Program</h2>
+            <p style="opacity: 0.7; font-size: 14px;">Share your link and earn 10% commission on every friend's bet!</p>
+            
+            <div style="background: var(--bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent); margin: 20px 0; word-break: break-all; font-size: 12px;" id="refURL">
+                Connect wallet to see link
+            </div>
+            
+            <button class="btn-main" style="background:var(--btn)" id="copyBtn" onclick="copyRef()">COPY LINK</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="changeScreen('screen-lobby', 0)"><i class="fas fa-home"></i>Lobby</div>
+        <div class="nav-item" onclick="changeScreen('screen-play', 1)"><i class="fas fa-play-circle"></i>Play</div>
+        <div class="nav-item" onclick="changeScreen('screen-invite', 2)"><i class="fas fa-users"></i>Invite</div>
+    </div>
+
     <script>
-        function toggleTheme() {
-            const root = document.documentElement;
-            const current = root.getAttribute('data-theme');
-            root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        let selectedSide = true; // Default: Even
+        const diceIcons = ['fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six'];
+
+        function changeScreen(screenId, idx) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[idx].classList.add('active');
         }
+
+        function selectSide(side) {
+            selectedSide = side;
+            document.getElementById('btn-even').classList.toggle('selected', side);
+            document.getElementById('btn-odd').classList.toggle('selected', !side);
+        }
+
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://raw.githubusercontent.com/ton-connect/demo-dapp-with-react/master/public/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
+
+        tonConnectUI.onStatusChange(wallet => {
+            if (wallet) {
+                document.getElementById('refURL').innerText = window.location.origin + "?ref=" + wallet.account.address;
+                document.getElementById('walletBalance').innerText = "Wallet Active";
+            }
+        });
+
         async function playGame() {
-            const amount = document.getElementById('betAmount').value;
-            const sideSelection = document.getElementById('betSide').value;
-            const status = document.getElementById('status');
-            if (!tonConnectUI.connected) { alert("Please connect wallet!"); return; }
-            if (amount < 0.1) { alert("Min bet is 0.1 TON"); return; }
-            status.innerText = "Processing Transaction...";
-            // Dynamic Payload for Tact v2.8 (True/False matching)
-            const payload = sideSelection === "true" 
+            const amt = document.getElementById('betAmount').value;
+            const btn = document.getElementById('playBtn');
+            const dice = document.getElementById('dice-icon');
+
+            if (!tonConnectUI.connected) { alert("Connect Wallet!"); return; }
+            if (amt < 0.1) { alert("Min Bet: 0.1 TON"); return; }
+
+            // Start Animation
+            dice.classList.add('rolling');
+            btn.disabled = true;
+            btn.innerText = "ROLLING...";
+
+            const payload = selectedSide 
                 ? "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8I" 
                 : "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8J";
+
             try {
-                const transaction = {
+                await tonConnectUI.sendTransaction({
                     validUntil: Math.floor(Date.now() / 1000) + 60,
                     messages: [{
-                        address: "EQCVwJNztxr7Ia1TuTxwsz8Iqe6DbDpdxcpjPoCcCnRKHotR", // အမတ်ကြီး၏ Address အသစ်ဖြင့် အစားထိုးရန်
-                        amount: (parseFloat(amount) * 1000000000).toString(),
+                        address: "EQCVwJNztxr7Ia1TuTxwsz8Iqe6DbDpdxcpjPoCcCnRKHotR", 
+                        amount: (parseFloat(amt) * 1000000000).toString(),
                         payload: payload
                     }]
-                };
-                await tonConnectUI.sendTransaction(transaction);
-                status.innerText = "Bet Placed! Wait for Payout.";
-                updateHistory(sideSelection === "true");
-            } catch (e) { status.innerText = "Transaction Cancelled"; }
+                });
+                document.getElementById('status').innerText = "Transaction Sent! Check wallet for result.";
+            } catch (e) {
+                alert("Transaction Failed");
+            } finally {
+                // Stop Animation after 2 seconds
+                setTimeout(() => {
+                    dice.classList.remove('rolling');
+                    btn.disabled = false;
+                    btn.innerText = "PLACE BET";
+                }, 2000);
+            }
         }
-        function copyLink() {
-            const link = window.location.origin + window.location.pathname + "?ref=" + (tonConnectUI.account?.address || "");
-            navigator.clipboard.writeText(link);
+
+        function copyRef() {
+            const url = document.getElementById('refURL').innerText;
+            navigator.clipboard.writeText(url);
             const btn = document.getElementById('copyBtn');
-            btn.innerText = "✅ Link Copied!";
-            setTimeout(() => { btn.innerText = "Copy My Referral Link"; }, 2000);
-        }
-        function updateHistory(side) {
-            const body = document.getElementById('historyBody');
-            if (body.innerText.includes("No history yet")) body.innerHTML = "";
-            const newRow = `<tr><td>${side ? 'EVEN' : 'ODD'}</td><td>Pending</td><td>⏳</td></tr>`;
-            body.innerHTML = newRow + body.innerHTML;
+            btn.innerText = "COPIED!";
+            btn.style.background = "#22c55e";
+            setTimeout(() => { btn.innerText = "COPY LINK"; btn.style.background = ""; }, 2000);
         }
     </script>
 </body>
