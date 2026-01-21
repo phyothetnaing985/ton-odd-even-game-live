@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN GAME - SUPREME EDITION</title>
+    <title>GOLDEN GAME - GLOBAL SUPREME</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -19,15 +19,14 @@
         .screen { display: none; flex-direction: column; align-items: center; padding: 20px; animation: fadeIn 0.3s; width: 100%; box-sizing: border-box; }
         .active-screen { display: flex; }
         
-        /* Game Bar & Lobby Elements */
+        /* Lobby Components */
         .game-card { width: 100%; max-width: 450px; background: var(--card); border-radius: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
         .game-meta { display: flex; align-items: center; gap: 12px; }
         .info-btn { color: var(--accent); font-size: 1.3rem; cursor: pointer; margin: 0 10px; transition: 0.2s; }
-        .info-btn:hover { transform: scale(1.1); }
         .play-btn { background: var(--accent); color: #000; border: none; padding: 10px 22px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Modal / Instruction Box */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        /* Global Fair Play Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-width: 400px; width: 100%; position: relative; line-height: 1.6; }
         .close-modal { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; cursor: pointer; opacity: 0.7; }
 
@@ -51,6 +50,7 @@
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #8b949e; font-size: 0.75rem; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
         
+        input[type=range] { width: 100%; accent-color: var(--accent); margin-top: 15px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -59,41 +59,41 @@
 <div id="info-modal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeInfo()">&times;</span>
-        <h3 style="color:var(--accent); margin-top: 0;"><i class="fas fa-shield-check"></i> Global Fair Play</h3>
+        <h3 style="color:var(--accent); margin-top: 0;"><i class="fas fa-globe"></i> Fair Play Standards</h3>
         <div style="font-size: 0.85rem;">
-            <p><b>1. Global Standard:</b> TON Blockchain နည်းပညာကို အသုံးပြုထားသဖြင့် ကမ္ဘာ့အဆင့်မီ စိတ်ချရမှုရှိပါသည်။</p>
-            <p><b>2. Smart Payout:</b> အနိုင်ရရှိပါက Player ၏ သီးသန့် Vault မှတစ်ဆင့် Wallet ထဲသို့ အလိုအလျောက် ပေးပို့ပါသည်။</p>
-            <p><b>3. Provably Fair:</b> Dice ရလဒ်များကို ပြင်ပမှ ဝင်ရောက်စွက်ဖက်၍ မရသော Random စနစ်ဖြင့် တွက်ချက်ပါသည်။</p>
+            <p><b>1. Decentralized Execution:</b> Powered by TON Blockchain. All game results are verifiable and transparent.</p>
+            <p><b>2. Instant Automatic Payouts:</b> Payouts are handled by our Smart Vault. Winners receive TON directly in their wallets instantly.</p>
+            <p><b>3. Cryptographic Randomness:</b> Results are generated using secure on-chain random seeds. No human intervention possible.</p>
             <hr style="border:0.1px solid rgba(255,255,255,0.1); margin: 15px 0;">
-            <p style="text-align: center; color: var(--accent);"><i class="fas fa-check-circle"></i> Verified by 67-GAME GROUP</p>
+            <p style="text-align: center; color: var(--accent);"><i class="fas fa-check-circle"></i> Certified Decentralized Application</p>
         </div>
     </div>
 </div>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-adjust"></i> MODE</button>
+    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-circle-half-stroke"></i> MODE</button>
 </div>
 
 <div id="lobby-screen" class="screen active-screen">
-    <h4 style="align-self: flex-start; margin-bottom: 15px; opacity: 0.7;">AVAILABLE GAMES</h4>
+    <h4 style="align-self: flex-start; margin-bottom: 15px; opacity: 0.7; letter-spacing: 1px;">AVAILABLE GAMES</h4>
     
     <div class="game-card">
         <div class="game-meta">
             <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" style="width: 50px; border-radius: 12px;">
             <div>
                 <div style="font-weight: bold; font-size: 1rem;">ODD & EVEN</div>
-                <div style="font-size: 0.75rem; color: var(--accent);">Multi: x1.90</div>
+                <div style="font-size: 0.75rem; color: var(--accent);">Multiplier: x1.90</div>
             </div>
         </div>
         <div style="display: flex; align-items: center;">
-            <i class="fas fa-file-alt info-btn" onclick="openInfo()"></i>
+            <i class="fas fa-file-lines info-btn" onclick="openInfo()"></i>
             <button class="play-btn" onclick="showScreen('play-screen')">PLAY</button>
         </div>
     </div>
     
-    <div style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 0.8rem;">
-        More Games Coming Soon...
+    <div style="margin-top: 40px; text-align: center; opacity: 0.4; font-size: 0.8rem; font-style: italic;">
+        New Games Loading Soon...
     </div>
 </div>
 
@@ -101,25 +101,25 @@
     <div class="dice-box" id="dice-container"><i class="fas fa-dice"></i></div>
     
     <div id="game-ui" style="width: 100%; max-width: 400px; display: none;">
-        <h3 id="game-status" style="text-align: center; margin-bottom: 5px;">CHOOSE SIDE</h3>
+        <h3 style="text-align: center; margin-bottom: 5px; letter-spacing: 1px;">PICK YOUR SIDE</h3>
         <div class="bet-grid">
             <button class="btn-bet" id="btn-odd" onclick="selectType('ODD', this)">ODD</button>
             <button class="btn-bet" id="btn-even" onclick="selectType('EVEN', this)">EVEN</button>
         </div>
         
-        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
-            <span style="font-size: 0.8rem; opacity: 0.6;">STAKE (TON):</span>
-            <span id="amt-val" style="font-size: 1.4rem; font-weight: bold; color: var(--accent); margin-left: 10px;">0.10</span>
-            <input type="range" min="0.1" max="10.0" step="0.1" value="0.1" style="width:100%; margin-top: 15px; accent-color: var(--accent);" oninput="updateAmt(this.value)">
+        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+            <span style="font-size: 0.8rem; opacity: 0.6;">STAKE:</span>
+            <span id="amt-val" style="font-size: 1.4rem; font-weight: bold; color: var(--accent); margin-left: 8px;">0.10</span> <small>TON</small>
+            <input type="range" min="0.1" max="10.0" step="0.1" value="0.1" oninput="updateAmt(this.value)">
         </div>
 
-        <button class="btn-main" onclick="handleBet()">PLACE BET NOW</button>
+        <button class="btn-main" onclick="handleBet()">CONFIRM BET</button>
     </div>
     
-    <p id="connect-msg" style="color: var(--accent); font-weight: bold;">CONNECT WALLET TO START</p>
+    <p id="connect-msg" style="color: var(--accent); font-weight: bold; text-align: center; margin-top: 20px;">PLEASE CONNECT WALLET TO PLAY</p>
 
     <div class="history-card">
-        <h4 style="margin: 0 0 10px 0;"><i class="fas fa-history"></i> GLOBAL PLAYERS</h4>
+        <h4 style="margin: 0 0 10px 0; color: var(--accent);"><i class="fas fa-globe"></i> GLOBAL HISTORY</h4>
         <table class="history-table">
             <thead>
                 <tr style="opacity: 0.5;"><th>PLAYER</th><th>SIDE</th><th>RESULT</th><th>PAYOUT</th></tr>
@@ -130,26 +130,26 @@
 </div>
 
 <div id="invite-screen" class="screen">
-    <i class="fas fa-users" style="font-size: 50px; color: var(--accent); margin-bottom: 20px;"></i>
-    <h2>Invite & Earn 10%</h2>
-    <p style="text-align: center; font-size: 0.9rem; opacity: 0.8;">Get rewarded for every friend you refer. All rewards sent directly to your Vault.</p>
-    <div style="background: var(--card); padding: 18px; border-radius: 15px; border: 1px dashed var(--accent); width: 100%; word-break: break-all; font-family: monospace; font-size: 0.8rem; margin: 20px 0; text-align: center;" id="ref-link">
-        Connect Wallet First...
+    <i class="fas fa-users-viewfinder" style="font-size: 60px; color: var(--accent); margin-bottom: 20px;"></i>
+    <h2>Affiliate Rewards</h2>
+    <p style="text-align: center; font-size: 0.9rem; opacity: 0.8; padding: 0 10px;">Invite your friends and earn a 10% commission on every bet they place. Rewards are credited to your Vault automatically.</p>
+    <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px dashed var(--accent); width: 100%; word-break: break-all; font-family: monospace; font-size: 0.8rem; margin: 20px 0; text-align: center;" id="ref-link">
+        Connecting...
     </div>
-    <button class="btn-main" id="copy-btn" style="background: var(--card); border: 1px solid var(--accent); color: var(--accent);" onclick="copyRef()">COPY LINK</button>
+    <button class="btn-main" id="copy-btn" style="background: var(--card); border: 1px solid var(--accent); color: var(--accent);" onclick="copyRef()">COPY REFERRAL LINK</button>
 </div>
 
 <div class="footer">
-    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-home"></i>Lobby</div>
-    <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-gift"></i>Invite</div>
+    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-house"></i>Lobby</div>
+    <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-bullhorn"></i>Invite</div>
 </div>
 
 <script>
     const VAULT_ADDR = "EQAmXMpzRq4JSSI4ak_eJEn_tv9ZMVYxGB5S68UWFZKyuT3I";
     let selectedSide = null;
     let betHistory = [
-        { addr: "UQAk...9zL", side: "EVEN", res: "EVEN", win: true, amt: 0.5 },
-        { addr: "UQB2...x4W", side: "ODD", res: "EVEN", win: false, amt: 0.1 }
+        { addr: "UQAn...k92", side: "EVEN", res: "EVEN", win: true, amt: 1.0 },
+        { addr: "UQBm...x51", side: "ODD", res: "EVEN", win: false, amt: 0.5 }
     ];
 
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ 
@@ -168,7 +168,6 @@
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
-        // Only update lobby/invite icons
         document.querySelectorAll('.nav-item').forEach(n => {
             const isMatch = n.innerText.toLowerCase() === id.split('-')[0];
             n.classList.toggle('active', isMatch);
@@ -185,7 +184,7 @@
     }
 
     async function handleBet() {
-        if(!selectedSide) return Telegram.WebApp.showAlert("Select ODD or EVEN!");
+        if(!selectedSide) return Telegram.WebApp.showAlert("Please select a side!");
         const amt = document.getElementById('amt-val').innerText;
         
         try {
@@ -212,7 +211,7 @@
                 betHistory.unshift({ addr: shortAddr, side: selectedSide, res: resSide, win: isWin, amt: parseFloat(amt) });
                 renderHistory();
                 
-                Telegram.WebApp.showAlert(isWin ? "🎉 WINNER! Check your wallet." : "❌ BETTER LUCK NEXT TIME!");
+                Telegram.WebApp.showAlert(isWin ? "🎉 CONGRATS! WINNER!" : "❌ SORRY! BETTER LUCK NEXT TIME!");
             }, 2000);
         } catch (e) { console.error(e); }
     }
@@ -233,7 +232,7 @@
         navigator.clipboard.writeText(link);
         const btn = document.getElementById('copy-btn');
         btn.innerText = "LINK COPIED!";
-        setTimeout(() => btn.innerText = "COPY LINK", 2000);
+        setTimeout(() => btn.innerText = "COPY REFERRAL LINK", 2000);
     }
 
     tonConnectUI.onStatusChange(wallet => {
