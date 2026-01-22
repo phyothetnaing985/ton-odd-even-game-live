@@ -10,48 +10,26 @@
     <style>
         :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; --btn: #2b3139; }
         .light-mode { --bg: #f5f5f5; --card: #ffffff; --accent: #0088cc; --green: #2ecc71; --text: #1e2329; --nav: #ffffff; --btn: #e4e6eb; }
-
         body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 80px; transition: 0.3s; overflow-x: hidden; }
-        
         .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 100; }
         .screen { display: none; flex-direction: column; align-items: center; padding: 15px; width: 100%; box-sizing: border-box; }
         .active-screen { display: flex; animation: fadeIn 0.3s; }
-
-        .visual-area { 
-            position: relative; width: 100%; max-width: 500px; height: 300px; 
-            margin: 10px 0; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 0 45px rgba(243, 186, 47, 0.25);
-        }
+        .visual-area { position: relative; width: 100%; max-width: 500px; height: 300px; margin: 10px 0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 45px rgba(243, 186, 47, 0.25); }
         .game-bg-large { width: 100%; height: 100%; object-fit: cover; filter: brightness(1.2); }
-
         .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; }
-        .side-btn { 
-            padding: 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); 
-            background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s;
-        }
-        .side-btn.selected { 
-            border-color: var(--accent); 
-            background: rgba(243, 186, 47, 0.15); 
-            box-shadow: 0 0 20px rgba(243, 186, 47, 0.4);
-            transform: scale(1.05);
-        }
-
+        .side-btn { padding: 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .side-btn.selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.15); box-shadow: 0 0 20px rgba(243, 186, 47, 0.4); transform: scale(1.05); }
         .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        
         .history-container { width: 100%; max-width: 450px; background: var(--card); border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
         .history-header { background: rgba(255,255,255,0.03); padding: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 0.7rem; font-weight: bold; color: var(--accent); text-align: center; }
         .history-row { padding: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 0.75rem; border-top: 1px solid rgba(255,255,255,0.02); text-align: center; }
-
         .ref-card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); width: 100%; max-width: 400px; text-align: center; margin-top: 20px; }
         .ref-bonus-badge { background: var(--accent); color: #000; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; margin-bottom: 15px; display: inline-block; }
-
         .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.05); }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-width: 450px; text-align: left; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -62,8 +40,8 @@
         <h2 style="color:var(--accent); text-align:center;"><i class="fas fa-shield-alt"></i> TRUST PROTOCOL</h2>
         <p style="font-size: 0.85rem; line-height: 1.7; opacity: 0.9;">
             1. <b>Decentralized Assets:</b> All game logic is locked in a Non-Custodial Smart Contract on TON Blockchain.<br>
-            2. <b>Provably Fair:</b> Outcomes are generated via on-chain hash entropy, making manipulation impossible.<br>
-            3. <b>Direct Payouts:</b> Winnings are automatically processed and can be withdrawn directly to your wallet.
+            2. <b>Provably Fair:</b> Outcomes are generated via on-chain hash entropy.<br>
+            3. <b>Direct Payouts:</b> Winnings are automatically processed.
         </p>
         <button class="btn-main" style="background:var(--accent); color:#000;" onclick="closeModal()">I VERIFY & UNDERSTAND</button>
     </div>
@@ -80,18 +58,12 @@
             <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" style="width: 60px; border-radius: 12px;">
             <div><div style="font-weight:bold; font-size:1.1rem;">ODD & EVEN</div><div style="font-size:0.75rem; color:var(--accent);">Win Multiplier: x1.90</div></div>
         </div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <i class="fas fa-scroll" style="color:var(--accent); font-size:1.4rem; cursor:pointer;" onclick="openModal()"></i>
-            <button style="background:var(--accent); border:none; padding:12px 20px; border-radius:10px; font-weight:bold; color:#000;" onclick="showScreen('play-screen')">PLAY</button>
-        </div>
+        <button style="background:var(--accent); border:none; padding:12px 20px; border-radius:10px; font-weight:bold; color:#000;" onclick="showScreen('play-screen')">PLAY</button>
     </div>
 </div>
 
 <div id="play-screen" class="screen">
-    <div class="visual-area">
-        <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="game-bg-large">
-    </div>
-
+    <div class="visual-area"><img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="game-bg-large"></div>
     <div id="game-ui" style="width:100%; max-width:400px; display:none;">
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; gap:12px;">
             <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
@@ -103,41 +75,22 @@
                 <span style="color:var(--green); font-weight:bold; font-size:1.1rem;" id="win-val">0.19</span> <small>TON</small>
             </div>
         </div>
-        
         <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" style="width:100%; accent-color:var(--accent); margin-bottom:20px;" oninput="updateBet(this.value)">
-        
         <div class="selection-box">
             <button class="side-btn" id="btn-odd" onclick="selectSide('ODD')">ODD</button>
             <button class="side-btn" id="btn-even" onclick="selectSide('EVEN')">EVEN</button>
         </div>
-
         <button class="btn-main" onclick="handleBet()">PLACE BET NOW</button>
-
-        <div class="history-container">
-            <div class="history-header"><div>PLAYER</div><div>SIDE</div><div>RESULT</div><div>PAYOUT</div></div>
-            <div id="history-list">
-                <div class="history-row"><div>UQAn...k92</div><div>EVEN</div><div>EVEN</div><div style="color:var(--green)">+1.90</div></div>
-            </div>
-        </div>
     </div>
-    <div id="connect-msg" style="text-align:center; margin-top:50px;"><i class="fas fa-wallet" style="font-size:2.5rem; color:var(--accent);"></i><p>Connect Wallet to Play</p></div>
+    <div id="connect-msg" style="text-align:center; margin-top:50px;"><p>Connect Wallet to Play</p></div>
 </div>
 
 <div id="invite-screen" class="screen">
     <div class="ref-card">
         <div class="ref-bonus-badge">EARN 10% COMMISSION</div>
-        <i class="fas fa-gift" style="font-size:50px; color:var(--accent); display:block; margin-bottom:10px;"></i>
-        <h2 style="margin:5px 0;">Global Affiliate</h2>
-        <p style="font-size:0.8rem; opacity:0.7; line-height:1.5;">Earn 10% from every bet made by your friends. Commissions are settled instantly on the TON Blockchain.</p>
-        
-        <div style="margin:20px 0;">
-            <div style="font-size:0.7rem; opacity:0.6;">AVAILABLE REWARDS</div>
-            <div style="font-size:2rem; font-weight:bold; color:var(--accent);">0.00 TON</div>
-            <button class="btn-main" style="margin-top:10px; padding:12px;" onclick="claimRewards()">CLAIM REWARDS</button>
-        </div>
-
-        <div id="ref-link" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; font-size:0.7rem; word-break:break-all; border:1px dashed #444; color: #888;">Connect wallet to generate link</div>
-        <button class="btn-main" id="copy-btn" style="background:transparent; border:2px solid var(--accent); color:var(--accent); margin-top:15px;" onclick="copyRef()">COPY REFERRAL LINK</button>
+        <h2 style="margin:5px 0;">Affiliate Link</h2>
+        <div id="ref-link" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; font-size:0.7rem; word-break:break-all; border:1px dashed #444; margin: 15px 0;">Connect wallet to generate link</div>
+        <button class="btn-main" id="copy-btn" style="background:transparent; border:2px solid var(--accent); color:var(--accent);" onclick="copyRef()">COPY LINK</button>
     </div>
 </div>
 
@@ -147,7 +100,6 @@
 </div>
 
 <script>
-    // ✅ ADDRESS IS SECURELY INTEGRATED
     const CONTRACT_ADDRESS = "EQAjzi31ql7IRCil4GGDi7joS99owrImCZ_Wasybdaxz7CVn";
     let selectedSide = null;
 
@@ -159,9 +111,6 @@
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
-        document.querySelectorAll('.nav-item').forEach(n => {
-            n.classList.toggle('active', id.includes(n.innerText.toLowerCase().replace('lobby','lobby-screen').replace('invite','invite-screen')));
-        });
     }
 
     function toggleMode() { document.body.classList.toggle('light-mode'); }
@@ -182,37 +131,20 @@
     function copyRef() {
         const link = document.getElementById('ref-link').innerText;
         navigator.clipboard.writeText(link);
-        document.getElementById('copy-btn').innerHTML = "COPIED <i class='fas fa-check-circle'></i>";
-        setTimeout(() => { document.getElementById('copy-btn').innerText = "COPY REFERRAL LINK"; }, 2000);
+        alert("Copied!");
     }
 
-    async function claimRewards() {
-        if (!tonConnectUI.connected) return alert("Please connect wallet!");
-        const transaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 60,
-            messages: [{
-                address: CONTRACT_ADDRESS,
-                amount: "50000000",
-                payload: "te6ccgEBAQEADgAAGFdpdGhkcmF3UmVm86p2Sg=="
-            }]
-        };
-        try {
-            await tonConnectUI.sendTransaction(transaction);
-            alert("Reward Claim Processed!");
-        } catch (e) { alert("Claim Failed."); }
-    }
-
-    // 🛡️ UNIVERSAL PAYLOAD (V2.2 UPDATE) - FIXED FOR ALL WALLETS
+    // 🛡️ v2.3 FINAL PAYLOAD - OPTIMIZED FOR TACT v2.8
     async function handleBet() {
         if (!tonConnectUI.connected) return alert("Please connect wallet!");
         if (!selectedSide) return alert("Please select ODD or EVEN first!");
         
         const amount = document.getElementById('amt-val').innerText;
         
-        // 🛡️ Universal Binary Payload (Base64 Cell)
-        const payload = selectedSide === "EVEN" 
-            ? "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8I" 
-            : "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8J";
+        // Advisor's Official Payloads for Tact v2.8
+        const payload = (selectedSide === "EVEN") 
+            ? "te6ccgEBAQEACgAAEbSWSIGAAAAAAAg=" 
+            : "te6ccgEBAQEACgAAEbSWSIGAAAAAIAg=";
 
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 60,
@@ -225,17 +157,14 @@
 
         try {
             await tonConnectUI.sendTransaction(transaction);
-            alert("Bet Placed Successfully! Watch history for results.");
-        } catch (e) {
-            alert("Transaction Cancelled.");
-        }
+            alert("Bet Placed! Please confirm in your wallet.");
+        } catch (e) { alert("Cancelled."); }
     }
 
     tonConnectUI.onStatusChange(wallet => {
         document.getElementById('game-ui').style.display = !!wallet ? 'block' : 'none';
         document.getElementById('connect-msg').style.display = !!wallet ? 'none' : 'block';
         if(wallet) {
-            // Updated Referral Link Format
             document.getElementById('ref-link').innerText = "https://t.me/GoldenGameBot?start=" + wallet.account.address;
         }
     });
