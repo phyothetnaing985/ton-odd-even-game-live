@@ -186,15 +186,14 @@
         setTimeout(() => { document.getElementById('copy-btn').innerText = "COPY REFERRAL LINK"; }, 2000);
     }
 
-    // 💰 Claim Referral Rewards Logic
     async function claimRewards() {
         if (!tonConnectUI.connected) return alert("Please connect wallet!");
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 60,
             messages: [{
                 address: CONTRACT_ADDRESS,
-                amount: "50000000", // 0.05 TON for Gas
-                payload: "te6ccgEBAQEADgAAGFdpdGhkcmF3UmVm86p2Sg==" // "WithdrawRef" Comment Payload
+                amount: "50000000",
+                payload: "te6ccgEBAQEADgAAGFdpdGhkcmF3UmVm86p2Sg=="
             }]
         };
         try {
@@ -203,13 +202,14 @@
         } catch (e) { alert("Claim Failed."); }
     }
 
-    // 🛡️ Finalized handleBet for Tact v2.8 (SYNCED WITH CONTRACT)
+    // 🛡️ UNIVERSAL PAYLOAD (V2.2 UPDATE) - FIXED FOR ALL WALLETS
     async function handleBet() {
         if (!tonConnectUI.connected) return alert("Please connect wallet!");
         if (!selectedSide) return alert("Please select ODD or EVEN first!");
         
         const amount = document.getElementById('amt-val').innerText;
-        // EXACT PAYLOADS FOR TACT V2.8
+        
+        // 🛡️ Universal Binary Payload (Base64 Cell)
         const payload = selectedSide === "EVEN" 
             ? "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8I" 
             : "te6ccgEBAQEAKgAAWv8AAQAAbS4uYmX7v/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACByS8J";
@@ -234,7 +234,10 @@
     tonConnectUI.onStatusChange(wallet => {
         document.getElementById('game-ui').style.display = !!wallet ? 'block' : 'none';
         document.getElementById('connect-msg').style.display = !!wallet ? 'none' : 'block';
-        if(wallet) document.getElementById('ref-link').innerText = "https://t.me/YourBot?start=" + wallet.account.address;
+        if(wallet) {
+            // Updated Referral Link Format
+            document.getElementById('ref-link').innerText = "https://t.me/GoldenGameBot?start=" + wallet.account.address;
+        }
     });
 </script>
 </body>
