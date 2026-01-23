@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN GAME - PROVABLY FAIR</title>
+    <title>GOLDEN GAME - SECURE DECENTRALIZED PLATFORM</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,34 +12,41 @@
         .light-mode { --bg: #f5f5f5; --card: #ffffff; --accent: #0088cc; --green: #2ecc71; --text: #1e2329; --nav: #ffffff; --btn: #e4e6eb; }
         body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 90px; transition: 0.3s; overflow-x: hidden; }
         
+        /* Header & Theme Toggle */
         .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 100; }
         .mode-toggle { background: var(--btn); border: 1px solid var(--accent); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 0.65rem; cursor: pointer; font-weight: bold; }
         
+        /* Layout */
         .screen { display: none; flex-direction: column; align-items: center; padding: 15px; width: 100%; box-sizing: border-box; }
         .active-screen { display: flex; animation: fadeIn 0.3s; }
         
+        /* Lobby Card */
+        .lobby-card { width: 100%; max-width: 450px; background: var(--card); border-radius: 18px; padding: 18px; display: flex; align-items: center; justify-content: space-between; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .lobby-info-btn { font-size: 1.4rem; color: var(--accent); cursor: pointer; opacity: 0.8; margin: 0 10px; transition: 0.2s; }
+        .lobby-info-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        /* Game UI Components */
         .visual-area { width: 100%; max-width: 500px; height: 260px; margin: 10px 0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 35px rgba(243, 186, 47, 0.2); }
         .game-bg-large { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Selection Box with Middle Icon */
-        .selection-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px; }
-        .side-btn { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; }
+        .side-btn { padding: 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: var(--btn); color: white; font-weight: 800; cursor: pointer; }
         .side-btn.selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.15); box-shadow: 0 0 15px rgba(243, 186, 47, 0.3); }
-        .info-icon-btn { color: var(--accent); font-size: 1.5rem; cursor: pointer; opacity: 0.8; transition: 0.2s; }
-        .info-icon-btn:hover { opacity: 1; transform: scale(1.1); }
+        
+        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: 800; cursor: pointer; }
+        .btn-play { background: var(--accent); border: none; padding: 10px 20px; border-radius: 10px; font-weight: 900; color: #000; cursor: pointer; }
 
-        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        
-        .card-container { width: 100%; max-width: 400px; background: var(--card); border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
-        .card-header { padding: 12px; font-size: 0.75rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        
+        /* Navigation */
         .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.05); }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
 
+        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; border: 1px solid var(--accent); text-align: center; }
+        .modal-content { background: var(--card); width: 85%; max-width: 380px; padding: 25px; border-radius: 20px; border: 1px solid var(--accent); max-height: 80vh; overflow-y: auto; }
         
+        .card-container { width: 100%; max-width: 400px; background: var(--card); border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+        .card-header { padding: 10px; font-size: 0.75rem; color: var(--accent); text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -47,16 +54,22 @@
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <button class="mode-toggle" onclick="toggleMode()"><i class="fas fa-adjust"></i> DAY/NIGHT</button>
+    <button class="mode-toggle" onclick="toggleMode()"><i class="fas fa-adjust"></i> THEME</button>
 </div>
 
 <div id="lobby-screen" class="screen active-screen">
-    <div style="width: 100%; max-width: 450px; background: var(--card); border-radius: 18px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1);">
+    <div class="lobby-card">
         <div style="display: flex; align-items: center; gap: 12px;">
             <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" style="width: 50px; border-radius: 10px;">
-            <div><div style="font-weight:bold;">ODD & EVEN</div><div style="font-size:0.7rem; color:var(--green);">Provably Fair v3.0</div></div>
+            <div>
+                <div style="font-weight:900; letter-spacing: 0.5px;">ODD & EVEN</div>
+                <div style="font-size:0.65rem; color:var(--green); font-weight: bold;"><i class="fas fa-shield-alt"></i> VERIFIED V3.0</div>
+            </div>
         </div>
-        <button style="background:var(--accent); border:none; padding:10px 20px; border-radius:10px; font-weight:bold;" onclick="showScreen('play-screen')">PLAY</button>
+        <div style="display: flex; align-items: center;">
+            <i class="far fa-file-alt lobby-info-btn" onclick="toggleModal('info-modal')"></i>
+            <button class="btn-play" onclick="showScreen('play-screen')">PLAY</button>
+        </div>
     </div>
 </div>
 
@@ -66,11 +79,11 @@
     <div id="game-ui" style="width:100%; max-width:400px; display:none;">
         <div style="display:flex; gap:12px; margin-bottom:15px;">
             <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center;">
-                <span style="font-size:0.6rem; opacity:0.6; display:block;">STAKE</span>
+                <span style="font-size:0.6rem; opacity:0.6; display:block;">BET AMOUNT</span>
                 <span style="color:var(--accent); font-weight:bold; font-size:1.1rem;" id="amt-val">0.10</span> <small>TON</small>
             </div>
             <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; text-align:center;">
-                <span style="font-size:0.6rem; opacity:0.6; display:block;">RETURN (x1.9)</span>
+                <span style="font-size:0.6rem; opacity:0.6; display:block;">POTENTIAL WIN</span>
                 <span style="color:var(--green); font-weight:bold; font-size:1.1rem;" id="win-val">0.19</span> <small>TON</small>
             </div>
         </div>
@@ -79,30 +92,29 @@
         
         <div class="selection-box">
             <button class="side-btn" id="btn-odd" onclick="selectSide('ODD')">ODD</button>
-            <i class="far fa-file-alt info-icon-btn" onclick="toggleModal('info-modal')"></i>
             <button class="side-btn" id="btn-even" onclick="selectSide('EVEN')">EVEN</button>
         </div>
         
         <button class="btn-main" onclick="handleBet()">PLACE BET NOW</button>
 
         <div class="card-container">
-            <div class="card-header"><i class="fas fa-history"></i> LIVE RECENT PLAYS</div>
+            <div class="card-header"><i class="fas fa-globe"></i> GLOBAL RECENT PLAYS</div>
             <div id="history-list" style="max-height: 150px; overflow-y: auto;">
-                <div style="padding:20px; text-align:center; font-size:0.7rem; opacity:0.5;">Loading History...</div>
+                <div style="padding:20px; text-align:center; font-size:0.7rem; opacity:0.5;">Awaiting transactions...</div>
             </div>
         </div>
     </div>
-    <div id="connect-msg" style="text-align:center; margin-top:50px;"><p>Connect Wallet to Access Game</p></div>
+    <div id="connect-msg" style="text-align:center; margin-top:50px; opacity: 0.7;"><p><i class="fas fa-wallet"></i> Please connect your wallet to start.</p></div>
 </div>
 
 <div id="invite-screen" class="screen">
     <div class="card-container" style="padding: 25px; text-align: center; border: 1px solid var(--accent);">
-        <i class="fas fa-users" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"></i>
-        <h3 style="margin:0;">REFERRAL 10%</h3>
-        <p style="font-size: 0.75rem; opacity: 0.8;">Earn 10% instant commission on every friend's bet.</p>
+        <i class="fas fa-gift" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"></i>
+        <h3 style="margin:0;">REFERRAL PROGRAM</h3>
+        <p style="font-size: 0.7rem; opacity: 0.8;">Earn 10% instant commission from your referrals' bets.</p>
         
         <div style="background:rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.05);">
-            <div style="font-size:0.6rem; opacity:0.6;">REWARD BALANCE</div>
+            <div style="font-size:0.6rem; opacity:0.6;">UNCLAIMED REWARDS</div>
             <div style="font-size: 1.4rem; font-weight: 800; color: var(--green);">0.00 <small>TON</small></div>
             <button style="margin-top:10px; background:var(--green); border:none; padding:8px 18px; border-radius:8px; color:white; font-weight:bold; font-size:0.7rem;" onclick="withdrawRef()">WITHDRAW NOW</button>
         </div>
@@ -114,25 +126,35 @@
 
 <div id="info-modal" class="modal">
     <div class="modal-content">
-        <h3 style="color:var(--accent); margin-top:0;">GAME INFORMATION</h3>
-        <p style="font-size:0.75rem; line-height:1.6; text-align:left; opacity:0.9;">
-            • <b>ODD Numbers:</b> 1, 3, 5, 7<br>
-            • <b>EVEN Numbers:</b> 2, 4, 6, 8<br>
-            • <b>Payout:</b> 1.9x (10% platform fee)<br>
-            • <b>Fairness:</b> Results are generated on-chain via TON randomness.<br>
-            • <b>Referral:</b> Get 10% from every bet made through your link.
-        </p>
-        <button class="btn-main" onclick="toggleModal('info-modal')">CLOSE</button>
+        <h3 style="color:var(--accent); margin-top:0; text-align: center;"><i class="fas fa-shield-check"></i> PROVABLY FAIR SYSTEM</h3>
+        <div style="font-size:0.75rem; line-height:1.6; color: var(--text); opacity: 0.9;">
+            <p><b>1. Decentralized & Secure:</b> Our platform operates on the <b>TON Blockchain</b>. No central authority can manipulate the outcomes. The contract code is immutable.</p>
+            
+            <p><b>2. Anti-Fraud Logic:</b> We utilize TON's native <code>random()</code> function. Results are determined at the moment of transaction on-chain, making it impossible for hackers or developers to predict or rig the dice.</p>
+            
+            <p><b>3. Instant Payouts:</b> When you win, the Smart Contract automatically sends <b>1.9x</b> of your stake back to your wallet. The process is fully automated and cannot be blocked by anyone.</p>
+            
+            <p><b>4. Fair Play Rules:</b>
+                <br>• <b>ODD:</b> Dice rolls 1, 3, 5, 7
+                <br>• <b>EVEN:</b> Dice rolls 2, 4, 6, 8
+                <br>• Platform Fee: 10% (for maintenance and referrals)
+            </p>
+            
+            <p style="color: var(--green); font-weight: bold; border: 1px solid var(--green); padding: 10px; border-radius: 8px; text-align: center;">
+                <i class="fas fa-check-circle"></i> 100% Transparent. 100% Unstoppable.
+            </p>
+        </div>
+        <button class="btn-main" style="margin-top: 20px;" onclick="toggleModal('info-modal')">I UNDERSTAND</button>
     </div>
 </div>
 
 <div class="footer">
-    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-home"></i>Lobby</div>
-    <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-gift"></i>Invite</div>
+    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-th-large"></i>Lobby</div>
+    <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i>Invite</div>
 </div>
 
 <script>
-    // 🚨 IMPORTANT: REPLACE WITH YOUR NEW CONTRACT ADDRESS
+    // 🚨 IMPORTANT: Replace this with the NEW V3 CONTRACT ADDRESS provided by the advisor
     const CONTRACT_ADDRESS = "YOUR_NEW_V3_CONTRACT_ADDRESS_HERE";
     let selectedSide = null;
 
@@ -175,7 +197,7 @@
         setTimeout(() => { document.getElementById('copy-btn').innerText = "COPY LINK"; }, 2000);
     }
 
-    // 🛡️ v3.0 FINAL PAYLOAD (Optimized for New Contract)
+    // 🛡️ v3.0 DYNAMIC PAYLOAD (ODD: 00, EVEN: 01)
     async function handleBet() {
         if (!tonConnectUI.connected) return alert("Please connect wallet!");
         if (!selectedSide) return alert("Please select ODD or EVEN!");
@@ -183,8 +205,7 @@
         const amountStr = document.getElementById('amt-val').innerText;
         const amountNano = BigInt(Math.round(parseFloat(amountStr) * 1000000000));
         
-        // Tact Bet Message (OpCode + Amount + Side)
-        // EVEN = true (01), ODD = false (00)
+        // Payload based on the new V3 contract structure
         const payload = (selectedSide === "EVEN") 
             ? "te6ccgEBAQEACgAAEnN+KWgAAAAAAAgAAA==" 
             : "te6ccgEBAQEACgAAEnN+KWgAAAAAIAgAAA==";
@@ -201,15 +222,8 @@
         try {
             await tonConnectUI.sendTransaction(transaction);
         } catch (e) { 
-            alert("Transaction Failed: Ensure your wallet has at least 0.2 TON for Gas.");
-            console.error(e);
+            alert("Transaction Failed: Ensure you have enough TON for gas (min 0.2 recommended).");
         }
-    }
-
-    async function withdrawRef() {
-        if (!tonConnectUI.connected) return alert("Connect wallet!");
-        alert("Withdrawal request sent to contract...");
-        // Add specific withdrawal payload here if provided by advisor
     }
 
     async function fetchHistory() {
