@@ -3,49 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN HUB - PREMIUM UI</title>
+    <title>GOLDEN HUB | PREMIER TON GAME</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0b0e11; --card: rgba(22, 27, 34, 0.9); --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; --btn: #2b3139; }
-        .light-mode { --bg: #f5f5f5; --card: rgba(255, 255, 255, 0.9); --accent: #0088cc; --green: #2ecc71; --text: #1e2329; --nav: #ffffff; --btn: #e4e6eb; }
+        :root { --bg: #0b0e11; --card: #1c2128; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; --btn: #2b3139; }
         
         body { 
             margin: 0; 
             background: var(--bg);
-            background-image: linear-gradient(rgba(11, 14, 17, 0.8), rgba(11, 14, 17, 0.8)), url('https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
             color: var(--text); 
             font-family: 'Inter', sans-serif; 
-            padding-bottom: 85px; 
+            padding-bottom: 80px; 
+            overflow-x: hidden;
         }
 
-        /* 1. HEADER */
-        .header { display: flex; justify-content: space-between; padding: 15px; background: var(--nav); align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; z-index: 1000; }
+        /* 1. HEADER & CONNECT BUTTON */
+        .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--nav); align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; }
 
-        /* MODAL STYLE (For Provably Fair & Info) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--nav); width: 85%; max-width: 350px; border-radius: 20px; padding: 25px; border: 1px solid var(--accent); position: relative; animation: popUp 0.3s ease-out; }
-        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* 2. GAME BANNER (THE FEATURE YOU WANTED) */
+        .game-banner {
+            width: 100%;
+            height: 220px;
+            background: url('https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            border-bottom: 3px solid var(--accent);
+        }
+        .banner-overlay {
+            position: absolute; bottom: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, var(--bg), transparent);
+        }
 
-        /* SCREENS */
-        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; animation: fadeIn 0.3s; }
+        /* 3. SCREENS & CARDS */
+        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; animation: fadeIn 0.3s ease; }
         .active-screen { display: flex; }
-        .game-card { width: 100%; max-width: 420px; background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
+        
+        .game-container { width: 100%; max-width: 450px; }
+        .game-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-top: -30px; position: relative; z-index: 10; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
 
-        /* 3. PLAY SCREEN ELEMENTS */
-        .side-btn { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--btn); background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .side-btn.selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.15); }
-        .bet-slider { width: 100%; accent-color: var(--accent); margin: 20px 0; }
+        /* 4. SELECTION BUTTONS */
+        .selection-box { display: flex; gap: 10px; margin: 20px 0; }
+        .side-btn { 
+            flex: 1; padding: 15px; border-radius: 12px; border: 2px solid var(--btn); 
+            background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s; 
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .side-btn.selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.1); color: var(--accent); }
+        .side-btn i { font-size: 1.2rem; }
 
-        /* 4. INVITE SCREEN ELEMENTS */
-        .ref-box { background: rgba(0, 192, 135, 0.1); border: 1px dashed var(--green); padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 0.85rem; line-height: 1.5; }
+        /* 5. BET SLIDER */
+        .slider-container { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .bet-slider { width: 100%; accent-color: var(--accent); cursor: pointer; height: 8px; border-radius: 5px; }
 
-        /* 5. FOOTER NAV */
-        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.1); }
+        /* 6. MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--nav); width: 100%; max-width: 350px; border-radius: 20px; padding: 25px; border: 1px solid var(--accent); }
+
+        /* 7. FOOTER */
+        .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.1); }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; cursor: pointer; font-size: 0.75rem; gap: 5px; }
         .nav-item.active { color: var(--accent); }
 
@@ -56,85 +73,97 @@
 
 <div id="fair-modal" class="modal">
     <div class="modal-content">
-        <h3 style="color: var(--accent); margin-top: 0;"><i class="fas fa-shield-alt"></i> Provably Fair</h3>
-        <p style="font-size: 0.85rem; line-height: 1.6;">
-            ကျွန်ုပ်တို့၏ဂိမ်းသည် TON Blockchain ပေါ်တွင် တိုက်ရိုက်အလုပ်လုပ်ပါသည်။<br><br>
-            🎯 <b>Logic:</b> ရလဒ်ကို <code>random(1, 11)</code> စနစ်ဖြင့် ထုတ်ပေးပါသည်။<br>
-            ⚖️ <b>Odds:</b> 50/50 တိကျပြီး လိမ်လည်မှုမရှိကြောင်း Smart Contract တွင် စစ်ဆေးနိုင်ပါသည်။<br>
-            ✅ <b>Verified:</b> ရလဒ်တိုင်းကို Blockchain ပေါ်တွင် အချိန်မရွေး ပြန်ကြည့်နိုင်ပါသည်။
+        <h3 style="color: var(--accent); margin: 0 0 15px 0;"><i class="fas fa-shield-alt"></i> Provably Fair</h3>
+        <p style="font-size: 0.85rem; line-height: 1.6; opacity: 0.8;">
+            - Logic: Result generated via random(1, 11)<br>
+            - Odds: 50/50 Exact Probability<br>
+            - Verified: Transactions secured by TON Blockchain.
         </p>
-        <button onclick="closeModal()" style="width: 100%; padding: 10px; background: var(--accent); border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">နားလည်ပါပြီ</button>
+        <button onclick="closeModal()" style="width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">I Understand</button>
     </div>
 </div>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <i class="fas fa-moon" id="theme-icon" onclick="toggleTheme()" style="font-size: 1.3rem; color: var(--accent); cursor: pointer;"></i>
+    <div onclick="openModal()" style="cursor: pointer;"><i class="far fa-question-circle" style="color: var(--accent); font-size: 1.4rem;"></i></div>
 </div>
 
 <div id="lobby-screen" class="screen active-screen">
-    <h2 style="align-self: flex-start; margin-left: 5%; color: var(--accent); font-weight: 900; letter-spacing: 1px;">GOLDEN HUB</h2>
-    <div class="game-card" style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" width="60" style="border-radius: 15px; box-shadow: 0 0 10px var(--accent);">
-            <div>
-                <div style="font-weight: 900;">ODD EVEN</div>
-                <div style="font-size: 0.65rem; color: var(--green); font-weight: bold;">v3.2 VERIFIED</div>
+    <div class="game-banner">
+        <div class="banner-overlay"></div>
+    </div>
+    <div class="game-container">
+        <div class="game-card" style="margin-top: -50px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" width="55" style="border-radius: 12px;">
+                <div>
+                    <div style="font-weight: 900; letter-spacing: 0.5px;">ODD EVEN</div>
+                    <div style="font-size: 0.65rem; color: var(--green); font-weight: bold;">v3.2 VERIFIED</div>
+                </div>
             </div>
-        </div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <i class="far fa-file-alt" onclick="openModal()" style="color: var(--accent); font-size: 1.5rem; cursor: pointer;"></i>
-            <button onclick="showScreen('play-screen')" style="background: var(--accent); border: none; padding: 12px 22px; border-radius: 12px; font-weight: 900; cursor: pointer;">PLAY</button>
+            <button onclick="showScreen('play-screen')" style="background: var(--accent); border: none; padding: 12px 25px; border-radius: 10px; font-weight: 900; cursor: pointer;">PLAY</button>
         </div>
     </div>
 </div>
 
 <div id="play-screen" class="screen">
-    <div class="game-card">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 10px;">BET: <span id="bet-amt" style="color:var(--accent); font-weight: bold;">0.10</span> TON</div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 10px;">WIN: <span id="win-amt" style="color:var(--green); font-weight: bold;">0.19</span> TON</div>
+    <div class="game-banner">
+        <div class="banner-overlay"></div>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+             <div style="font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; text-shadow: 2px 2px 10px #000;">CHOOSE YOUR SIDE</div>
         </div>
-        <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="bet-slider" oninput="updateBet(this.value)">
-        <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-            <button id="btn-odd" class="side-btn" onclick="setSide(false)">ODD</button>
-            <button id="btn-even" class="side-btn" onclick="setSide(true)">EVEN</button>
-        </div>
-        <button id="bet-btn" onclick="placeBet()" style="width: 100%; padding: 18px; border-radius: 15px; background: var(--green); border: none; color: white; font-weight: 900; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,192,135,0.3);">PLACE BET NOW</button>
     </div>
-    
-    <div style="width: 100%; max-width: 420px; margin-top: 20px;">
-        <h4 style="margin-bottom: 10px; opacity: 0.8;"><i class="fas fa-history"></i> Live History</h4>
-        <div style="background: var(--card); border-radius: 15px; padding: 10px; font-size: 0.8rem;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tbody id="history-body"></tbody>
-            </table>
-            <div style="text-align: center; font-size: 0.6rem; opacity: 0.5; margin-top: 10px;">* Real-time Simulation Data</div>
+
+    <div class="game-container">
+        <div class="game-card">
+            <div class="selection-box">
+                <button id="btn-odd" class="side-btn" onclick="setSide(false)">
+                    <i class="fas fa-dice-one"></i> ODD
+                </button>
+                <button id="btn-even" class="side-btn" onclick="setSide(true)">
+                    <i class="fas fa-dice-two"></i> EVEN
+                </button>
+            </div>
+
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 10px;">
+                    <span>BET: <b id="bet-amt" style="color: var(--accent);">0.10</b> TON</span>
+                    <span>WIN: <b id="win-amt" style="color: var(--green);">0.19</b> TON</span>
+                </div>
+                <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="bet-slider" oninput="updateBet(this.value)">
+            </div>
+
+            <button id="bet-btn" onclick="placeBet()" style="width: 100%; padding: 18px; border-radius: 15px; background: var(--green); border: none; color: white; font-weight: 900; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,192,135,0.3);">CONFIRM AND PAY</button>
+        </div>
+
+        <div style="margin-top: 25px;">
+            <h4 style="margin: 0 0 10px 5px; font-size: 0.85rem; opacity: 0.7;"><i class="fas fa-list-ul"></i> RECENT RECORDS</h4>
+            <div style="background: var(--card); border-radius: 15px; padding: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                <table style="width: 100%; font-size: 0.75rem; border-collapse: collapse;">
+                    <thead><tr style="opacity: 0.5; text-align: left;"><th style="padding: 8px;">PLAYER</th><th>SIDE</th><th>STATUS</th></tr></thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <div id="invite-screen" class="screen">
-    <div class="game-card" style="text-align: center;">
-        <div style="background: var(--accent); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px;">
-            <i class="fas fa-gift" style="font-size: 1.8rem; color: #000;"></i>
-        </div>
-        <h2 style="margin: 0;">10% Referral Reward</h2>
-        <p style="font-size: 0.85rem; opacity: 0.7;">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး သူတို့ကစားသမျှ၏ ၁၀% ကို အမြတ်အဖြစ် ရယူပါ။</p>
-        
-        <div class="ref-box">
-            <b>ဘယ်လိုအလုပ်လုပ်သလဲ?</b><br>
-            သင့် Link ဖြင့်ဝင်ကစားသူတိုင်း၏ လောင်းကြေးထဲမှ ၁၀% ကို စမတ်စာချုပ်က သင့်အတွက် သီးသန့်ဖယ်ထားပေးမည်ဖြစ်ပြီး အချိန်မရွေး ထုတ်ယူနိုင်ပါသည်။
-        </div>
+    <div class="game-container">
+        <div class="game-card" style="margin-top: 20px; text-align: center; padding: 30px 20px;">
+            <i class="fas fa-gift" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
+            <h2 style="margin: 0;">10% Reward</h2>
+            <p style="font-size: 0.85rem; opacity: 0.7;">Share your link and earn 10% from every friend's bet.</p>
+            
+            <div style="background: rgba(0, 192, 135, 0.1); border: 1px solid var(--green); border-radius: 15px; padding: 20px; margin: 20px 0;">
+                <div style="font-size: 0.7rem; opacity: 0.6;">AVAILABLE TO WITHDRAW</div>
+                <div id="ref-bal" style="font-size: 1.8rem; font-weight: 900; color: var(--green);">0.00 TON</div>
+                <button onclick="withdrawRef()" style="width: 100%; margin-top: 15px; background: var(--green); border: none; padding: 12px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">WITHDRAW</button>
+            </div>
 
-        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin: 15px 0;">
-            <div style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">AVAILABLE REWARDS</div>
-            <div id="ref-bal" style="font-size: 1.8rem; font-weight: 900; color: var(--green);">0.00 TON</div>
-            <button onclick="withdrawRef()" style="width: 100%; margin-top: 15px; background: var(--green); border: none; padding: 12px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">WITHDRAW REWARDS</button>
+            <div id="ref-link" style="font-size: 0.65rem; word-break: break-all; opacity: 0.5; background: #000; padding: 12px; border-radius: 10px; margin-bottom: 10px;">Connect wallet to see link</div>
+            <button id="copy-btn" onclick="copyRef()" style="width: 100%; background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">COPY LINK</button>
         </div>
-
-        <div id="ref-link" style="font-size: 0.7rem; word-break: break-all; opacity: 0.5; margin-bottom: 10px; background: #000; padding: 10px; border-radius: 8px;">Connect wallet to see link</div>
-        <button id="copy-btn" onclick="copyRef()" style="width: 100%; background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">COPY LINK</button>
     </div>
 </div>
 
@@ -161,13 +190,6 @@
         document.getElementById('nav-invite').classList.toggle('active', id === 'invite-screen');
     }
 
-    function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-        const icon = document.getElementById('theme-icon');
-        icon.classList.toggle('fa-moon');
-        icon.classList.toggle('fa-sun');
-    }
-
     function updateBet(v) {
         document.getElementById('bet-amt').innerText = parseFloat(v).toFixed(2);
         document.getElementById('win-amt').innerText = (v * 1.9).toFixed(2);
@@ -181,13 +203,13 @@
 
     async function placeBet() {
         if (!tonConnectUI.connected) return tonConnectUI.openModal();
-        if (selectedSide === null) return alert("Please select ODD or EVEN!");
+        if (selectedSide === null) return alert("Select ODD or EVEN side!");
         const btn = document.getElementById('bet-btn');
         btn.disabled = true; btn.innerText = "CONFIRMING...";
         try {
             const amount = TonWeb.utils.toNano(document.getElementById('bet-amt').innerText);
             const cell = new TonWeb.boc.Cell();
-            cell.bits.writeUint(0x65228565, 32);
+            cell.bits.writeUint(0x65228565, 32); // Tact OpCode
             cell.bits.writeBit(selectedSide);
             const ref = new URLSearchParams(window.location.search).get('ref');
             if (ref && TonWeb.utils.Address.isValid(ref)) {
@@ -197,26 +219,30 @@
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{ address: CONTRACT_ADDRESS, amount: amount.toString(), payload: TonWeb.utils.bytesToBase64(await cell.toBoc()) }]
             });
-        } catch (e) { alert("Bet Failed"); }
-        finally { btn.disabled = false; btn.innerText = "PLACE BET NOW"; }
+        } catch (e) { alert("Transaction Error"); }
+        finally { btn.disabled = false; btn.innerText = "CONFIRM AND PAY"; }
     }
 
     function copyRef() {
-        navigator.clipboard.writeText(document.getElementById('ref-link').innerText);
-        document.getElementById('copy-btn').innerText = "COPIED ✅";
-        setTimeout(() => document.getElementById('copy-btn').innerText = "COPY LINK", 2000);
+        const link = document.getElementById('ref-link').innerText;
+        if (link.includes("http")) {
+            navigator.clipboard.writeText(link);
+            document.getElementById('copy-btn').innerText = "COPIED ✅";
+            setTimeout(() => document.getElementById('copy-btn').innerText = "COPY LINK", 2000);
+        }
     }
 
     tonConnectUI.onStatusChange(wallet => {
         if (wallet) {
-            document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + wallet.account.address;
+            const friendlyAddr = new TonWeb.utils.Address(wallet.account.address).toString(true, true, true);
+            document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + friendlyAddr;
         }
     });
 
-    // Mock History for UI Beauty
+    // Mock History
     document.getElementById('history-body').innerHTML = `
-        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 10px;">EQD...w21</td><td style="color:var(--accent)">EVEN</td><td style="color:var(--green)">WIN</td></tr>
-        <tr><td style="padding: 10px;">EQB...p98</td><td style="color:var(--accent)">ODD</td><td style="color:#ff4d4d">LOSS</td></tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);"><td style="padding: 10px;">EQD...x42</td><td style="color:var(--accent)">EVEN</td><td style="color:var(--green)">WIN</td></tr>
+        <tr><td style="padding: 10px;">EQB...z11</td><td style="color:var(--accent)">ODD</td><td style="color:#ff4d4d">LOSS</td></tr>
     `;
 </script>
 </body>
