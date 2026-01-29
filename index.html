@@ -1,249 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN HUB | PREMIER TON GAME</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --bg: #0b0e11; --card: #1c2128; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; --btn: #2b3139; }
-        
-        body { 
-            margin: 0; 
-            background: var(--bg);
-            color: var(--text); 
-            font-family: 'Inter', sans-serif; 
-            padding-bottom: 80px; 
-            overflow-x: hidden;
-        }
+<meta charset="UTF-8">
+<title>Golden Odd Even — TON</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
 
-        /* 1. HEADER & CONNECT BUTTON */
-        .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--nav); align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; }
-
-        /* 2. GAME BANNER (THE FEATURE YOU WANTED) */
-        .game-banner {
-            width: 100%;
-            height: 220px;
-            background: url('https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-            border-bottom: 3px solid var(--accent);
-        }
-        .banner-overlay {
-            position: absolute; bottom: 0; width: 100%; height: 50%;
-            background: linear-gradient(to top, var(--bg), transparent);
-        }
-
-        /* 3. SCREENS & CARDS */
-        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; animation: fadeIn 0.3s ease; }
-        .active-screen { display: flex; }
-        
-        .game-container { width: 100%; max-width: 450px; }
-        .game-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-top: -30px; position: relative; z-index: 10; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
-
-        /* 4. SELECTION BUTTONS */
-        .selection-box { display: flex; gap: 10px; margin: 20px 0; }
-        .side-btn { 
-            flex: 1; padding: 15px; border-radius: 12px; border: 2px solid var(--btn); 
-            background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s; 
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .side-btn.selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.1); color: var(--accent); }
-        .side-btn i { font-size: 1.2rem; }
-
-        /* 5. BET SLIDER */
-        .slider-container { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 20px; }
-        .bet-slider { width: 100%; accent-color: var(--accent); cursor: pointer; height: 8px; border-radius: 5px; }
-
-        /* 6. MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: var(--nav); width: 100%; max-width: 350px; border-radius: 20px; padding: 25px; border: 1px solid var(--accent); }
-
-        /* 7. FOOTER */
-        .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; cursor: pointer; font-size: 0.75rem; gap: 5px; }
-        .nav-item.active { color: var(--accent); }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    </style>
+<style>
+:root{
+ --bg:#0b0e11;--card:#1c2128;--accent:#f3ba2f;
+ --green:#00c087;--text:#eaecef;--nav:#161b22;
+}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter}
+.header{display:flex;justify-content:space-between;align-items:center;
+ padding:12px;background:var(--nav)}
+.screen{display:none;padding:16px}
+.active{display:block}
+.game-card{background:var(--card);border-radius:18px;padding:20px}
+.banner{height:200px;background:url('https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png') center/cover}
+.btn{padding:16px;border-radius:14px;border:none;font-weight:900}
+.green{background:var(--green)}
+.accent{background:var(--accent)}
+.footer{position:fixed;bottom:0;width:100%;display:flex;background:var(--nav)}
+.footer div{flex:1;text-align:center;padding:10px}
+</style>
 </head>
+
 <body>
 
-<div id="fair-modal" class="modal">
-    <div class="modal-content">
-        <h3 style="color: var(--accent); margin: 0 0 15px 0;"><i class="fas fa-shield-alt"></i> Provably Fair</h3>
-        <p style="font-size: 0.85rem; line-height: 1.6; opacity: 0.8;">
-            - Logic: Result generated via random(1, 11)<br>
-            - Odds: 50/50 Exact Probability<br>
-            - Verified: Transactions secured by TON Blockchain.
-        </p>
-        <button onclick="closeModal()" style="width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">I Understand</button>
-    </div>
-</div>
-
 <div class="header">
-    <div id="ton-connect-btn"></div>
-    <div onclick="openModal()" style="cursor: pointer;"><i class="far fa-question-circle" style="color: var(--accent); font-size: 1.4rem;"></i></div>
+  <div id="ton-connect"></div>
+  <div onclick="alert('Provably Fair: random(1..10), 50/50')">📜</div>
 </div>
 
-<div id="lobby-screen" class="screen active-screen">
-    <div class="game-banner">
-        <div class="banner-overlay"></div>
-    </div>
-    <div class="game-container">
-        <div class="game-card" style="margin-top: -50px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" width="55" style="border-radius: 12px;">
-                <div>
-                    <div style="font-weight: 900; letter-spacing: 0.5px;">ODD EVEN</div>
-                    <div style="font-size: 0.65rem; color: var(--green); font-weight: bold;">v3.2 VERIFIED</div>
-                </div>
-            </div>
-            <button onclick="showScreen('play-screen')" style="background: var(--accent); border: none; padding: 12px 25px; border-radius: 10px; font-weight: 900; cursor: pointer;">PLAY</button>
-        </div>
-    </div>
+<div id="lobby" class="screen active">
+  <div class="banner"></div>
+  <div class="game-card">
+    <h2>ODD EVEN</h2>
+    <button class="btn accent" onclick="show('play')">PLAY</button>
+  </div>
 </div>
 
-<div id="play-screen" class="screen">
-    <div class="game-banner">
-        <div class="banner-overlay"></div>
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-             <div style="font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; text-shadow: 2px 2px 10px #000;">CHOOSE YOUR SIDE</div>
-        </div>
+<div id="play" class="screen">
+  <div class="game-card">
+    <div>
+      <button class="btn" onclick="setSide(false)">ODD</button>
+      <button class="btn" onclick="setSide(true)">EVEN</button>
     </div>
-
-    <div class="game-container">
-        <div class="game-card">
-            <div class="selection-box">
-                <button id="btn-odd" class="side-btn" onclick="setSide(false)">
-                    <i class="fas fa-dice-one"></i> ODD
-                </button>
-                <button id="btn-even" class="side-btn" onclick="setSide(true)">
-                    <i class="fas fa-dice-two"></i> EVEN
-                </button>
-            </div>
-
-            <div class="slider-container">
-                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 10px;">
-                    <span>BET: <b id="bet-amt" style="color: var(--accent);">0.10</b> TON</span>
-                    <span>WIN: <b id="win-amt" style="color: var(--green);">0.19</b> TON</span>
-                </div>
-                <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="bet-slider" oninput="updateBet(this.value)">
-            </div>
-
-            <button id="bet-btn" onclick="placeBet()" style="width: 100%; padding: 18px; border-radius: 15px; background: var(--green); border: none; color: white; font-weight: 900; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,192,135,0.3);">CONFIRM AND PAY</button>
-        </div>
-
-        <div style="margin-top: 25px;">
-            <h4 style="margin: 0 0 10px 5px; font-size: 0.85rem; opacity: 0.7;"><i class="fas fa-list-ul"></i> RECENT RECORDS</h4>
-            <div style="background: var(--card); border-radius: 15px; padding: 10px; border: 1px solid rgba(255,255,255,0.05);">
-                <table style="width: 100%; font-size: 0.75rem; border-collapse: collapse;">
-                    <thead><tr style="opacity: 0.5; text-align: left;"><th style="padding: 8px;">PLAYER</th><th>SIDE</th><th>STATUS</th></tr></thead>
-                    <tbody id="history-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <input type="range" min="0.1" max="1" step="0.1" value="0.1" oninput="update(this.value)">
+    <div>BET <span id="bet">0.1</span> | WIN <span id="win">0.19</span></div>
+    <button class="btn green" onclick="bet()">PLACE BET NOW</button>
+  </div>
 </div>
 
-<div id="invite-screen" class="screen">
-    <div class="game-container">
-        <div class="game-card" style="margin-top: 20px; text-align: center; padding: 30px 20px;">
-            <i class="fas fa-gift" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
-            <h2 style="margin: 0;">10% Reward</h2>
-            <p style="font-size: 0.85rem; opacity: 0.7;">Share your link and earn 10% from every friend's bet.</p>
-            
-            <div style="background: rgba(0, 192, 135, 0.1); border: 1px solid var(--green); border-radius: 15px; padding: 20px; margin: 20px 0;">
-                <div style="font-size: 0.7rem; opacity: 0.6;">AVAILABLE TO WITHDRAW</div>
-                <div id="ref-bal" style="font-size: 1.8rem; font-weight: 900; color: var(--green);">0.00 TON</div>
-                <button onclick="withdrawRef()" style="width: 100%; margin-top: 15px; background: var(--green); border: none; padding: 12px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">WITHDRAW</button>
-            </div>
-
-            <div id="ref-link" style="font-size: 0.65rem; word-break: break-all; opacity: 0.5; background: #000; padding: 12px; border-radius: 10px; margin-bottom: 10px;">Connect wallet to see link</div>
-            <button id="copy-btn" onclick="copyRef()" style="width: 100%; background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">COPY LINK</button>
-        </div>
-    </div>
+<div id="invite" class="screen">
+  <div class="game-card">
+    <h3>10% Referral</h3>
+    <div id="refBal">0 TON</div>
+    <button class="btn green" onclick="withdrawRef()">WITHDRAW</button>
+    <div id="refLink"></div>
+  </div>
 </div>
 
 <div class="footer">
-    <div id="nav-lobby" class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-th-large"></i><span>Lobby</span></div>
-    <div id="nav-invite" class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i><span>Invite</span></div>
+  <div onclick="show('lobby')">Lobby</div>
+  <div onclick="show('invite')">Invite</div>
 </div>
 
 <script>
-    const CONTRACT_ADDRESS = "EQD6Ec2ZgY1ehW8FULm_tosmXgSMDrUYFszQeyqunVGfgf26";
-    const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
-    
-    let selectedSide = null;
-    const tonWeb = new TonWeb();
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: MANIFEST_URL, buttonRootId: 'ton-connect-btn' });
+const CONTRACT = "PUT_DEPLOYED_ADDRESS_HERE";
+let side = null;
 
-    function openModal() { document.getElementById('fair-modal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('fair-modal').style.display = 'none'; }
-    
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-        document.getElementById(id).classList.add('active-screen');
-        document.getElementById('nav-lobby').classList.toggle('active', id === 'lobby-screen');
-        document.getElementById('nav-invite').classList.toggle('active', id === 'invite-screen');
-    }
+const tc = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl:"https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
+  buttonRootId:"ton-connect"
+});
 
-    function updateBet(v) {
-        document.getElementById('bet-amt').innerText = parseFloat(v).toFixed(2);
-        document.getElementById('win-amt').innerText = (v * 1.9).toFixed(2);
-    }
+function show(id){
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+}
 
-    function setSide(s) {
-        selectedSide = s;
-        document.getElementById('btn-even').classList.toggle('selected', s === true);
-        document.getElementById('btn-odd').classList.toggle('selected', s === false);
-    }
+function setSide(s){side=s}
+function update(v){
+ bet.innerText=v;
+ win.innerText=(v*1.9).toFixed(2);
+}
 
-    async function placeBet() {
-        if (!tonConnectUI.connected) return tonConnectUI.openModal();
-        if (selectedSide === null) return alert("Select ODD or EVEN side!");
-        const btn = document.getElementById('bet-btn');
-        btn.disabled = true; btn.innerText = "CONFIRMING...";
-        try {
-            const amount = TonWeb.utils.toNano(document.getElementById('bet-amt').innerText);
-            const cell = new TonWeb.boc.Cell();
-            cell.bits.writeUint(0x65228565, 32); // Tact OpCode
-            cell.bits.writeBit(selectedSide);
-            const ref = new URLSearchParams(window.location.search).get('ref');
-            if (ref && TonWeb.utils.Address.isValid(ref)) {
-                cell.bits.writeBit(true); cell.bits.writeAddress(new TonWeb.utils.Address(ref));
-            } else { cell.bits.writeBit(false); }
-            await tonConnectUI.sendTransaction({
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{ address: CONTRACT_ADDRESS, amount: amount.toString(), payload: TonWeb.utils.bytesToBase64(await cell.toBoc()) }]
-            });
-        } catch (e) { alert("Transaction Error"); }
-        finally { btn.disabled = false; btn.innerText = "CONFIRM AND PAY"; }
-    }
+async function bet(){
+ if(!tc.connected)return tc.openModal();
+ if(side===null)return alert("Choose side");
 
-    function copyRef() {
-        const link = document.getElementById('ref-link').innerText;
-        if (link.includes("http")) {
-            navigator.clipboard.writeText(link);
-            document.getElementById('copy-btn').innerText = "COPIED ✅";
-            setTimeout(() => document.getElementById('copy-btn').innerText = "COPY LINK", 2000);
-        }
-    }
+ const cell=new TonWeb.boc.Cell();
+ TonWeb.boc.writeMessage(cell,{
+   type:'Bet',
+   sideEven:side,
+   referrer:new URLSearchParams(location.search).get('ref')
+ });
 
-    tonConnectUI.onStatusChange(wallet => {
-        if (wallet) {
-            const friendlyAddr = new TonWeb.utils.Address(wallet.account.address).toString(true, true, true);
-            document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + friendlyAddr;
-        }
-    });
+ await tc.sendTransaction({
+   validUntil:Date.now()/1000+300,
+   messages:[{
+     address:CONTRACT,
+     amount:TonWeb.utils.toNano(bet.innerText).toString(),
+     payload:TonWeb.utils.bytesToBase64(await cell.toBoc())
+   }]
+ });
+}
 
-    // Mock History
-    document.getElementById('history-body').innerHTML = `
-        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);"><td style="padding: 10px;">EQD...x42</td><td style="color:var(--accent)">EVEN</td><td style="color:var(--green)">WIN</td></tr>
-        <tr><td style="padding: 10px;">EQB...z11</td><td style="color:var(--accent)">ODD</td><td style="color:#ff4d4d">LOSS</td></tr>
-    `;
+async function withdrawRef(){
+ const cell=new TonWeb.boc.Cell();
+ TonWeb.boc.writeMessage(cell,{type:'WithdrawRef'});
+ await tc.sendTransaction({
+   validUntil:Date.now()/1000+300,
+   messages:[{address:CONTRACT,amount:TonWeb.utils.toNano("0.05"),payload:TonWeb.utils.bytesToBase64(await cell.toBoc())}]
+ });
+}
+
+tc.onStatusChange(w=>{
+ if(w){
+  const a=new TonWeb.utils.Address(w.account.address).toString(true,true,true);
+  refLink.innerText=location.origin+location.pathname+"?ref="+a;
+ }
+});
 </script>
 </body>
 </html>
