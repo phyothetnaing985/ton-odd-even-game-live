@@ -12,60 +12,26 @@
     <style>
         :root { --gold: #FFD700; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #f59e0b; }
         body.light-mode { --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; }
-        
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 80px; transition: 0.3s; overflow-x: hidden; }
-        
-        /* Header */
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; transition: 0.3s; overflow-x: hidden; }
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
-        #ton-connect { transform: scale(0.9); }
-
-        /* General UI */
         .container { padding: 20px; max-width: 480px; margin: auto; }
-        .glass-card { background: var(--card); border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 20px; border: 1px solid rgba(255, 215, 0, 0.1); position: relative; }
-        
-        /* Banner Images */
+        .glass-card { background: var(--card); border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 20px; border: 1px solid rgba(255, 215, 0, 0.1); }
         .banner-img { width: 100%; border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--gold); object-fit: cover; height: 180px; }
-        .play-banner { height: 120px; }
-
-        /* Fair Info Modal Style (English Texts) */
-        .fair-bg { 
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png');
-            background-size: cover; background-position: center; padding: 20px; border-radius: 15px; color: #fff; border: 1px solid var(--gold); display: none; margin-top: 10px;
-        }
-
-        /* Buttons & Inputs */
-        .btn-main { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3); transition: 0.2s; }
-        .btn-main:active { transform: scale(0.97); }
-        
+        .fair-bg { background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png'); background-size: cover; padding: 20px; border-radius: 15px; display: none; margin-top: 10px; border: 1px solid var(--gold); }
+        .btn-main { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
         .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .select-btn { padding: 18px; border: 2px solid #334155; border-radius: 14px; background: rgba(255,255,255,0.05); color: var(--text); font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 1rem; }
-        .select-btn.active { border-color: var(--gold); background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); color: var(--gold); }
-        
-        input[type=range] { width: 100%; accent-color: var(--gold); margin: 20px 0; cursor: pointer; }
-
-        /* History Table */
-        .history-container { overflow-x: auto; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { color: #94a3b8; font-weight: 400; padding: 12px 5px; border-bottom: 1px solid #334155; text-align: center; }
-        td { padding: 12px 5px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .status-win { color: #22c55e; font-weight: bold; }
-        .status-lose { color: #ef4444; font-weight: bold; }
-
-        /* Footer Nav */
-        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid var(--gold); box-shadow: 0 -5px 20px rgba(0,0,0,0.2); z-index: 1000; }
-        .nav-item { text-align: center; font-size: 0.75rem; opacity: 0.5; transition: 0.3s; cursor: pointer; }
+        .select-btn { padding: 18px; border: 2px solid #334155; border-radius: 14px; background: rgba(255,255,255,0.05); color: var(--text); font-weight: 800; cursor: pointer; }
+        .select-btn.active { border-color: var(--gold); background: rgba(255, 215, 0, 0.15); color: var(--gold); }
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid var(--gold); }
+        .nav-item { text-align: center; font-size: 0.75rem; opacity: 0.5; cursor: pointer; }
         .nav-item.active { opacity: 1; color: var(--gold); }
-        .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
-
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <header>
-        <div onclick="toggleTheme()" style="cursor: pointer; font-size: 1.2rem;">
-            <i class="fas fa-moon" id="theme-icon"></i>
-        </div>
+        <div onclick="toggleTheme()" style="cursor: pointer;"><i class="fas fa-moon" id="theme-icon"></i></div>
         <div id="ton-connect"></div>
     </header>
 
@@ -73,20 +39,14 @@
         <div id="lobby-section">
             <div class="glass-card">
                 <img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="banner-img">
-                <h2 style="margin: 10px 0 5px; color: var(--gold);">Golden ODD-EVEN</h2>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px;">Win 1.90x in seconds on TON Blockchain!</p>
+                <h2 style="color: var(--gold);">Golden ODD-EVEN</h2>
+                <p>Win 1.90x in seconds on TON Blockchain!</p>
                 <button class="btn-main" onclick="showSection('play')">PLAY NOW</button>
-                
                 <div style="margin-top: 20px; text-align: center;">
-                    <span onclick="toggleFairInfo()" style="cursor: pointer; font-size: 0.9rem; color: var(--accent);">
-                        <i class="fas fa-file-alt"></i> Provably Fair Info
-                    </span>
+                    <span onclick="toggleFairInfo()" style="cursor: pointer; color: var(--accent);"><i class="fas fa-file-alt"></i> Fair Play Info</span>
                     <div id="fair-modal" class="fair-bg">
-                        <h4 style="margin: 0 0 10px;"><i class="fas fa-shield-alt"></i> Why trust us?</h4>
-                        <p style="font-size: 0.8rem; line-height: 1.5; text-align: left;">
-                            This game is powered by the TON Smart Contract. We use <b>nativePrepareRandom()</b> to ensure the outcome is generated on-chain. 
-                            The house cannot manipulate results. Every bet is verifiable and transparent.
-                        </p>
+                        <h4>Provably Fair</h4>
+                        <p style="font-size: 0.8rem; text-align: left;">Powered by TON Smart Contract. Outcomes are generated on-chain using nativePrepareRandom(). 100% transparent.</p>
                     </div>
                 </div>
             </div>
@@ -94,84 +54,49 @@
 
         <div id="play-section" class="hidden">
             <div class="glass-card">
-                <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="banner-img play-banner">
+                <img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="banner-img" style="height:120px;">
                 <div style="display: flex; justify-content: space-between; font-weight: bold;">
                     <span>Bet: <span id="bet-display" style="color: var(--gold);">0.1</span> TON</span>
                     <span>Win: <span id="win-display" style="color: #22c55e;">0.19</span> TON</span>
                 </div>
-                <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" id="bet-slider" oninput="updateBetUI(this.value)">
-                
+                <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" style="width:100%; margin:20px 0;" oninput="updateBetUI(this.value)">
                 <div class="selection-grid">
                     <button id="btn-even" class="select-btn" onclick="setSide(true)">EVEN</button>
                     <button id="btn-odd" class="select-btn" onclick="setSide(false)">ODD</button>
                 </div>
-                
                 <button class="btn-main" onclick="handlePlaceBet()">PLACE BET NOW</button>
-            </div>
-
-            <div class="glass-card">
-                <h3 style="margin: 0 0 15px; font-size: 1rem;"><i class="fas fa-broadcast-tower" style="color: #ef4444;"></i> Global Live History</h3>
-                <div class="history-container">
-                    <table>
-                        <thead>
-                            <tr><th>Player</th><th>Pick</th><th>Dice</th><th>Status</th></tr>
-                        </thead>
-                        <tbody id="history-rows">
-                            </tbody>
-                    </table>
-                </div>
             </div>
         </div>
 
         <div id="invite-section" class="hidden">
             <div class="glass-card" style="text-align: center;">
-                <div style="background: rgba(245, 158, 11, 0.1); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                    <i class="fas fa-gift" style="font-size: 2rem; color: var(--gold);"></i>
-                </div>
-                <h2 style="margin-bottom: 5px;">Invite & Earn 10%</h2>
-                <p style="font-size: 0.85rem; opacity: 0.7;">Get 10% instant commission when your friends play.</p>
-                
-                <div style="margin: 25px 0;">
-                    <p style="font-size: 0.8rem; margin-bottom: 5px;">Available Rewards</p>
-                    <h1 id="ref-balance-ui" style="color: var(--gold); margin: 0;">0.00 TON</h1>
-                </div>
-                
-                <button class="btn-main" onclick="handleWithdrawRef()" style="margin-bottom: 20px;">WITHDRAW REWARDS</button>
-                
-                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px dashed var(--gold);">
-                    <p style="font-size: 0.75rem; margin-bottom: 10px;">Your Referral Link</p>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" id="ref-url" readonly style="flex: 1; background: transparent; border: none; color: var(--gold); font-size: 0.8rem; outline: none;">
-                        <button onclick="copyInviteLink()" id="copy-btn" style="background: var(--gold); border: none; padding: 5px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; color: #000;">COPY</button>
-                    </div>
+                <i class="fas fa-gift" style="font-size: 2.5rem; color: var(--gold);"></i>
+                <h2>Invite & Earn 10%</h2>
+                <h1 id="ref-balance-ui" style="color: var(--gold);">0.00 TON</h1>
+                <button class="btn-main" onclick="handleWithdrawRef()">WITHDRAW REWARDS</button>
+                <div style="margin-top:20px; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px;">
+                    <input type="text" id="ref-url" readonly style="width:70%; background:transparent; border:none; color:var(--gold);">
+                    <button onclick="copyInviteLink()" id="copy-btn" style="padding:5px; background:var(--gold); border:none; border-radius:5px;">COPY</button>
                 </div>
             </div>
         </div>
     </div>
 
     <nav>
-        <div class="nav-item active" id="nav-lobby" onclick="showSection('lobby')">
-            <i class="fas fa-home"></i><br>Lobby
-        </div>
-        <div class="nav-item" id="nav-play" onclick="showSection('play')">
-            <i class="fas fa-dice"></i><br>Play
-        </div>
-        <div class="nav-item" id="nav-invite" onclick="showSection('invite')">
-            <i class="fas fa-user-plus"></i><br>Invite
-        </div>
+        <div class="nav-item active" id="nav-lobby" onclick="showSection('lobby')"><i class="fas fa-home"></i><br>Lobby</div>
+        <div class="nav-item" id="nav-play" onclick="showSection('play')"><i class="fas fa-dice"></i><br>Play</div>
+        <div class="nav-item" id="nav-invite" onclick="showSection('invite')"><i class="fas fa-user-plus"></i><br>Invite</div>
     </nav>
 
     <script>
-        // --- Configuration (Integrated Real Address) ---
         const CONTRACT_ADDRESS = "EQDrMfp_8qbmmnp6mNsg-arxKY2oNvvic1kmWovr6_2kFVNK";
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://yourdomain.com/tonconnect-manifest.json', 
+            manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
         const tonWeb = new TonWeb();
-        let currentSide = null; 
-        let currentBet = 0.1;
+        let currentSide = null; let currentBet = 0.1;
 
         function updateBetUI(val) {
             currentBet = parseFloat(val);
@@ -192,43 +117,28 @@
             });
             document.getElementById(id + '-section').classList.remove('hidden');
             document.getElementById('nav-' + id).classList.add('active');
-
             if (id === 'invite' && tonConnectUI.account) {
-                const link = window.location.origin + window.location.pathname + "?ref=" + tonConnectUI.account.address;
-                document.getElementById('ref-url').value = link;
+                document.getElementById('ref-url').value = window.location.origin + window.location.pathname + "?ref=" + tonConnectUI.account.address;
             }
         }
 
         function toggleFairInfo() {
-            const modal = document.getElementById('fair-modal');
-            modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+            const m = document.getElementById('fair-modal');
+            m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const icon = document.getElementById('theme-icon');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
-        }
-
-        // --- Core Transaction ---
         async function handlePlaceBet() {
-            if (!tonConnectUI.connected) return alert("Please connect your wallet first!");
+            if (!tonConnectUI.connected) return alert("Please connect wallet!");
             if (currentSide === null) return alert("Select EVEN or ODD!");
-
             try {
                 const cell = new TonWeb.boc.Cell();
                 cell.bits.writeUint(0x65228565, 32); 
-                cell.bits.writeBit(currentSide);     
-
+                cell.bits.writeBit(currentSide);
                 const params = new URLSearchParams(window.location.search);
-                const refAddr = params.get('ref');
-                if (refAddr && TonWeb.Address.isValid(refAddr)) {
-                    cell.bits.writeBit(1);
-                    cell.bits.writeAddress(new TonWeb.utils.Address(refAddr));
-                } else {
-                    cell.bits.writeBit(0);
-                }
+                const ref = params.get('ref');
+                if (ref && TonWeb.Address.isValid(ref)) {
+                    cell.bits.writeBit(1); cell.bits.writeAddress(new TonWeb.utils.Address(ref));
+                } else { cell.bits.writeBit(0); }
 
                 const tx = {
                     validUntil: Math.floor(Date.now() / 1000) + 300,
@@ -238,73 +148,20 @@
                         payload: TonWeb.utils.bytesToBase64(await cell.toBoc())
                     }]
                 };
-
                 await tonConnectUI.sendTransaction(tx);
-                alert("Bet submitted! Please wait for blockchain confirmation.");
-            } catch (e) {
-                alert("Transaction Failed: " + e.message);
-            }
-        }
-
-        // --- Global History Simulation (Logic connected to your Contract) ---
-        async function fetchLiveHistory() {
-            try {
-                const url = `https://toncenter.com/api/v2/getTransactions?address=${CONTRACT_ADDRESS}&limit=10`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    const list = document.getElementById('history-rows');
-                    list.innerHTML = ""; 
-                    
-                    data.result.forEach(tx => {
-                        if (!tx.in_msg || tx.in_msg.message === "") return;
-                        const addr = tx.in_msg.source;
-                        const shortAddr = addr.slice(0, 4) + "..." + addr.slice(-4);
-                        
-                        // Displaying real entries from blockchain
-                        const row = `<tr>
-                            <td>${shortAddr}</td>
-                            <td>${Math.random() > 0.5 ? 'EVEN' : 'ODD'}</td>
-                            <td>${Math.floor(Math.random() * 10) + 1}</td>
-                            <td><span class="${Math.random() > 0.5 ? 'status-win' : 'status-lose'}">${Math.random() > 0.5 ? 'WIN' : 'LOSE'}</span></td>
-                        </tr>`;
-                        list.insertAdjacentHTML('beforeend', row);
-                    });
-                }
-            } catch (e) { console.error("History fetch error", e); }
+            } catch (e) { alert("Error: " + e.message); }
         }
 
         function copyInviteLink() {
             const input = document.getElementById('ref-url');
-            input.select();
-            document.execCommand('copy');
-            const btn = document.getElementById('copy-btn');
-            btn.innerText = "COPIED!";
-            btn.style.background = "#22c55e";
-            setTimeout(() => { btn.innerText = "COPY"; btn.style.background = "var(--gold)"; }, 2000);
+            input.select(); document.execCommand('copy');
+            document.getElementById('copy-btn').innerText = "COPIED!";
+            setTimeout(() => { document.getElementById('copy-btn').innerText = "COPY"; }, 2000);
         }
 
-        async function handleWithdrawRef() {
-            if (!tonConnectUI.connected) return alert("Connect Wallet!");
-            try {
-                const cell = new TonWeb.boc.Cell();
-                cell.bits.writeUint(0, 32); 
-                const tx = {
-                    validUntil: Math.floor(Date.now() / 1000) + 300,
-                    messages: [{
-                        address: CONTRACT_ADDRESS,
-                        amount: TonWeb.utils.toNano("0.05").toString(),
-                        payload: TonWeb.utils.bytesToBase64(await (new TonWeb.boc.Cell().bits.writeUint(0, 32).bits.writeString("WithdrawRef")).toBoc())
-                    }]
-                };
-                await tonConnectUI.sendTransaction(tx);
-            } catch (e) { alert(e.message); }
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
         }
-
-        setInterval(fetchLiveHistory, 15000);
-        window.onload = fetchLiveHistory;
-
     </script>
 </body>
 </html>
