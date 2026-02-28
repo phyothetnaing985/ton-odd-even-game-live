@@ -1,301 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN LOW-HIGH | TACT v3.1</title>
-    
-    <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
-    <script src="https://bundle.run/tonweb@0.0.66"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; --btn: #2b3139; }
-        .light-mode { --bg: #f5f5f5; --card: #ffffff; --accent: #0088cc; --green: #2ecc71; --text: #1e2329; --nav: #ffffff; --btn: #e4e6eb; }
-        
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 90px; transition: 0.3s; overflow-x: hidden; }
-        
-        .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 100; }
-        #ton-connect-btn { transform: scale(0.9); transform-origin: left; }
-        .mode-toggle { background: var(--btn); border: 1px solid var(--accent); color: var(--accent); padding: 8px 12px; border-radius: 20px; cursor: pointer; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOW HIGH | TON</title>
 
-        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; width: 100%; box-sizing: border-box; }
-        .active-screen { display: flex; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+<script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
+<script src="https://unpkg.com/tonweb@0.0.62/dist/tonweb.js"></script>
 
-        /* Lobby Card & Visuals */
-        .lobby-card { width: 100%; max-width: 450px; background: var(--card); border-radius: 18px; padding: 18px; display: flex; align-items: center; justify-content: space-between; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .visual-area { width: 100%; max-width: 500px; height: 260px; margin: 10px 0; border-radius: 20px; overflow: hidden; border: 1px solid rgba(243, 186, 47, 0.3); }
-        .game-bg-large { width: 100%; height: 100%; object-fit: cover; }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        /* Game Controls */
-        .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; }
-        .side-btn { padding: 18px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); background: var(--btn); color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .side-btn.selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.15); box-shadow: 0 0 15px rgba(243, 186, 47, 0.3); color: var(--accent); }
-        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; border: none; background: var(--green); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; }
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Navigation */
-        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid rgba(255,255,255,0.05); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; font-size: 0.75rem; cursor: pointer; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: var(--card); width: 90%; max-width: 380px; padding: 25px; border-radius: 20px; border: 1px solid var(--accent); }
-
-        .slider { width: 100%; height: 8px; border-radius: 5px; background: #30363d; outline: none; margin: 20px 0; -webkit-appearance: none; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--accent); border-radius: 50%; border: 3px solid white; cursor: pointer; }
-    </style>
+<style>
+:root{
+--bg:#0d1117;
+--card:#161b22;
+--text:#f0f6fc;
+--accent:#238636;
+--yellow:#e3b341;
+--blue:#1f6feb;
+}
+.light{
+--bg:#f6f8fa;
+--card:#ffffff;
+--text:#1f2328;
+--accent:#2da44e;
+--yellow:#9a6700;
+--blue:#0969da;
+}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui;padding-bottom:80px;}
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--card);}
+.screen{display:none;padding:15px;}
+.active{display:block;}
+.card{background:var(--card);padding:18px;border-radius:14px;margin-bottom:15px;}
+.btn{padding:15px;border:none;border-radius:12px;font-weight:bold;cursor:pointer;}
+.playbtn{background:linear-gradient(180deg,#f0c050,#d4a017);width:100%;}
+.choice{flex:1;padding:14px;border-radius:10px;background:#21262d;color:white;border:2px solid transparent;}
+.choice.sel{border-color:var(--blue);color:var(--blue);}
+.slider{width:100%;}
+.nav{position:fixed;bottom:0;width:100%;background:var(--card);display:flex;}
+.nav a{flex:1;text-align:center;padding:10px;color:#8b949e;text-decoration:none;}
+.nav a.active{color:var(--blue);}
+.info-box{background:#1f6feb20;padding:15px;border-radius:12px;margin-top:10px;}
+img{width:100%;border-radius:12px;margin-bottom:15px;}
+</style>
 </head>
+
 <body>
 
 <div class="header">
-    <div id="ton-connect-btn"></div>
-    <div class="mode-toggle" onclick="toggleMode()"><i class="fas fa-moon" id="theme-icon"></i></div>
+<div id="ton-connect"></div>
+<div onclick="toggleTheme()" style="cursor:pointer"><i id="themeIcon" class="fas fa-moon"></i></div>
 </div>
 
-<div id="lobby-screen" class="screen active-screen">
-    <div class="visual-area"><img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png" class="game-bg-large"></div>
-    <div class="lobby-card">
-        <div style="display: flex; flex-direction: column;">
-            <span style="font-weight:900; font-size:1.1rem; color:var(--accent);">LOW / HIGH</span>
-            <span style="font-size:0.65rem; color:var(--green); font-weight:bold;">TACT v3.1 REAL-TIME</span>
-        </div>
-        <div style="display:flex; align-items:center;">
-            <i class="far fa-file-alt" style="font-size:1.4rem; color:var(--accent); cursor:pointer; margin-right:15px;" onclick="toggleModal(true)"></i>
-            <button class="btn-main" style="padding:10px 20px; width:auto; font-size:0.8rem;" onclick="showScreen('play-screen')">PLAY</button>
-        </div>
-    </div>
+<!-- LOBBY -->
+<div id="lobby" class="screen active">
+<img src="https://i.postimg.cc/XJfvQK5S/IMG-20260115-210549.png">
+<div class="card">
+<h2>LOW HIGH</h2>
+
+<div style="text-align:right;cursor:pointer" onclick="toggleInfo()">
+<i class="fas fa-file-alt"></i>
 </div>
 
-<div id="play-screen" class="screen">
-    <div class="visual-area"><img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png" class="game-bg-large"></div>
-    <div id="game-ui" style="display:none; width:100%; max-width:400px;">
-        <div style="display:flex; gap:12px; margin-bottom:15px; text-align:center;">
-            <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
-                <span style="font-size:0.65rem; opacity:0.6;">BET</span><br>
-                <span style="color:var(--accent); font-weight:bold; font-size:1.2rem;" id="amt-val">0.10</span> <small>TON</small>
-            </div>
-            <div style="background:var(--card); flex:1; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
-                <span style="font-size:0.65rem; opacity:0.6;">WIN (1.85x)</span><br>
-                <span style="color:var(--green); font-weight:bold; font-size:1.2rem;" id="win-val">0.18</span> <small>TON</small>
-            </div>
-        </div>
-        
-        <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="slider" id="betSlider">
-
-        <div class="selection-box">
-            <button class="side-btn selected" id="btn-low" onclick="selectSide(true)">LOW (1-49)</button>
-            <button class="side-btn" id="btn-high" onclick="selectSide(false)">HIGH (50-98)</button>
-        </div>
-        
-        <button class="btn-main" id="place-bet-btn" onclick="handleBet()">PLACE BET NOW</button>
-        <p id="tx-status" style="font-size:0.7rem; margin-top:10px; opacity:0.7; text-align:center;"></p>
-    </div>
-    <div id="connect-msg" style="margin-top:50px; text-align:center;">
-        <i class="fas fa-wallet" style="font-size:2rem; opacity:0.2; margin-bottom:10px;"></i>
-        <p>Please connect wallet to play</p>
-    </div>
+<div id="fairInfo" class="info-box" style="display:none">
+<b>Provably Fair Game</b><br><br>
+Each bet is processed directly on-chain by our Tact smart contract.
+Random numbers are generated with entropy mixing (block time, balance, value).
+Results cannot be manipulated.
+Refund safety exists for edge cases (99-100, liquidity, pause).
+All payouts follow fixed 1.85x logic.
 </div>
 
-<div id="invite-screen" class="screen">
-    <div style="width:100%; max-width:400px; background:var(--card); border-radius:18px; padding:25px; text-align:center; border:1px solid var(--accent);">
-        <i class="fas fa-gift" style="font-size:2.5rem; color:var(--accent); margin-bottom:15px;"></i>
-        <h3 style="margin:0;">REFERRAL SYSTEM</h3>
-        <p style="font-size:0.75rem; opacity:0.8; margin:10px 0 20px;">Earn <b style="color:var(--green);">5% Reward</b> instantly when your friends win!</p>
-        
-        <div style="background:rgba(0,0,0,0.2); padding:20px; border-radius:15px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.05);">
-            <div style="font-size:0.65rem; opacity:0.6;">AVAILABLE REWARDS</div>
-            <div style="font-size:1.8rem; font-weight:800; color:var(--green);" id="ref-bal">0.00 <small>TON</small></div>
-            <button class="btn-main" style="padding:10px; margin-top:10px; font-size:0.8rem; background:var(--accent); color:black;" onclick="withdrawRef()">WITHDRAW REWARDS</button>
-        </div>
-
-        <div style="text-align:left; margin-bottom:10px;">
-            <span style="font-size:0.65rem; opacity:0.6;">YOUR UNIQUE INVITE LINK:</span>
-            <div id="ref-link" style="background:#000; padding:12px; border-radius:8px; font-size:0.6rem; word-break:break-all; border:1px dashed #444; margin-top:5px; color:var(--accent);">Connect wallet to generate...</div>
-        </div>
-        <button class="btn-main" id="copy-btn" style="background:transparent; border:2px solid var(--accent); color:var(--accent);" onclick="copyLink()">COPY LINK</button>
-    </div>
+<button class="btn playbtn" onclick="nav('play')">PLAY</button>
+</div>
 </div>
 
-<div id="info-modal" class="modal" onclick="toggleModal(false)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 style="color:var(--accent); text-align:center; margin-top:0;">PROVABLY FAIR</h3>
-        <div style="font-size:0.8rem; line-height:1.6; color:#c9d1d9;">
-            <p><b>1. Open Source:</b> Built with Tact v3.1. The logic is immutable and verified on-chain.</p>
-            <p><b>2. Entropy Mix:</b> Dice results (1-100) are generated using TON's <code>random()</code> mixed with transaction entropy.</p>
-            <p><b>3. Range:</b> LOW (1-49), HIGH (50-98). 99-100 are safety refund numbers.</p>
-            <p><b>4. Fair Payout:</b> Win 1.85x your bet instantly. 5% goes to referrers.</p>
-        </div>
-        <button class="btn-main" style="margin-top:15px;" onclick="toggleModal(false)">I UNDERSTAND</button>
-    </div>
+<!-- PLAY -->
+<div id="play" class="screen">
+<img src="https://i.postimg.cc/8zfNZBQP/IMG-20260115-210803.png">
+
+<div class="card">
+<div>
+Bet: <b><span id="betVal">0.1</span> TON</b><br>
+Win: <b style="color:var(--accent)"><span id="winVal">0.185</span> TON*</b>
 </div>
 
-<div class="footer">
-    <div class="nav-item active" id="nav-lobby" onclick="showScreen('lobby-screen')"><i class="fas fa-th-large"></i>Lobby</div>
-    <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i>Invite</div>
+<input type="range" min="0.1" max="1.0" step="0.1" value="0.1" id="slider" class="slider">
+
+<div style="display:flex;gap:10px;margin-top:15px;">
+<button id="lowBtn" class="choice sel" onclick="setSide(true)">LOW (1-49)</button>
+<button id="highBtn" class="choice" onclick="setSide(false)">HIGH (50-98)</button>
+</div>
+
+<button id="betBtn" class="btn playbtn" style="margin-top:15px;" onclick="placeBet()">PLACE BET NOW</button>
+
+<p id="status"></p>
+</div>
+</div>
+
+<!-- INVITE -->
+<div id="invite" class="screen">
+<div class="card">
+<h3>Referral 5% (Win Only)</h3>
+<p>Earn 5% from winning bets of invited players.</p>
+</div>
+
+<div class="card">
+Available Rewards: <b><span id="refBal">0</span> TON</b><br><br>
+<button class="btn playbtn" onclick="withdrawRef()">WITHDRAW REWARDS</button>
+</div>
+
+<div class="card">
+Referral Link:<br>
+<div id="refLink" style="font-size:12px;word-break:break-all">Connect wallet...</div>
+<br>
+<button class="btn" onclick="copyLink()">COPY LINK</button>
+</div>
+</div>
+
+<div class="nav">
+<a id="navLobby" class="active" onclick="nav('lobby')"><i class="fas fa-home"></i><br>Lobby</a>
+<a id="navInvite" onclick="nav('invite')"><i class="fas fa-user-plus"></i><br>Invite</a>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
-    const CONTRACT_ADDRESS = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
-    let isSideLow = true;
-    const tonWeb = new TonWeb();
-    let tonConnectUI;
+document.addEventListener("DOMContentLoaded", async function(){
 
-    // --- INITIALIZATION ---
-    window.onload = function() {
-        tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ 
-            manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json", 
-            buttonRootId: 'ton-connect-btn' 
-        });
+const CONTRACT="EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+const tonweb=new TonWeb();
+const tonConnect=new TONConnectUI.TonConnectUI({
+manifestUrl:"https://YOUR_DOMAIN_HERE/tonconnect-manifest.json",
+buttonRootId:"ton-connect"
+});
 
-        // Event Listener for Wallet Connection
-        tonConnectUI.onStatusChange(wallet => {
-            const isConnected = !!wallet;
-            document.getElementById('game-ui').style.display = isConnected ? 'block' : 'none';
-            document.getElementById('connect-msg').style.display = isConnected ? 'none' : 'block';
-            if(isConnected) {
-                const userAddr = wallet.account.address;
-                const friendly = new TonWeb.utils.Address(userAddr).toString(true, true, true);
-                document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + friendly;
-                updateReferralBalance(userAddr);
-            }
-        });
+let sideLow=true;
 
-        // Slider Logic (Critical Point 12: toNano Precision)
-        const slider = document.getElementById('betSlider');
-        slider.oninput = function() {
-            const val = parseFloat(this.value);
-            document.getElementById('amt-val').innerText = val.toFixed(2);
-            document.getElementById('win-val').innerText = (val * 1.85).toFixed(2);
-        };
-    };
+window.nav=function(id){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.querySelectorAll(".nav a").forEach(a=>a.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.getElementById("nav"+id.charAt(0).toUpperCase()+id.slice(1)).classList.add("active");
+}
 
-    // --- UI FUNCTIONS ---
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-        document.getElementById(id).classList.add('active-screen');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(id === 'lobby-screen' || id === 'play-screen') document.getElementById('nav-lobby').classList.add('active');
-        if(id === 'invite-screen') document.getElementById('nav-invite').classList.add('active');
-    }
+window.toggleTheme=function(){
+document.body.classList.toggle("light");
+document.getElementById("themeIcon").className=
+document.body.classList.contains("light")?"fas fa-sun":"fas fa-moon";
+}
 
-    function toggleModal(show) { document.getElementById('info-modal').style.display = show ? 'flex' : 'none'; }
+window.toggleInfo=function(){
+let box=document.getElementById("fairInfo");
+box.style.display=box.style.display==="none"?"block":"none";
+}
 
-    function toggleMode() {
-        document.body.classList.toggle('light-mode');
-        const icon = document.getElementById('theme-icon');
-        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
-    }
+const slider=document.getElementById("slider");
+slider.addEventListener("input",()=>{
+let v=parseFloat(slider.value);
+betVal.innerText=v.toFixed(1);
+winVal.innerText=(v*1.85).toFixed(3);
+});
 
-    function selectSide(low) {
-        isSideLow = low;
-        document.getElementById('btn-low').classList.toggle('selected', low);
-        document.getElementById('btn-high').classList.toggle('selected', !low);
-    }
+window.setSide=function(v){
+sideLow=v;
+lowBtn.classList.toggle("sel",v);
+highBtn.classList.toggle("sel",!v);
+}
 
-    function copyLink() {
-        const link = document.getElementById('ref-link').innerText;
-        if(link.includes("...")) return;
-        navigator.clipboard.writeText(link);
-        const btn = document.getElementById('copy-btn');
-        btn.innerText = "COPIED ✅";
-        btn.style.borderColor = "var(--green)";
-        setTimeout(() => { btn.innerText = "COPY LINK"; btn.style.borderColor = "var(--accent)"; }, 2000);
-    }
+window.placeBet=async function(){
+if(!tonConnect.connected) return alert("Connect wallet first");
+betBtn.disabled=true;
+status.innerText="Awaiting wallet confirmation...";
 
-    // --- BLOCKCHAIN LOGIC (Critical Point 1: Exact Serialization) ---
-    async function handleBet() {
-        if (!tonConnectUI.connected) return;
-        
-        const btn = document.getElementById('place-bet-btn');
-        const status = document.getElementById('tx-status');
-        const amount = document.getElementById('amt-val').innerText;
-        
-        // Block Double Click (Critical Point 4)
-        btn.disabled = true;
-        status.innerText = "Confirm in your wallet...";
+try{
+const cell=new TonWeb.boc.Cell();
+cell.bits.writeUint(0xAAAABBBB,32);
+cell.bits.writeBit(sideLow);
 
-        try {
-            const amountNano = TonWeb.utils.toNano(amount).toString();
-            const cell = new TonWeb.boc.Cell();
-            
-            // Exact Order (Critical Point 1)
-            cell.bits.writeUint(0xAAAABBBB, 32); // 1. Opcode
-            cell.bits.writeBit(isSideLow);        // 2. sideLow (Bool)
-            
-            // Referrer Bit (Critical Point 11)
-            const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
-            
-            if (ref && TonWeb.utils.Address.isValid(ref)) {
-                cell.bits.writeBit(true); // Flag: Has referrer
-                cell.bits.writeAddress(new TonWeb.utils.Address(ref)); // 3. Address
-            } else {
-                cell.bits.writeBit(false); // Flag: No referrer
-            }
+const url=new URLSearchParams(window.location.search);
+const ref=url.get("ref");
 
-            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
+if(ref){
+cell.bits.writeBit(true);
+cell.bits.writeAddress(new TonWeb.utils.Address(ref));
+}else{
+cell.bits.writeBit(false);
+}
 
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{
-                    address: CONTRACT_ADDRESS,
-                    amount: amountNano, // Value = Bet (Critical Point 2)
-                    payload: payload,
-                    bounce: false // Critical Point 3
-                }]
-            };
+const boc=TonWeb.utils.bytesToBase64(await cell.toBoc());
+const nano=TonWeb.utils.toNano(slider.value).toString();
 
-            await tonConnectUI.sendTransaction(transaction);
-            status.innerText = "Transaction Sent! Waiting for result...";
-        } catch (e) {
-            status.innerText = "Rejected or Failed.";
-            btn.disabled = false;
-        }
-    }
+await tonConnect.sendTransaction({
+validUntil:Math.floor(Date.now()/1000)+300,
+messages:[{
+address:CONTRACT,
+amount:nano,
+payload:boc,
+bounce:false
+}]
+});
 
-    async function withdrawRef() {
-        if (!tonConnectUI.connected) return;
-        try {
-            const cell = new TonWeb.boc.Cell();
-            cell.bits.writeString("WithdrawRef"); // Exact Case (Critical Point 7)
-            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
+status.innerText="Bet sent to blockchain.";
+}catch(e){
+status.innerText="Cancelled / Error";
+betBtn.disabled=false;
+}
+}
 
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{
-                    address: CONTRACT_ADDRESS,
-                    amount: TonWeb.utils.toNano("0.05").toString(),
-                    payload: payload,
-                    bounce: false
-                }]
-            };
-            await tonConnectUI.sendTransaction(transaction);
-        } catch (e) { alert("Withdrawal Failed"); }
-    }
+window.withdrawRef=async function(){
+const cell=new TonWeb.boc.Cell();
+cell.bits.writeString("WithdrawRef");
+const boc=TonWeb.utils.bytesToBase64(await cell.toBoc());
 
-    async function updateReferralBalance(userAddr) {
-        try {
-            const response = await fetch(`https://toncenter.com/api/v2/runGetMethod`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    address: CONTRACT_ADDRESS,
-                    method: "referralBalance",
-                    stack: [["address", userAddr]]
-                })
-            });
-            const data = await response.json();
-            if(data.ok && data.result.stack[0]) {
-                const balNano = parseInt(data.result.stack[0][1], 16);
-                document.getElementById('ref-bal').innerHTML = `${(balNano / 1e9).toFixed(2)} <small>TON</small>`;
-            }
-        } catch (e) { console.error(e); }
-    }
+await tonConnect.sendTransaction({
+validUntil:Math.floor(Date.now()/1000)+300,
+messages:[{
+address:CONTRACT,
+amount:TonWeb.utils.toNano("0.05").toString(),
+payload:boc,
+bounce:false
+}]
+});
+}
+
+window.copyLink=function(){
+navigator.clipboard.writeText(refLink.innerText);
+alert("Copied!");
+}
+
+tonConnect.onStatusChange(async wallet=>{
+if(wallet){
+let addr=new TonWeb.utils.Address(wallet.account.address).toString(true,true,true);
+refLink.innerText=location.origin+location.pathname+"?ref="+addr;
+}
+});
+
+});
 </script>
 </body>
 </html>
