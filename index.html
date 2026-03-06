@@ -1,387 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>GOLDEN LOW-HIGH | v3.1 LIVE</title>
+    <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
+    <script src="https://bundle.run/tonweb@0.0.66"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; }
+        .light-mode { --bg: #f5f5f5; --card: #ffffff; --accent: #0088cc; --green: #2ecc71; --text: #1e2329; --nav: #ffffff; }
+        
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 80px; overflow-x: hidden; transition: 0.3s; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; padding: 10px 15px; background: var(--card); align-items: center; border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
+        .theme-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        
+        /* Screens */
+        .screen { display: none; padding: 15px; flex-direction: column; align-items: center; min-height: 80vh; animation: fadeIn 0.3s; }
+        .active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-<title>Golden LOW HIGH</title>
+        /* Images */
+        .game-img { width: 100%; max-width: 400px; border-radius: 15px; border: 1px solid #333; margin-bottom: 15px; pointer-events: none; }
+        
+        /* Lobby UI */
+        .lobby-card { width: 100%; max-width: 400px; background: var(--card); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        .fair-icon { font-size: 1.5rem; color: var(--accent); cursor: pointer; margin-right: 10px; }
 
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-<script src="https://unpkg.com/ton-core@latest/dist/ton-core.min.js"></script>
+        /* Play UI */
+        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; }
+        .box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; }
+        .val { font-size: 1.2rem; font-weight: bold; display: block; }
+        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        
+        /* Slider */
+        .slider { width: 100%; max-width: 400px; height: 8px; border-radius: 5px; background: #2b3139; outline: none; margin: 25px 0; -webkit-appearance: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #0088cc; cursor: pointer; border: 3px solid white; }
 
-<style>
+        .btn-side-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px; }
+        .btn-side { padding: 15px; border-radius: 10px; border: 2px solid #333; background: #1c2128; color: white; font-weight: bold; cursor: pointer; }
+        .selected { border: 2px solid var(--accent); background: rgba(243, 186, 47, 0.1); color: var(--accent); }
 
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-padding-bottom:80px;
-}
+        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; background: var(--green); color: white; font-weight: bold; font-size: 1rem; border: none; cursor: pointer; }
+        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
 
-header{
-display:flex;
-justify-content:space-between;
-padding:15px;
-background:#020617;
-align-items:center;
-}
+        /* Invite UI */
+        .invite-card { width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--accent); }
+        .ref-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin: 15px 0; font-size: 0.7rem; word-break: break-all; border: 1px dashed #444; color: var(--accent); }
 
-.screen{
-display:none;
-padding:20px;
-}
-
-.active{
-display:block;
-}
-
-.gameimg{
-width:100%;
-border-radius:15px;
-margin-bottom:15px;
-}
-
-.card{
-background:#161b22;
-padding:15px;
-border-radius:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.playbtn{
-background:#22c55e;
-border:none;
-padding:12px 25px;
-border-radius:10px;
-color:white;
-font-weight:bold;
-}
-
-.betbox{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.box{
-background:#161b22;
-padding:15px;
-border-radius:12px;
-text-align:center;
-}
-
-.slider{
-width:100%;
-margin:25px 0;
-}
-
-.sidebuttons{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-bottom:20px;
-}
-
-.side{
-padding:15px;
-border-radius:8px;
-border:none;
-background:#222;
-color:white;
-font-weight:bold;
-}
-
-.selected{
-background:#f3ba2f;
-color:black;
-}
-
-.betbtn{
-width:100%;
-padding:18px;
-background:#22c55e;
-border:none;
-border-radius:12px;
-font-size:18px;
-font-weight:bold;
-}
-
-footer{
-position:fixed;
-bottom:0;
-width:100%;
-display:flex;
-background:#020617;
-}
-
-footer button{
-flex:1;
-padding:18px;
-background:none;
-border:none;
-color:white;
-}
-
-</style>
+        /* Footer */
+        .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--nav); display: flex; border-top: 1px solid #2b3139; z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.75rem; opacity: 0.5; cursor: pointer; color: var(--text); }
+        .active-nav { color: var(--accent); opacity: 1; font-weight: bold; }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 4px; }
+    </style>
 </head>
-
 <body>
 
-<header>
-
-<div onclick="toggleTheme()">🌙/☀️</div>
-
-<div id="connect"></div>
-
-</header>
-
-<!-- LOBBY -->
-
-<div id="lobby" class="screen active">
-
-<img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png"
-class="gameimg">
-
-<div class="card">
-
-<div>
-<h2>LOW / HIGH</h2>
-
-<div style="font-size:12px;color:#22c55e">
-Provably Fair Blockchain Game
+<div class="header">
+    <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-adjust"></i> THEME</button>
+    <div id="ton-connect-btn"></div>
 </div>
 
+<div id="lobby-screen" class="screen active">
+    <img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png" class="game-img">
+    <div class="lobby-card">
+        <div>
+            <div style="font-weight: bold; color: var(--accent); font-size: 1.1rem;">LOW / HIGH</div>
+            <div style="font-size: 0.7rem; color: var(--green);">TACT SMART CONTRACT v3.1</div>
+        </div>
+        <div style="display:flex; align-items:center;">
+            <i class="far fa-file-alt fair-icon" onclick="showFairInfo()"></i>
+            <button class="btn-main" style="width: 80px; padding: 10px;" onclick="showScreen('play-screen')">PLAY</button>
+        </div>
+    </div>
 </div>
 
-<div>
-
-<button class="playbtn" onclick="show('play')">
-PLAY
-</button>
-
+<div id="play-screen" class="screen">
+    <img src="https://i.ibb.co/qYnXY1CW/1772808401788.png" class="game-img">
+    <div class="display-container">
+        <div class="box">
+            <span class="label">Bet Amount</span>
+            <span class="val" id="bet-display">0.10</span> <small>TON</small>
+        </div>
+        <div class="box">
+            <span class="label">Potential Win</span>
+            <span class="val" style="color:var(--green)" id="win-display">0.18</span> <small>TON</small>
+        </div>
+    </div>
+    
+    <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="slider" id="betSlider">
+    
+    <div class="btn-side-box">
+        <button class="btn-side selected" id="low-btn" onclick="selectSide(true)">LOW (1-49)</button>
+        <button class="btn-side" id="high-btn" onclick="selectSide(false)">HIGH (50-98)</button>
+    </div>
+    
+    <button class="btn-main" id="bet-btn" onclick="placeBet()">PLACE BET NOW</button>
+    <div id="status" style="margin-top:15px; font-size:0.8rem; color:var(--accent); text-align: center;"></div>
 </div>
 
+<div id="invite-screen" class="screen">
+    <div class="invite-card">
+        <i class="fas fa-gift" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"></i>
+        <h3>Refer & Earn 5%</h3>
+        <p style="font-size:0.8rem; opacity:0.8;">Earn rewards instantly from every winning bet your referred friends make!</p>
+        <div class="ref-box" id="ref-link">Connect wallet to see link</div>
+        <button class="btn-main" style="padding:10px; background:var(--accent); color:black;" onclick="copyLink()">COPY INVITE LINK</button>
+        <hr style="border:0.1px solid #333; margin:20px 0;">
+        <div style="font-size:0.9rem;">My Rewards: <span id="ref-balance" style="color:var(--green); font-weight:bold;">0.00</span> TON</div>
+        <button class="btn-main" style="padding:10px; margin-top:10px;" onclick="withdrawRef()">WITHDRAW TO WALLET</button>
+    </div>
 </div>
 
+<div class="footer">
+    <div class="nav-item active-nav" id="nav-lobby" onclick="showScreen('lobby-screen')">
+        <i class="fas fa-home"></i><span>Lobby</span>
+    </div>
+    <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')">
+        <i class="fas fa-users"></i><span>Invite</span>
+    </div>
 </div>
-
-<!-- PLAY -->
-
-<div id="play" class="screen">
-
-<img src="https://i.ibb.co/qYnXY1CW/1772808401788.png"
-class="gameimg">
-
-<div class="betbox">
-
-<div class="box">
-BET<br>
-<span id="bet">0.1</span> TON
-</div>
-
-<div class="box">
-WIN<br>
-<span id="win">0.185</span> TON
-</div>
-
-</div>
-
-<input type="range"
-min="0.1"
-max="1"
-step="0.01"
-value="0.1"
-id="slider"
-class="slider">
-
-<div class="sidebuttons">
-
-<button id="low" class="side selected"
-onclick="selectSide(true)">
-LOW (1-49)
-</button>
-
-<button id="high" class="side"
-onclick="selectSide(false)">
-HIGH (50-98)
-</button>
-
-</div>
-
-<button class="betbtn" id="betbtn" onclick="bet()">
-PLACE BET NOW
-</button>
-
-<div id="status" style="margin-top:15px;color:#f3ba2f"></div>
-
-</div>
-
-<!-- INVITE -->
-
-<div id="invite" class="screen">
-
-<h3>Refer & Earn</h3>
-
-<p>
-Earn 5% reward from friend's winning bet.
-</p>
-
-<div style="background:#161b22;padding:15px;border-radius:12px">
-
-Rewards
-<div id="refbal" style="color:#22c55e;font-weight:bold">
-0 TON
-</div>
-
-</div>
-
-<br>
-
-<input id="reflink" readonly
-style="width:100%;padding:12px;border-radius:8px;border:none">
-
-<br><br>
-
-<button onclick="copy()"
-style="width:100%;padding:14px;background:#f3ba2f;border:none;border-radius:10px">
-COPY LINK
-</button>
-
-</div>
-
-<footer>
-
-<button onclick="show('lobby')">Lobby</button>
-<button onclick="show('invite')">Invite</button>
-
-</footer>
 
 <script>
+    const CONTRACT_ADDRESS = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+    let isSideLow = true;
+    let tonConnectUI;
+    const tonWeb = new TonWeb();
 
-/* ========= CONFIG ========= */
+    async function init() {
+        tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
+            buttonRootId: 'ton-connect-btn'
+        });
 
-const CONTRACT="EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI"
+        // Bet Slider Real-time Calculation
+        const slider = document.getElementById('betSlider');
+        slider.oninput = function() {
+            const bet = parseFloat(this.value);
+            document.getElementById('bet-display').innerText = bet.toFixed(2);
+            // Point 14: Show approximate win (1.85x)
+            document.getElementById('win-display').innerText = (bet * 1.85).toFixed(2);
+        };
 
-let sideLow=true
-let tonConnect
-let betting=false
+        tonConnectUI.onStatusChange(wallet => {
+            if (wallet) {
+                const userAddr = wallet.account.address;
+                const friendlyAddr = new TonWeb.utils.Address(userAddr).toString(true, true, true);
+                document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + friendlyAddr;
+            }
+        });
+    }
 
-/* ========= INIT ========= */
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-lobby').classList.toggle('active-nav', id === 'lobby-screen' || id === 'play-screen');
+        document.getElementById('nav-invite').classList.toggle('active-nav', id === 'invite-screen');
+    }
 
-window.onload=()=>{
+    function selectSide(low) {
+        isSideLow = low;
+        document.getElementById('low-btn').classList.toggle('selected', low);
+        document.getElementById('high-btn').classList.toggle('selected', !low);
+    }
 
-tonConnect=new TON_CONNECT_UI.TonConnectUI({
-manifestUrl:"https://yourdomain.com/tonconnect-manifest.json",
-buttonRootId:"connect"
-})
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
 
-slider.oninput=()=>{
+    function showFairInfo() {
+        alert("Provably Fair Gaming:\n\n1. Results are generated on-chain using TACT smart contract entropy.\n2. Dice Range: 1-100.\n3. LOW: 1-49 | HIGH: 50-98.\n4. Safety: 99-100 rolls trigger an automatic full refund.\n5. Payout: 1.85x directly to your wallet.");
+    }
 
-let b=parseFloat(slider.value)
+    async function placeBet() {
+        if (!tonConnectUI.connected) { alert("Please connect your wallet first!"); return; }
+        
+        const btn = document.getElementById('bet-btn');
+        const status = document.getElementById('status');
+        
+        // Point 4: Block Double Click
+        btn.disabled = true;
+        status.innerText = "Confirming transaction in wallet...";
 
-bet.innerText=b.toFixed(2)
-win.innerText=(b*1.85).toFixed(3)
+        try {
+            // Point 12: toNano precision
+            const betAmount = document.getElementById('bet-display').innerText;
+            const nanoAmount = TonWeb.utils.toNano(betAmount).toString();
+            
+            // Point 1 & 11: Exact Serialization
+            const cell = new TonWeb.boc.Cell();
+            cell.bits.writeUint(0xAAAABBBB, 32); // Opcode
+            cell.bits.writeBit(isSideLow);       // sideLow bit
 
-}
+            // Check for Referrer in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            
+            if (ref && TonWeb.utils.Address.isValid(ref)) {
+                cell.bits.writeBit(true); // Flag: referrer exists
+                cell.bits.writeAddress(new TonWeb.utils.Address(ref));
+            } else {
+                cell.bits.writeBit(false); // Flag: no referrer
+            }
 
-}
+            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
 
-/* ========= SERIALIZATION SAFE ========= */
+            // Point 2 & 3: Pure bet value & Bounce false
+            await tonConnectUI.sendTransaction({
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{
+                    address: CONTRACT_ADDRESS,
+                    amount: nanoAmount,
+                    payload: payload,
+                    bounce: false
+                }]
+            });
+            status.innerText = "Bet Placed! Waiting for Smart Contract result...";
+        } catch (e) {
+            status.innerText = "Transaction failed or cancelled.";
+            console.error(e);
+        } finally {
+            setTimeout(() => { btn.disabled = false; }, 5000);
+        }
+    }
 
-function buildBetCell(sideLow){
+    async function withdrawRef() {
+        if (!tonConnectUI.connected) return;
+        try {
+            const cell = new TonWeb.boc.Cell();
+            // Point 7: Case sensitive
+            cell.bits.writeUint(0, 32); 
+            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc()); // Using comment message as per Tact string receiver
 
-const builder = window.TonCore.beginCell()
+            await tonConnectUI.sendTransaction({
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{
+                    address: CONTRACT_ADDRESS,
+                    amount: TonWeb.utils.toNano("0.05").toString(),
+                    payload: "te6cckEBAQEADgAAGFdpdGhkcmF3UmVme967Bw==", // "WithdrawRef" as comment
+                    bounce: false
+                }]
+            });
+        } catch (e) { alert("Withdrawal failed."); }
+    }
 
-builder.storeUint(0xAAAABBBB,32)
-builder.storeBit(sideLow)
-builder.storeBit(false)
+    function copyLink() {
+        const link = document.getElementById('ref-link').innerText;
+        if (link.includes("Connect")) return;
+        navigator.clipboard.writeText(link);
+        alert("Referral Link Copied!");
+    }
 
-return builder.endCell()
-
-}
-
-/* ========= BET ========= */
-
-async function bet(){
-
-if(betting) return
-
-if(!tonConnect.connected){
-alert("Connect wallet first")
-return
-}
-
-if(!confirm("Confirm bet transaction ?")) return
-
-betting=true
-
-betbtn.innerText="CONFIRMING..."
-
-try{
-
-const amount = parseFloat(bet.innerText)
-
-const cell = buildBetCell(sideLow)
-
-await tonConnect.sendTransaction({
-
-validUntil:Math.floor(Date.now()/1000)+300,
-
-messages:[{
-address:CONTRACT,
-amount:(amount*1e9).toString(),
-payload:cell.toBoc().toString("base64"),
-bounce:false
-}]
-
-})
-
-status.innerText="Transaction sent"
-
-}catch(e){
-
-alert(e.message)
-
-}
-
-beting=false
-betbtn.innerText="PLACE BET NOW"
-
-}
-
-/* ========= UI ========= */
-
-function selectSide(low){
-
-sideLow=low
-
-low.classList.toggle("selected",low)
-high.classList.toggle("selected",!low)
-
-}
-
-function show(id){
-
-document.querySelectorAll(".screen")
-.forEach(s=>s.classList.remove("active"))
-
-document.getElementById(id).classList.add("active")
-
-}
-
-function toggleTheme(){
-document.body.classList.toggle("light")
-}
-
-function copy(){
-navigator.clipboard.writeText(reflink.value)
-alert("Referral link copied")
-}
-
+    window.onload = init;
 </script>
-
 </body>
 </html>
