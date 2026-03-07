@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN LOW-HIGH | v3.1 LIVE</title>
-    <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
+    <title>GOLDEN LOW-HIGH | Official Game</title>
     <script src="https://bundle.run/tonweb@0.0.66"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -12,69 +11,66 @@
         :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; }
         .light-mode { --bg: #f5f5f5; --card: #ffffff; --accent: #0088cc; --green: #2ecc71; --text: #1e2329; --nav: #ffffff; }
         
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 80px; overflow-x: hidden; transition: 0.3s; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 80px; transition: 0.3s; }
         
-        /* Header */
-        .header { display: flex; justify-content: space-between; padding: 10px 15px; background: var(--card); align-items: center; border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
-        .theme-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
-        
+        /* Header & Connect Button */
+        .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); align-items: center; border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
+        #ton-connect-btn { min-width: 140px; }
+
         /* Screens */
-        .screen { display: none; padding: 15px; flex-direction: column; align-items: center; min-height: 80vh; animation: fadeIn 0.3s; }
+        .screen { display: none; padding: 15px; flex-direction: column; align-items: center; animation: fadeIn 0.3s; }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Images */
-        .game-img { width: 100%; max-width: 400px; border-radius: 15px; border: 1px solid #333; margin-bottom: 15px; pointer-events: none; }
-        
-        /* Lobby UI */
-        .lobby-card { width: 100%; max-width: 400px; background: var(--card); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-        .fair-icon { font-size: 1.5rem; color: var(--accent); cursor: pointer; margin-right: 10px; }
-
-        /* Play UI */
-        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; }
+        /* Game UI */
+        .game-img { width: 100%; max-width: 400px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 400px; }
         .box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; }
-        .val { font-size: 1.2rem; font-weight: bold; display: block; }
-        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        .val { font-size: 1.3rem; font-weight: bold; color: var(--accent); }
+        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; display: block; }
         
         /* Slider */
-        .slider { width: 100%; max-width: 400px; height: 8px; border-radius: 5px; background: #2b3139; outline: none; margin: 25px 0; -webkit-appearance: none; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #0088cc; cursor: pointer; border: 3px solid white; }
+        .slider-box { width: 100%; max-width: 400px; margin: 25px 0; }
+        .slider { width: 100%; height: 8px; border-radius: 5px; background: #2b3139; outline: none; -webkit-appearance: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 3px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
+        /* Buttons */
         .btn-side-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px; }
-        .btn-side { padding: 15px; border-radius: 10px; border: 2px solid #333; background: #1c2128; color: white; font-weight: bold; cursor: pointer; }
-        .selected { border: 2px solid var(--accent); background: rgba(243, 186, 47, 0.1); color: var(--accent); }
+        .btn-side { padding: 18px; border-radius: 12px; border: 2px solid #333; background: #1c2128; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.15); color: var(--accent); }
 
-        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; background: var(--green); color: white; font-weight: bold; font-size: 1rem; border: none; cursor: pointer; }
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; background: var(--green); color: white; font-weight: bold; font-size: 1.1rem; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.97); }
+        .btn-main:disabled { background: #444; cursor: not-allowed; }
 
-        /* Invite UI */
-        .invite-card { width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--accent); }
-        .ref-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin: 15px 0; font-size: 0.7rem; word-break: break-all; border: 1px dashed #444; color: var(--accent); }
-
-        /* Footer */
-        .footer { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--nav); display: flex; border-top: 1px solid #2b3139; z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.75rem; opacity: 0.5; cursor: pointer; color: var(--text); }
+        /* Footer Navigation */
+        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid #2b3139; z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; opacity: 0.6; cursor: pointer; color: var(--text); }
         .active-nav { color: var(--accent); opacity: 1; font-weight: bold; }
-        .nav-item i { font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        
+        /* Info Overlay */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .info-card { background: var(--card); padding: 25px; border-radius: 20px; max-width: 400px; border: 1px solid var(--accent); line-height: 1.6; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-adjust"></i> THEME</button>
+    <button class="theme-btn" onclick="toggleTheme()" style="background:none; border:none; color:var(--accent); font-size:1.2rem;"><i class="fas fa-moon"></i></button>
     <div id="ton-connect-btn"></div>
 </div>
 
 <div id="lobby-screen" class="screen active">
     <img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png" class="game-img">
-    <div class="lobby-card">
+    <div style="width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
         <div>
-            <div style="font-weight: bold; color: var(--accent); font-size: 1.1rem;">LOW / HIGH</div>
-            <div style="font-size: 0.7rem; color: var(--green);">TACT SMART CONTRACT v3.1</div>
+            <div style="font-weight: bold; color: var(--accent); font-size: 1.2rem;">LOW / HIGH</div>
+            <div style="font-size: 0.75rem; color: var(--green); margin-top: 4px;">TACT SMART CONTRACT v3.1</div>
         </div>
-        <div style="display:flex; align-items:center;">
-            <i class="far fa-file-alt fair-icon" onclick="showFairInfo()"></i>
-            <button class="btn-main" style="width: 80px; padding: 10px;" onclick="showScreen('play-screen')">PLAY</button>
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <i class="far fa-file-alt" style="font-size: 1.8rem; color: var(--accent); cursor: pointer;" onclick="document.getElementById('fair-overlay').style.display='flex'"></i>
+            <button class="btn-main" style="width: 100px; padding: 12px;" onclick="showScreen('play-screen')">PLAY</button>
         </div>
     </div>
 </div>
@@ -84,15 +80,17 @@
     <div class="display-container">
         <div class="box">
             <span class="label">Bet Amount</span>
-            <span class="val" id="bet-display">0.10</span> <small>TON</small>
+            <span class="val"><span id="bet-display">0.10</span> <small>TON</small></span>
         </div>
         <div class="box">
             <span class="label">Potential Win</span>
-            <span class="val" style="color:var(--green)" id="win-display">0.18</span> <small>TON</small>
+            <span class="val" style="color:var(--green)"><span id="win-display">0.18</span> <small>TON</small></span>
         </div>
     </div>
     
-    <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="slider" id="betSlider">
+    <div class="slider-box">
+        <input type="range" min="0.1" max="1.0" step="0.1" value="0.1" class="slider" id="betSlider">
+    </div>
     
     <div class="btn-side-box">
         <button class="btn-side selected" id="low-btn" onclick="selectSide(true)">LOW (1-49)</button>
@@ -100,59 +98,84 @@
     </div>
     
     <button class="btn-main" id="bet-btn" onclick="placeBet()">PLACE BET NOW</button>
-    <div id="status" style="margin-top:15px; font-size:0.8rem; color:var(--accent); text-align: center;"></div>
+    <div id="status" style="margin-top:15px; font-size:0.85rem; color:var(--accent); text-align: center;"></div>
 </div>
 
 <div id="invite-screen" class="screen">
-    <div class="invite-card">
-        <i class="fas fa-gift" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"></i>
-        <h3>Refer & Earn 5%</h3>
-        <p style="font-size:0.8rem; opacity:0.8;">Earn rewards instantly from every winning bet your referred friends make!</p>
-        <div class="ref-box" id="ref-link">Connect wallet to see link</div>
-        <button class="btn-main" style="padding:10px; background:var(--accent); color:black;" onclick="copyLink()">COPY INVITE LINK</button>
-        <hr style="border:0.1px solid #333; margin:20px 0;">
-        <div style="font-size:0.9rem;">My Rewards: <span id="ref-balance" style="color:var(--green); font-weight:bold;">0.00</span> TON</div>
-        <button class="btn-main" style="padding:10px; margin-top:10px;" onclick="withdrawRef()">WITHDRAW TO WALLET</button>
+    <div style="width: 100%; max-width: 400px; background: var(--card); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid var(--accent); box-sizing: border-box;">
+        <i class="fas fa-gift" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
+        <h2 style="margin: 0 0 10px 0;">Refer & Earn 5%</h2>
+        <p style="font-size:0.85rem; opacity:0.8; margin-bottom: 20px;">Earn rewards instantly when your friends win! Real-time payout to your balance.</p>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px dashed #444;">
+            <div id="ref-link" style="font-size: 0.75rem; word-break: break-all; color: var(--accent);">Connect wallet to see link</div>
+        </div>
+        
+        <button class="btn-main" style="background:var(--accent); color:black; padding: 14px;" onclick="copyLink()">COPY INVITE LINK</button>
+        
+        <hr style="border:0; border-top: 1px solid #333; margin: 25px 0;">
+        
+        <div style="font-size: 1rem; margin-bottom: 15px;">Available Rewards: <span id="ref-balance" style="color:var(--green); font-weight:bold;">0.00</span> TON</div>
+        <button class="btn-main" style="padding:14px; background: #2b3139;" onclick="withdrawRef()">WITHDRAW REWARDS</button>
     </div>
 </div>
 
 <div class="footer">
     <div class="nav-item active-nav" id="nav-lobby" onclick="showScreen('lobby-screen')">
-        <i class="fas fa-home"></i><span>Lobby</span>
+        <i class="fas fa-th-large"></i><span>Lobby</span>
     </div>
     <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')">
-        <i class="fas fa-users"></i><span>Invite</span>
+        <i class="fas fa-user-friends"></i><span>Invite</span>
     </div>
 </div>
 
+<div id="fair-overlay" class="overlay" onclick="this.style.display='none'">
+    <div class="info-card" onclick="event.stopPropagation()">
+        <h3 style="color:var(--accent); margin-top:0;">Global Provably Fair Game</h3>
+        <p>Our game is built on the <b>TON Blockchain</b> using <b>Tact Smart Contract</b>, ensuring total transparency.</p>
+        <ul style="padding-left: 20px; font-size: 0.9rem;">
+            <li><b>Dice Range:</b> 1 to 100.</li>
+            <li><b>LOW:</b> 1-49 | <b>HIGH:</b> 50-98.</li>
+            <li><b>House Edge:</b> 99-100 (Full Refund).</li>
+            <li><b>Security:</b> Result generated on-chain.</li>
+        </ul>
+        <button class="btn-main" style="padding:10px; margin-top:10px;" onclick="document.getElementById('fair-overlay').style.display='none'">GOT IT</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
+
 <script>
     const CONTRACT_ADDRESS = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+    const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
     let isSideLow = true;
     let tonConnectUI;
-    const tonWeb = new TonWeb();
 
     async function init() {
-        tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
-            buttonRootId: 'ton-connect-btn'
-        });
+        try {
+            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: MANIFEST_URL,
+                buttonRootId: 'ton-connect-btn'
+            });
 
-        // Bet Slider Real-time Calculation
-        const slider = document.getElementById('betSlider');
-        slider.oninput = function() {
-            const bet = parseFloat(this.value);
-            document.getElementById('bet-display').innerText = bet.toFixed(2);
-            // Point 14: Show approximate win (1.85x)
-            document.getElementById('win-display').innerText = (bet * 1.85).toFixed(2);
-        };
+            // Slider Calculation (Bet x 1.85)
+            const slider = document.getElementById('betSlider');
+            slider.addEventListener('input', function() {
+                const bet = parseFloat(this.value);
+                document.getElementById('bet-display').innerText = bet.toFixed(2);
+                document.getElementById('win-display').innerText = (bet * 1.85).toFixed(2);
+            });
 
-        tonConnectUI.onStatusChange(wallet => {
-            if (wallet) {
-                const userAddr = wallet.account.address;
-                const friendlyAddr = new TonWeb.utils.Address(userAddr).toString(true, true, true);
-                document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + friendlyAddr;
-            }
-        });
+            tonConnectUI.onStatusChange(wallet => {
+                if (wallet) {
+                    const userAddr = wallet.account.address;
+                    const friendlyAddr = new TonWeb.utils.Address(userAddr).toString(true, true, true);
+                    document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + friendlyAddr;
+                }
+            });
+        } catch (e) {
+            console.error("Initialization Failed:", e);
+        }
     }
 
     function showScreen(id) {
@@ -168,93 +191,67 @@
         document.getElementById('high-btn').classList.toggle('selected', !low);
     }
 
-    function toggleTheme() { document.body.classList.toggle('light-mode'); }
-
-    function showFairInfo() {
-        alert("Provably Fair Gaming:\n\n1. Results are generated on-chain using TACT smart contract entropy.\n2. Dice Range: 1-100.\n3. LOW: 1-49 | HIGH: 50-98.\n4. Safety: 99-100 rolls trigger an automatic full refund.\n5. Payout: 1.85x directly to your wallet.");
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const icon = document.querySelector('.theme-btn i');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
     }
 
     async function placeBet() {
-        if (!tonConnectUI.connected) { alert("Please connect your wallet first!"); return; }
+        if (!tonConnectUI.connected) { alert("Please connect your wallet!"); return; }
         
         const btn = document.getElementById('bet-btn');
         const status = document.getElementById('status');
-        
-        // Point 4: Block Double Click
         btn.disabled = true;
-        status.innerText = "Confirming transaction in wallet...";
+        status.innerText = "Check your wallet for confirmation...";
 
         try {
-            // Point 12: toNano precision
             const betAmount = document.getElementById('bet-display').innerText;
-            const nanoAmount = TonWeb.utils.toNano(betAmount).toString();
+            const nanoAmount = (parseFloat(betAmount) * 1000000000).toString();
             
-            // Point 1 & 11: Exact Serialization
+            // TACT Serialization (Opcode 0xAAAABBBB)
             const cell = new TonWeb.boc.Cell();
-            cell.bits.writeUint(0xAAAABBBB, 32); // Opcode
-            cell.bits.writeBit(isSideLow);       // sideLow bit
+            cell.bits.writeUint(0xAAAABBBB, 32); 
+            cell.bits.writeBit(isSideLow);
 
-            // Check for Referrer in URL
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
             
             if (ref && TonWeb.utils.Address.isValid(ref)) {
-                cell.bits.writeBit(true); // Flag: referrer exists
+                cell.bits.writeBit(true);
                 cell.bits.writeAddress(new TonWeb.utils.Address(ref));
             } else {
-                cell.bits.writeBit(false); // Flag: no referrer
+                cell.bits.writeBit(false);
             }
 
-            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
+            const payloadBoc = TonWeb.utils.bytesToBase64(await cell.toBoc());
 
-            // Point 2 & 3: Pure bet value & Bounce false
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{
                     address: CONTRACT_ADDRESS,
                     amount: nanoAmount,
-                    payload: payload,
+                    payload: payloadBoc,
                     bounce: false
                 }]
             });
-            status.innerText = "Bet Placed! Waiting for Smart Contract result...";
+            status.innerText = "Transaction Sent Successfully!";
         } catch (e) {
-            status.innerText = "Transaction failed or cancelled.";
-            console.error(e);
+            status.innerText = "Transaction Failed or Cancelled.";
         } finally {
-            setTimeout(() => { btn.disabled = false; }, 5000);
+            setTimeout(() => { btn.disabled = false; }, 3000);
         }
-    }
-
-    async function withdrawRef() {
-        if (!tonConnectUI.connected) return;
-        try {
-            const cell = new TonWeb.boc.Cell();
-            // Point 7: Case sensitive
-            cell.bits.writeUint(0, 32); 
-            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc()); // Using comment message as per Tact string receiver
-
-            await tonConnectUI.sendTransaction({
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{
-                    address: CONTRACT_ADDRESS,
-                    amount: TonWeb.utils.toNano("0.05").toString(),
-                    payload: "te6cckEBAQEADgAAGFdpdGhkcmF3UmVme967Bw==", // "WithdrawRef" as comment
-                    bounce: false
-                }]
-            });
-        } catch (e) { alert("Withdrawal failed."); }
     }
 
     function copyLink() {
         const link = document.getElementById('ref-link').innerText;
         if (link.includes("Connect")) return;
-        navigator.clipboard.writeText(link);
-        alert("Referral Link Copied!");
+        navigator.clipboard.writeText(link).then(() => {
+            alert("Invite Link Copied!");
+        });
     }
 
     window.onload = init;
 </script>
 </body>
 </html>
-
