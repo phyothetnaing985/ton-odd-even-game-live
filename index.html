@@ -3,85 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN LOW-HIGH | v5 Production</title>
+    <title>GOLDEN GAME | v6 Stable</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; --nav: #161b22; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 90px; }
+        :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding-bottom: 90px; }
         .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
         .screen { display: none; padding: 15px; flex-direction: column; align-items: center; }
         .active { display: flex; }
-        .game-img { width: 100%; max-width: 400px; border-radius: 15px; margin-bottom: 15px; }
-        .box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; width: 100%; }
+        .box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; width: 100%; box-sizing: border-box; }
         .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
-        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
-        /* Fixed Slider for MaxBet Guard */
-        .slider { width: 100%; max-width: 400px; height: 10px; margin: 25px 0; -webkit-appearance: none; background: #2b3139; border-radius: 5px; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 3px solid #fff; }
-        .btn-side { padding: 18px; border-radius: 12px; border: 2px solid #333; background: #1c2128; color: white; font-weight: bold; width: 100%; cursor: pointer; }
-        .selected { border-color: var(--accent); background: rgba(243, 186, 47, 0.1); color: var(--accent); }
-        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; background: var(--green); color: white; font-weight: bold; border: none; cursor: pointer; }
-        .btn-main:disabled { background: #444; opacity: 0.6; }
-        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid #2b3139; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; opacity: 0.6; color: var(--text); }
-        .active-nav { color: var(--accent); opacity: 1; }
-        #status-box { margin-top: 15px; font-size: 0.8rem; text-align: center; color: var(--accent); display: none; }
+        .slider { width: 100%; max-width: 400px; height: 8px; margin: 25px 0; -webkit-appearance: none; background: #2b3139; border-radius: 5px; cursor: pointer; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; }
+        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; background: var(--green); color: white; font-weight: bold; border: none; cursor: pointer; font-size: 1rem; }
+        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card); display: flex; border-top: 1px solid #2b3139; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; opacity: 0.5; color: var(--text); cursor: pointer; }
+        .active-nav { opacity: 1; color: var(--accent); }
+        .status-msg { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none; width: 100%; max-width: 380px; text-align: center; }
+        .copy-btn { background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <div style="font-weight: bold; color: var(--accent);">GOLDEN v5</div>
+    <div style="font-weight: bold; color: var(--accent);">GOLDEN v6</div>
 </div>
 
 <div id="lobby-screen" class="screen active">
-    <img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png" class="game-img">
+    <img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png" style="width:100%; max-width:400px; border-radius:15px; margin-bottom:20px;">
     <button class="btn-main" onclick="showScreen('play-screen')">PLAY NOW</button>
 </div>
 
 <div id="play-screen" class="screen">
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:400px;">
-        <div class="box"><span class="label">Amount</span><br><span class="val" id="bet-display">0.10</span></div>
-        <div class="box"><span class="label">Payout</span><br><span class="val" id="win-display" style="color:var(--green)">0.18</span></div>
+        <div class="box"><span style="color:#888; font-size:0.7rem;">BET AMOUNT</span><br><span class="val" id="ui-bet">0.10</span> <span style="font-size:0.8rem;">TON</span></div>
+        <div class="box"><span style="color:#888; font-size:0.7rem;">WIN PAYOUT</span><br><span class="val" id="ui-win" style="color:var(--green)">0.18</span> <span style="font-size:0.8rem;">TON</span></div>
     </div>
-    <input type="range" min="0.1" max="0.98" step="0.01" value="0.1" class="slider" id="betSlider">
+    
+    <input type="range" min="0.1" max="1.0" step="0.05" value="0.1" class="slider" id="betSlider">
     
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:400px; margin-bottom:20px;">
-        <button class="btn-side selected" id="low-btn" onclick="selectSide(true)">LOW (1-49)</button>
-        <button class="btn-side" id="high-btn" onclick="selectSide(false)">HIGH (50-98)</button>
+        <button id="low-btn" style="padding:15px; border-radius:10px; border:2px solid var(--accent); background:rgba(243,186,47,0.1); color:var(--accent); font-weight:bold;" onclick="setSide(true)">LOW (1-49)</button>
+        <button id="high-btn" style="padding:15px; border-radius:10px; border:2px solid #333; background:#1c2128; color:#fff; font-weight:bold;" onclick="setSide(false)">HIGH (50-98)</button>
     </div>
     
     <button class="btn-main" id="bet-btn" onclick="placeBet()">PLACE BET NOW</button>
-    <div id="status-box"></div>
+    <div id="status-box" class="status-msg"></div>
 </div>
 
 <div id="invite-screen" class="screen">
-    <div class="box" style="border:1px solid var(--accent);">
-        <i class="fas fa-gift" style="font-size:2rem; color:var(--accent);"></i>
-        <h3>Referral Program</h3>
-        <p style="font-size:0.8rem;">Earn 5% from every win of your friends!</p>
-        <div id="ref-link" style="background:#000; padding:10px; border-radius:8px; font-size:0.6rem; margin:10px 0;">Connect Wallet</div>
-        <button class="btn-main" style="background:var(--accent); color:#000;" onclick="copyLink()">COPY LINK</button>
-        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-        <button class="btn-main" style="background:#2b3139;" onclick="withdrawRef()">WITHDRAW REWARDS</button>
+    <div class="box">
+        <i class="fas fa-gift" style="font-size:2.5rem; color:var(--accent); margin-bottom:10px;"></i>
+        <h3>Refer & Earn 5%</h3>
+        <p style="font-size:0.8rem; color:#888;">Invite friends and earn from their wins!</p>
+        <div id="ref-url" style="background:#000; padding:12px; border-radius:8px; font-size:0.7rem; word-break:break-all; border:1px dashed #444; margin:15px 0;">Connect Wallet to Get Link</div>
+        <button class="copy-btn" id="copy-btn" onclick="copyInvite()">
+            <i class="fas fa-copy"></i> COPY INVITE LINK
+        </button>
     </div>
 </div>
 
 <div class="footer">
-    <div class="nav-item active-nav" id="nav-lobby" onclick="showScreen('lobby-screen')"><i class="fas fa-home"></i><span>Lobby</span></div>
-    <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i><span>Invite</span></div>
+    <div class="nav-item active-nav" id="nav-lobby" onclick="showScreen('lobby-screen')"><i class="fas fa-gamepad"></i><span>Lobby</span></div>
+    <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')"><i class="fas fa-user-plus"></i><span>Invite</span></div>
 </div>
 
 <script>
-    const CONTRACT_ADDRESS = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
-    // Fix: Added versioning to manifest to prevent caching
-    const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json?v=5.1";
-    let isSideLow = true;
+    const CONTRACT_ADDR = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+    const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
     let tonConnectUI;
+    let isLow = true;
 
     async function init() {
         tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -89,16 +84,17 @@
             buttonRootId: 'ton-connect-btn'
         });
 
-        document.getElementById('betSlider').oninput = function() {
+        const slider = document.getElementById('betSlider');
+        slider.oninput = function() {
             const val = parseFloat(this.value);
-            document.getElementById('bet-display').innerText = val.toFixed(2);
-            document.getElementById('win-display').innerText = (val * 1.85).toFixed(2);
+            document.getElementById('ui-bet').innerText = val.toFixed(2);
+            document.getElementById('ui-win').innerText = (val * 1.85).toFixed(2);
         };
 
         tonConnectUI.onStatusChange(wallet => {
             if (wallet) {
-                const userAddr = new TonWeb.utils.Address(wallet.account.address).toString(true, true, true);
-                document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + userAddr;
+                const addr = new TonWeb.utils.Address(wallet.account.address).toString(true, true, true);
+                document.getElementById('ref-url').innerText = window.location.origin + window.location.pathname + "?ref=" + addr;
             }
         });
     }
@@ -110,29 +106,37 @@
         document.getElementById('nav-invite').classList.toggle('active-nav', id === 'invite-screen');
     }
 
-    function selectSide(low) {
-        isSideLow = low;
-        document.getElementById('low-btn').classList.toggle('selected', low);
-        document.getElementById('high-btn').classList.toggle('selected', !low);
+    function setSide(low) {
+        isLow = low;
+        document.getElementById('low-btn').style.borderColor = low ? 'var(--accent)' : '#333';
+        document.getElementById('low-btn').style.background = low ? 'rgba(243,186,47,0.1)' : '#1c2128';
+        document.getElementById('high-btn').style.borderColor = !low ? 'var(--accent)' : '#333';
+        document.getElementById('high-btn').style.background = !low ? 'rgba(243,186,47,0.1)' : '#1c2128';
     }
 
     async function placeBet() {
-        if (!tonConnectUI.connected) { alert("Connect Wallet!"); return; }
+        if (!tonConnectUI.connected) { alert("Please Connect Wallet!"); return; }
+        
         const btn = document.getElementById('bet-btn');
         const status = document.getElementById('status-box');
+        const uiBetVal = parseFloat(document.getElementById('ui-bet').innerText);
         
         btn.disabled = true;
         status.style.display = "block";
-        status.innerText = "Check your wallet...";
+        status.style.background = "rgba(243,186,47,0.1)";
+        status.innerText = "Confirming in Wallet...";
 
         try {
-            const betVal = parseFloat(document.getElementById('bet-display').innerText);
-            const safeAmount = betVal + 0.02; // Gas margin
-            const nanoAmount = TonWeb.utils.toNano(safeAmount.toString()).toString();
+            // Fix logic: UI မှာ ၁.၀ ပြပေမယ့် Contract Max ၁.၀ ဖြစ်လို့ ညှိပို့ပေးခြင်း
+            let actualSend = uiBetVal;
+            if (actualSend >= 1.0) actualSend = 0.98; // ၁.၀ လောင်းရင် ၀.၉၈ ပဲပို့မယ် (Fail မဖြစ်အောင်)
+
+            const totalAmount = actualSend + 0.02; // Gas fee 0.02 ပေါင်းမယ်
+            const nanoAmount = TonWeb.utils.toNano(totalAmount.toFixed(2)).toString();
 
             const cell = new TonWeb.boc.Cell();
-            cell.bits.writeUint(0xAAAABBBB, 32); // Opcode
-            cell.bits.writeBit(isSideLow);        // Side
+            cell.bits.writeUint(0xAAAABBBB, 32); 
+            cell.bits.writeBit(isLow);
 
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
@@ -148,45 +152,39 @@
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{
-                    address: CONTRACT_ADDRESS,
+                    address: CONTRACT_ADDR,
                     amount: nanoAmount,
                     payload: payloadBoc,
                     bounce: false
                 }]
             });
-            status.innerText = "Transaction Sent! Good Luck!";
+
+            status.style.background = "rgba(0,192,135,0.1)";
+            status.innerText = "Success! Bet Placed.";
         } catch (e) {
-            status.innerText = "Transaction Error or Cancelled.";
+            status.style.background = "rgba(255,0,0,0.1)";
+            status.innerText = "Transaction Cancelled.";
         } finally {
-            setTimeout(() => { btn.disabled = false; }, 2000);
+            setTimeout(() => { btn.disabled = false; status.style.display="none"; }, 4000);
         }
     }
 
-    async function withdrawRef() {
-        if (!tonConnectUI.connected) return;
-        try {
-            // "WithdrawRef" opcode/comment serialization
-            await tonConnectUI.sendTransaction({
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{
-                    address: CONTRACT_ADDRESS,
-                    amount: TonWeb.utils.toNano("0.05").toString(),
-                    payload: "te6cckEBAQEADgAAGFdpdGhkcmF3UmVme967Bw==", 
-                    bounce: false
-                }]
-            });
-            alert("Withdrawal request sent!");
-        } catch (e) { alert("Withdrawal failed."); }
-    }
-
-    function copyLink() {
-        const link = document.getElementById('ref-link').innerText;
-        if(link.includes("Connect")) return;
+    function copyInvite() {
+        const link = document.getElementById('ref-url').innerText;
+        if (link.includes("Connect")) return;
         navigator.clipboard.writeText(link);
-        alert("Invite link copied!");
+        
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
+        copyBtn.style.background = "#00c087";
+        setTimeout(() => {
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> COPY INVITE LINK';
+            copyBtn.style.background = "var(--accent)";
+        }, 2000);
     }
 
     window.onload = init;
 </script>
 </body>
 </html>
+
