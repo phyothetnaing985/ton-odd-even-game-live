@@ -3,56 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN GAME | v7 Casino Grade</title>
+    <title>GOLDEN GAME | Production v8</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding-bottom: 90px; }
-        .header { display: flex; justify-content: space-between; padding: 12px 15px; background: var(--card); border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
-        .screen { display: none; padding: 15px; flex-direction: column; align-items: center; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; padding-bottom: 90px; overflow-x: hidden; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--card); border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
+        .screen { display: none; padding: 15px; flex-direction: column; align-items: center; animation: fadeIn 0.3s ease; }
         .active { display: flex; }
-        .game-img { width: 100%; max-width: 400px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; width: 100%; box-sizing: border-box; }
-        .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
-        .slider { width: 100%; max-width: 400px; height: 10px; margin: 25px 0; -webkit-appearance: none; background: #2b3139; border-radius: 5px; cursor: pointer; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: 4px solid #fff; }
-        .btn-main { width: 100%; max-width: 400px; padding: 18px; border-radius: 12px; background: var(--green); color: white; font-weight: bold; border: none; cursor: pointer; font-size: 1.1rem; }
-        .btn-main:disabled { background: #444; cursor: not-allowed; opacity: 0.6; }
-        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card); display: flex; border-top: 1px solid #2b3139; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; opacity: 0.5; color: var(--text); cursor: pointer; }
-        .active-nav { opacity: 1; color: var(--accent); }
-        .status-msg { margin-top: 15px; padding: 12px; border-radius: 10px; font-size: 0.85rem; display: none; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(243,186,47,0.3); }
-        .withdraw-btn { background: #2b3139; color: var(--accent); border: 1px solid var(--accent); padding: 15px; border-radius: 10px; width: 100%; margin-top: 20px; font-weight: bold; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .game-img { width: 100%; max-width: 380px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 400px; margin-bottom: 20px; }
+        .stat-box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; }
+        .val { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+        .label { font-size: 0.7rem; color: #848e9c; text-transform: uppercase; letter-spacing: 1px; }
+        .slider { width: 100%; max-width: 400px; height: 12px; margin: 30px 0; -webkit-appearance: none; background: #2b3139; border-radius: 6px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 4px solid #fff; box-shadow: 0 0 15px rgba(243,186,47,0.4); }
+        .side-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 25px; }
+        .btn-side { padding: 18px; border-radius: 12px; border: 2px solid #2b3139; background: #1c2128; color: #fff; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-side.selected { border-color: var(--accent); background: rgba(243,186,47,0.1); color: var(--accent); }
+        .btn-main { width: 100%; max-width: 400px; padding: 20px; border-radius: 14px; background: var(--green); color: white; font-weight: 800; border: none; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,192,135,0.3); }
+        .btn-main:disabled { opacity: 0.5; filter: grayscale(1); }
+        .footer { position: fixed; bottom: 0; width: 100%; height: 80px; background: var(--card); display: flex; border-top: 1px solid #2b3139; z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; color: #848e9c; cursor: pointer; }
+        .nav-item.active-nav { color: var(--accent); }
+        .status-msg { margin-top: 15px; font-size: 0.9rem; color: var(--accent); font-weight: 500; display: none; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <div style="font-weight: bold; color: var(--accent); font-size: 1.2rem;">GOLDEN GAME</div>
+    <div style="font-weight: 900; color: var(--accent);">GOLDEN v8</div>
 </div>
 
 <div id="lobby-screen" class="screen active">
     <img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png" class="game-img">
-    <button class="btn-main" onclick="showScreen('play-screen')">ENTER GAME</button>
+    <button class="btn-main" onclick="showScreen('play-screen')">START PLAYING</button>
 </div>
 
 <div id="play-screen" class="screen">
-    <img src="https://i.ibb.co/qYnXY1CW/1772808401788.png" class="game-img">
+    <img src="https://i.ibb.co/qYnXY1CW/1772808401788.png" class="game-img" style="max-width: 150px; margin-bottom: 10px;">
     
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:400px;">
-        <div class="box"><span style="color:#888; font-size:0.7rem;">AMOUNT</span><br><span class="val" id="ui-bet">0.10</span></div>
-        <div class="box"><span style="color:#888; font-size:0.7rem;">EST. PAYOUT</span><br><span class="val" id="ui-win" style="color:var(--green)">0.18</span></div>
+    <div class="stats-grid">
+        <div class="stat-box"><span class="label">Bet</span><br><span class="val" id="ui-bet">0.10</span></div>
+        <div class="stat-box"><span class="label">Win</span><br><span class="val" id="ui-win" style="color:var(--green)">0.18</span></div>
     </div>
     
     <input type="range" min="0.1" max="1.0" step="0.05" value="0.1" class="slider" id="betSlider">
     
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:400px; margin-bottom:20px;">
-        <button id="low-btn" style="padding:16px; border-radius:12px; border:2px solid var(--accent); background:rgba(243,186,47,0.1); color:var(--accent); font-weight:bold;" onclick="setSide(true)">LOW (1-49)</button>
-        <button id="high-btn" style="padding:16px; border-radius:12px; border:2px solid #333; background:#1c2128; color:#fff; font-weight:bold;" onclick="setSide(false)">HIGH (50-98)</button>
+    <div class="side-picker">
+        <button id="low-btn" class="btn-side selected" onclick="setSide(true)">LOW (1-49)</button>
+        <button id="high-btn" class="btn-side" onclick="setSide(false)">HIGH (50-98)</button>
     </div>
     
     <button class="btn-main" id="bet-btn" onclick="placeBet()">PLACE BET NOW</button>
@@ -60,26 +65,21 @@
 </div>
 
 <div id="invite-screen" class="screen">
-    <div class="box" style="padding: 25px;">
-        <i class="fas fa-gem" style="font-size:3rem; color:var(--accent); margin-bottom:15px;"></i>
-        <h2 style="margin: 0;">Invite & Earn</h2>
-        <p style="color:#888; font-size:0.9rem;">You get 5% commission from every win!</p>
+    <div class="stat-box" style="width:100%; max-width:400px; padding: 30px 20px;">
+        <i class="fas fa-users" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
+        <h2>Referral Program</h2>
+        <p style="color:#848e9c; margin-bottom: 25px;">Earn 5% instantly from your friends' wins!</p>
         
-        <div id="ref-url" style="background:#000; padding:15px; border-radius:10px; font-size:0.75rem; word-break:break-all; border:1px dashed #555; margin:20px 0; color: var(--accent);">Connect Wallet to see link</div>
+        <div id="ref-url" style="background:#000; padding:15px; border-radius:10px; font-size:0.8rem; border:1px dashed #444; margin-bottom: 20px; color: var(--accent);">Connect Wallet first</div>
         
-        <button class="btn-main" id="copy-btn" onclick="copyInvite()" style="background: var(--accent); color: #000;">
-            <i class="fas fa-copy"></i> COPY LINK
-        </button>
-
-        <button class="withdraw-btn" onclick="withdrawRef()">
-            <i class="fas fa-wallet"></i> WITHDRAW COMMISSIONS
-        </button>
+        <button class="btn-main" onclick="copyInvite()" style="background:var(--accent); color:#000;">COPY LINK</button>
+        <button class="btn-side" onclick="withdrawRef()" style="width:100%; margin-top: 15px; border-color: var(--accent);">WITHDRAW REWARDS</button>
     </div>
 </div>
 
 <div class="footer">
-    <div class="nav-item active-nav" id="nav-lobby" onclick="showScreen('lobby-screen')"><i class="fas fa-dice"></i><span>Game</span></div>
-    <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')"><i class="fas fa-gift"></i><span>Referral</span></div>
+    <div class="nav-item active-nav" id="nav-lobby" onclick="showScreen('lobby-screen')"><i class="fas fa-home"></i><span>Lobby</span></div>
+    <div class="nav-item" id="nav-invite" onclick="showScreen('invite-screen')"><i class="fas fa-gift"></i><span>Invite</span></div>
 </div>
 
 <script>
@@ -94,8 +94,7 @@
             buttonRootId: 'ton-connect-btn'
         });
 
-        const slider = document.getElementById('betSlider');
-        slider.oninput = function() {
+        document.getElementById('betSlider').oninput = function() {
             const val = parseFloat(this.value);
             document.getElementById('ui-bet').innerText = val.toFixed(2);
             document.getElementById('ui-win').innerText = (val * 1.85).toFixed(2);
@@ -103,8 +102,7 @@
 
         tonConnectUI.onStatusChange(wallet => {
             if (wallet) {
-                const rawAddr = wallet.account.address;
-                const addr = new TonWeb.utils.Address(rawAddr).toString(true, true, true);
+                const addr = new TonWeb.utils.Address(wallet.account.address).toString(true, true, true);
                 document.getElementById('ref-url').innerText = window.location.origin + window.location.pathname + "?ref=" + addr;
             }
         });
@@ -119,16 +117,12 @@
 
     function setSide(low) {
         isLow = low;
-        document.getElementById('low-btn').style.borderColor = low ? 'var(--accent)' : '#333';
-        document.getElementById('low-btn').style.background = low ? 'rgba(243,186,47,0.1)' : '#1c2128';
-        document.getElementById('low-btn').style.color = low ? 'var(--accent)' : '#fff';
-        document.getElementById('high-btn').style.borderColor = !low ? 'var(--accent)' : '#333';
-        document.getElementById('high-btn').style.background = !low ? 'rgba(243,186,47,0.1)' : '#1c2128';
-        document.getElementById('high-btn').style.color = !low ? 'var(--accent)' : '#fff';
+        document.getElementById('low-btn').classList.toggle('selected', low);
+        document.getElementById('high-btn').classList.toggle('selected', !low);
     }
 
     async function placeBet() {
-        if (!tonConnectUI.connected) { alert("Please connect your wallet!"); return; }
+        if (!tonConnectUI.connected) { alert("Please Connect Wallet!"); return; }
         
         const btn = document.getElementById('bet-btn');
         const status = document.getElementById('status-box');
@@ -136,17 +130,14 @@
         
         btn.disabled = true;
         status.style.display = "block";
-        status.innerText = "Awaiting Wallet Approval...";
+        status.innerText = "Check your wallet...";
 
         try {
-            // CEO's Strategy: If UI says 1.0, send 0.98 to avoid maxBet failure. 
-            // 0.98 + 0.02 (Gas) = 1.00 TON Total. Perfect.
-            let betAmount = uiVal >= 1.0 ? 0.98 : uiVal;
-            const gasReserve = 0.02; 
-            const totalSend = (betAmount + gasReserve).toFixed(2);
-            const nanoAmount = TonWeb.utils.toNano(totalSend).toString();
+            // Tact-Friendly Amount Logic
+            let betVal = uiVal >= 1.0 ? 0.98 : uiVal;
+            const nanoAmount = TonWeb.utils.toNano((betVal + 0.02).toFixed(2)).toString();
 
-            // Exact Serialization for Tact Bet Message (0xAAAABBBB)
+            // CRITICAL FIX: Tact Maybe<Address> Manual Serialization
             const cell = new TonWeb.boc.Cell();
             cell.bits.writeUint(0xAAAABBBB, 32); // Opcode
             cell.bits.writeBit(isLow);           // sideLow: Bool
@@ -155,10 +146,10 @@
             const ref = urlParams.get('ref');
 
             if (ref && TonWeb.utils.Address.isValid(ref)) {
-                cell.bits.writeBit(true); // Optional exists
+                cell.bits.writeBit(1); // Maybe Flag: true
                 cell.bits.writeAddress(new TonWeb.utils.Address(ref));
             } else {
-                cell.bits.writeBit(false); // Optional null
+                cell.bits.writeBit(0); // Maybe Flag: false
             }
 
             const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
@@ -169,46 +160,38 @@
                     address: CONTRACT_ADDR,
                     amount: nanoAmount,
                     payload: payload,
-                    bounce: false
+                    bounce: true // Set to true to catch errors
                 }]
             });
-
-            status.innerText = "Bet Success! Watching results...";
+            status.innerText = "Transaction Sent! Good Luck!";
         } catch (e) {
-            status.innerText = "Transaction Error.";
+            status.innerText = "Failed or Cancelled.";
         } finally {
-            setTimeout(() => { btn.disabled = false; status.style.display="none"; }, 5000);
+            setTimeout(() => { btn.disabled = false; status.style.display="none"; }, 4000);
         }
     }
 
     async function withdrawRef() {
-        if (!tonConnectUI.connected) { alert("Connect wallet first!"); return; }
+        if (!tonConnectUI.connected) return;
         try {
-            // "WithdrawRef" String Message
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{
                     address: CONTRACT_ADDR,
-                    amount: TonWeb.utils.toNano("0.05").toString(), // Small gas for execution
-                    payload: "te6cckEBAQEADgAAGFdpdGhkcmF3UmVme967Bw==", // "WithdrawRef" in BOC
+                    amount: TonWeb.utils.toNano("0.05").toString(),
+                    payload: "te6cckEBAQEADgAAGFdpdGhkcmF3UmVme967Bw==", // "WithdrawRef"
                     bounce: false
                 }]
             });
-            alert("Withdrawal Request Sent!");
-        } catch (e) { alert("Action Cancelled."); }
+            alert("Request Sent!");
+        } catch (e) { console.error(e); }
     }
 
     function copyInvite() {
         const link = document.getElementById('ref-url').innerText;
         if (link.includes("Connect")) return;
         navigator.clipboard.writeText(link);
-        const copyBtn = document.getElementById('copy-btn');
-        copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
-        copyBtn.style.background = "#00c087";
-        setTimeout(() => {
-            copyBtn.innerHTML = '<i class="fas fa-copy"></i> COPY LINK';
-            copyBtn.style.background = "var(--accent)";
-        }, 2000);
+        alert("Link Copied!");
     }
 
     window.onload = init;
