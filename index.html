@@ -3,41 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>GOLDEN GAME | Production v8</title>
+    <title>GOLDEN GAME | Final Fix v9</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root { --bg: #0b0e11; --card: #161b22; --accent: #f3ba2f; --green: #00c087; --text: #eaecef; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; padding-bottom: 90px; overflow-x: hidden; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; padding-bottom: 90px; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--card); border-bottom: 1px solid #2b3139; position: sticky; top: 0; z-index: 1000; }
         .screen { display: none; padding: 15px; flex-direction: column; align-items: center; animation: fadeIn 0.3s ease; }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .game-img { width: 100%; max-width: 380px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        .game-img { width: 100%; max-width: 380px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 400px; margin-bottom: 20px; }
         .stat-box { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #2b3139; }
         .val { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
-        .label { font-size: 0.7rem; color: #848e9c; text-transform: uppercase; letter-spacing: 1px; }
-        .slider { width: 100%; max-width: 400px; height: 12px; margin: 30px 0; -webkit-appearance: none; background: #2b3139; border-radius: 6px; outline: none; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 4px solid #fff; box-shadow: 0 0 15px rgba(243,186,47,0.4); }
+        .label { font-size: 0.7rem; color: #848e9c; text-transform: uppercase; }
+        .slider { width: 100%; max-width: 400px; height: 12px; margin: 30px 0; -webkit-appearance: none; background: #2b3139; border-radius: 6px; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); border: 4px solid #fff; }
         .side-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 25px; }
-        .btn-side { padding: 18px; border-radius: 12px; border: 2px solid #2b3139; background: #1c2128; color: #fff; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-side { padding: 18px; border-radius: 12px; border: 2px solid #2b3139; background: #1c2128; color: #fff; font-weight: bold; cursor: pointer; }
         .btn-side.selected { border-color: var(--accent); background: rgba(243,186,47,0.1); color: var(--accent); }
-        .btn-main { width: 100%; max-width: 400px; padding: 20px; border-radius: 14px; background: var(--green); color: white; font-weight: 800; border: none; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,192,135,0.3); }
-        .btn-main:disabled { opacity: 0.5; filter: grayscale(1); }
-        .footer { position: fixed; bottom: 0; width: 100%; height: 80px; background: var(--card); display: flex; border-top: 1px solid #2b3139; z-index: 1000; }
+        .btn-main { width: 100%; max-width: 400px; padding: 20px; border-radius: 14px; background: var(--green); color: white; font-weight: 800; border: none; cursor: pointer; font-size: 1.1rem; }
+        .footer { position: fixed; bottom: 0; width: 100%; height: 80px; background: var(--card); display: flex; border-top: 1px solid #2b3139; }
         .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; color: #848e9c; cursor: pointer; }
         .nav-item.active-nav { color: var(--accent); }
-        .status-msg { margin-top: 15px; font-size: 0.9rem; color: var(--accent); font-weight: 500; display: none; }
+        .status-msg { margin-top: 15px; font-size: 0.9rem; color: var(--accent); display: none; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div id="ton-connect-btn"></div>
-    <div style="font-weight: 900; color: var(--accent);">GOLDEN v8</div>
+    <div style="font-weight: 900; color: var(--accent);">GOLDEN v9</div>
 </div>
 
 <div id="lobby-screen" class="screen active">
@@ -46,34 +45,25 @@
 </div>
 
 <div id="play-screen" class="screen">
-    <img src="https://i.ibb.co/qYnXY1CW/1772808401788.png" class="game-img" style="max-width: 150px; margin-bottom: 10px;">
-    
     <div class="stats-grid">
         <div class="stat-box"><span class="label">Bet</span><br><span class="val" id="ui-bet">0.10</span></div>
         <div class="stat-box"><span class="label">Win</span><br><span class="val" id="ui-win" style="color:var(--green)">0.18</span></div>
     </div>
-    
     <input type="range" min="0.1" max="1.0" step="0.05" value="0.1" class="slider" id="betSlider">
-    
     <div class="side-picker">
         <button id="low-btn" class="btn-side selected" onclick="setSide(true)">LOW (1-49)</button>
         <button id="high-btn" class="btn-side" onclick="setSide(false)">HIGH (50-98)</button>
     </div>
-    
     <button class="btn-main" id="bet-btn" onclick="placeBet()">PLACE BET NOW</button>
     <div id="status-box" class="status-msg"></div>
 </div>
 
 <div id="invite-screen" class="screen">
     <div class="stat-box" style="width:100%; max-width:400px; padding: 30px 20px;">
-        <i class="fas fa-users" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
-        <h2>Referral Program</h2>
-        <p style="color:#848e9c; margin-bottom: 25px;">Earn 5% instantly from your friends' wins!</p>
-        
-        <div id="ref-url" style="background:#000; padding:15px; border-radius:10px; font-size:0.8rem; border:1px dashed #444; margin-bottom: 20px; color: var(--accent);">Connect Wallet first</div>
-        
+        <i class="fas fa-users" style="font-size: 3rem; color: var(--accent);"></i>
+        <h2>Invite & Earn 5%</h2>
+        <div id="ref-url" style="background:#000; padding:15px; border-radius:10px; font-size:0.7rem; border:1px dashed #444; word-break: break-all; margin: 15px 0;">Connect Wallet</div>
         <button class="btn-main" onclick="copyInvite()" style="background:var(--accent); color:#000;">COPY LINK</button>
-        <button class="btn-side" onclick="withdrawRef()" style="width:100%; margin-top: 15px; border-color: var(--accent);">WITHDRAW REWARDS</button>
     </div>
 </div>
 
@@ -84,13 +74,12 @@
 
 <script>
     const CONTRACT_ADDR = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
-    const MANIFEST_URL = "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json";
     let tonConnectUI;
     let isLow = true;
 
     async function init() {
         tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: MANIFEST_URL,
+            manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json',
             buttonRootId: 'ton-connect-btn'
         });
 
@@ -102,7 +91,8 @@
 
         tonConnectUI.onStatusChange(wallet => {
             if (wallet) {
-                const addr = new TonWeb.utils.Address(wallet.account.address).toString(true, true, true);
+                const rawAddr = wallet.account.address;
+                const addr = new TonWeb.utils.Address(rawAddr).toString(true, true, true);
                 document.getElementById('ref-url').innerText = window.location.origin + window.location.pathname + "?ref=" + addr;
             }
         });
@@ -122,37 +112,34 @@
     }
 
     async function placeBet() {
-        if (!tonConnectUI.connected) { alert("Please Connect Wallet!"); return; }
+        if (!tonConnectUI.connected) { alert("Connect Wallet First!"); return; }
         
         const btn = document.getElementById('bet-btn');
         const status = document.getElementById('status-box');
-        const uiVal = parseFloat(document.getElementById('ui-bet').innerText);
+        const betValue = parseFloat(document.getElementById('ui-bet').innerText);
         
         btn.disabled = true;
         status.style.display = "block";
-        status.innerText = "Check your wallet...";
+        status.innerText = "Processing Transaction...";
 
         try {
-            // Tact-Friendly Amount Logic
-            let betVal = uiVal >= 1.0 ? 0.98 : uiVal;
-            const nanoAmount = TonWeb.utils.toNano((betVal + 0.02).toFixed(2)).toString();
-
-            // CRITICAL FIX: Tact Maybe<Address> Manual Serialization
+            // FIX: Manual Bit Encoding for Tact Message
             const cell = new TonWeb.boc.Cell();
             cell.bits.writeUint(0xAAAABBBB, 32); // Opcode
             cell.bits.writeBit(isLow);           // sideLow: Bool
 
             const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
+            const refAddr = urlParams.get('ref');
 
-            if (ref && TonWeb.utils.Address.isValid(ref)) {
-                cell.bits.writeBit(1); // Maybe Flag: true
-                cell.bits.writeAddress(new TonWeb.utils.Address(ref));
+            if (refAddr && TonWeb.utils.Address.isValid(refAddr)) {
+                cell.bits.writeBit(true); // Maybe Flag: has value
+                cell.bits.writeAddress(new TonWeb.utils.Address(refAddr));
             } else {
-                cell.bits.writeBit(0); // Maybe Flag: false
+                cell.bits.writeBit(false); // Maybe Flag: null
             }
 
             const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
+            const nanoAmount = TonWeb.utils.toNano((betValue + 0.05).toFixed(2)).toString();
 
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
@@ -160,31 +147,15 @@
                     address: CONTRACT_ADDR,
                     amount: nanoAmount,
                     payload: payload,
-                    bounce: true // Set to true to catch errors
+                    bounce: false // Casino-grade: don't bounce user funds back if minor error
                 }]
             });
-            status.innerText = "Transaction Sent! Good Luck!";
+            status.innerText = "Bet Placed! Check History.";
         } catch (e) {
-            status.innerText = "Failed or Cancelled.";
+            status.innerText = "Error: " + e.message;
         } finally {
-            setTimeout(() => { btn.disabled = false; status.style.display="none"; }, 4000);
+            setTimeout(() => { btn.disabled = false; status.style.display="none"; }, 5000);
         }
-    }
-
-    async function withdrawRef() {
-        if (!tonConnectUI.connected) return;
-        try {
-            await tonConnectUI.sendTransaction({
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{
-                    address: CONTRACT_ADDR,
-                    amount: TonWeb.utils.toNano("0.05").toString(),
-                    payload: "te6cckEBAQEADgAAGFdpdGhkcmF3UmVme967Bw==", // "WithdrawRef"
-                    bounce: false
-                }]
-            });
-            alert("Request Sent!");
-        } catch (e) { console.error(e); }
     }
 
     function copyInvite() {
@@ -198,3 +169,4 @@
 </script>
 </body>
 </html>
+
