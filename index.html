@@ -1,64 +1,249 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden V6 - Fixed Opcode</title>
-    <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.bundle.js"></script>
-    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.dot.js"></script>
+<meta charset="UTF-8">
+<title>Golden Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family:Arial;
+margin:0;
+text-align:center;
+}
+
+header{
+background:#020617;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
+
+.card{
+background:#1e293b;
+margin:15px;
+padding:20px;
+border-radius:12px;
+}
+
+button{
+padding:14px;
+margin:6px;
+border:none;
+border-radius:8px;
+font-size:16px;
+width:90%;
+background:#22c55e;
+color:white;
+}
+
+button.side{
+width:40%;
+background:#334155;
+}
+
+.selected{
+border:2px solid gold;
+}
+
+input{
+width:90%;
+padding:10px;
+border-radius:8px;
+border:none;
+}
+
+</style>
 </head>
+
 <body>
 
-    <button id="bet-button" style="padding: 20px; background: #00df8e; color: white; border: none; border-radius: 10px; cursor: pointer;">
-        PLACE BET NOW
-    </button>
+<header>🎲 GOLDEN GAME</header>
 
-    <script>
-        // 1. Contract Address သတ်မှတ်ခြင်း
-        const contractAddress = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+<div id="ton-connect"></div>
 
-        // 2. TonConnect ဆက်သွယ်ခြင်း
-        const connector = new TonConnectSDK.TonConnect();
+<div class="card">
 
-        async function placeBet() {
-            try {
-                const tonWeb = new TonWeb();
-                
-                // --- အရေးကြီးဆုံးအပိုင်း (Opcode ပြင်ဆင်ခြင်း) ---
-                // Tact တွင် 'message Bet' အတွက် အသုံးများဆုံး Opcode ဖြစ်သော 0x5cf05177 ကို သုံးထားသည်
-                const cell = new TonWeb.boc.Cell();
-                cell.bits.writeUint(0x5cf05177, 32); // 32-bit Opcode (Fixed)
-                
-                // လောင်းကြေး (ဥပမာ - 0.3 TON)
-                const amount = TonWeb.utils.toNano("0.3");
+<h3>Bet Amount</h3>
 
-                // Payload ကို Base64 ပြောင်းခြင်း
-                const payload = TonWeb.utils.bytesToBase64(await cell.toBoc());
+<input id="betAmount" value="0.1">
 
-                const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600,
-                    messages: [
-                        {
-                            address: contractAddress,
-                            amount: amount.toString(),
-                            payload: payload
-                        }
-                    ]
-                };
+<h3>Choose Side</h3>
 
-                await connector.sendTransaction(transaction);
-                alert("Bet Transaction Sent! Please wait for confirmation.");
+<button id="lowBtn" class="side">LOW (1-49)</button>
+<button id="highBtn" class="side">HIGH (50-98)</button>
 
-            } catch (error) {
-                console.error("Bet Error:", error);
-                alert("Error: " + error.message);
-            }
-        }
+<br>
 
-        // Button ကိုနှိပ်လျှင် placeBet အလုပ်လုပ်စေရန်
-        document.getElementById('bet-button').onclick = placeBet;
+<button onclick="placeBet()">PLACE BET</button>
 
-    </script>
+</div>
+
+<div class="card">
+
+<h3>Referral</h3>
+
+<div id="refLink">Connect wallet</div>
+
+<button onclick="withdrawRef()">Withdraw Referral</button>
+
+</div>
+
+<script>
+
+const CONTRACT =
+"EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI"
+
+let sideLow = true
+
+const tonConnect = new TON_CONNECT_UI.TonConnectUI({
+manifestUrl:
+"https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
+buttonRootId:"ton-connect"
+})
+
+document.getElementById("lowBtn").onclick=()=>{
+sideLow=true
+updateSide()
+}
+
+document.getElementById("highBtn").onclick=()=>{
+sideLow=false
+updateSide()
+}
+
+function updateSide(){
+
+lowBtn.classList.toggle("selected",sideLow)
+highBtn.classList.toggle("selected",!sideLow)
+
+}
+
+tonConnect.onStatusChange(wallet=>{
+
+if(wallet){
+
+const addr = wallet.account.address
+
+const url =
+location.origin+
+location.pathname+
+"?ref="+addr
+
+document.getElementById("refLink").innerText=url
+
+}
+
+})
+
+async function buildBetPayload(){
+
+const tonweb = new TonWeb()
+
+const cell = new TonWeb.boc.Cell()
+
+// opcode
+cell.bits.writeUint(0xAAAABBBB,32)
+
+// sideLow
+cell.bits.writeBit(sideLow?1:0)
+
+// referral parsing
+const params =
+new URLSearchParams(window.location.search)
+
+const ref = params.get("ref")
+
+if(ref){
+
+cell.bits.writeBit(1)
+
+const addr =
+new TonWeb.utils.Address(ref)
+
+cell.bits.writeAddress(addr)
+
+}else{
+
+cell.bits.writeBit(0)
+
+}
+
+return TonWeb.utils.bytesToBase64(
+await cell.toBoc()
+)
+
+}
+
+async function placeBet(){
+
+if(!tonConnect.connected){
+
+alert("Connect wallet first")
+
+return
+}
+
+const bet =
+document.getElementById("betAmount").value
+
+const payload =
+await buildBetPayload()
+
+await tonConnect.sendTransaction({
+
+validUntil:
+Math.floor(Date.now()/1000)+600,
+
+messages:[{
+
+address:CONTRACT,
+
+amount:
+TonWeb.utils.toNano(bet).toString(),
+
+payload:payload
+
+}]
+
+})
+
+}
+
+async function withdrawRef(){
+
+if(!tonConnect.connected)return
+
+await tonConnect.sendTransaction({
+
+validUntil:
+Math.floor(Date.now()/1000)+600,
+
+messages:[{
+
+address:CONTRACT,
+
+amount:
+TonWeb.utils.toNano("0.05").toString(),
+
+payload:
+TonWeb.utils.bytesToBase64(
+new TextEncoder().encode("WithdrawRef")
+)
+
+}]
+
+})
+
+}
+
+</script>
+
 </body>
 </html>
-
