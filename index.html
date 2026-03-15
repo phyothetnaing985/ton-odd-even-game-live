@@ -1,297 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Golden Game</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
-
-<style>
-
-body{
-background:#0f172a;
-color:white;
-font-family:Arial;
-margin:0;
-text-align:center;
-}
-
-header{
-background:#020617;
-padding:15px;
-font-size:22px;
-font-weight:bold;
-}
-
-.card{
-background:#1e293b;
-margin:15px;
-padding:20px;
-border-radius:12px;
-}
-
-button{
-padding:14px;
-margin:6px;
-border:none;
-border-radius:8px;
-font-size:16px;
-width:90%;
-background:#22c55e;
-color:white;
-}
-
-.side{
-width:40%;
-background:#334155;
-}
-
-.selected{
-border:2px solid gold;
-}
-
-input{
-width:90%;
-padding:10px;
-border-radius:8px;
-border:none;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <title>Golden Game Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
+    <style>
+        body { background:#0f172a; color:white; font-family:sans-serif; text-align:center; margin:0; }
+        .card { background:#1e293b; margin:15px; padding:20px; border-radius:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        button { padding:15px; margin:10px; border:none; border-radius:10px; font-weight:bold; width:90%; cursor:pointer; }
+        .bet-btn { background:#22c55e; color:white; font-size:18px; }
+        .side-btn { width:45%; background:#334155; color:white; }
+        .selected { border: 2px solid #fbbf24; background:#475569; }
+        input { width:80%; padding:12px; border-radius:8px; border:none; margin:10px; font-size:16px; }
+    </style>
 </head>
-
 <body>
-
-<header>🎲 GOLDEN GAME</header>
-
-<div id="ton-connect"></div>
-
-<div class="card">
-
-<h3>Bet Amount</h3>
-
-<input id="betAmount" value="0.2">
-
-<h3>Choose Side</h3>
-
-<button id="lowBtn" class="side selected">LOW (1-49)</button>
-<button id="highBtn" class="side">HIGH (50-98)</button>
-
-<br>
-
-<button id="betBtn">PLACE BET</button>
-
-</div>
-
-<div class="card">
-
-<h3>Referral</h3>
-
-<div id="refLink">Connect wallet first</div>
-
-<button id="withdrawBtn">Withdraw Referral</button>
-
-</div>
-
-<script>
-
-console.log("GoldenGame UI loaded")
-
-const CONTRACT =
-"EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI"
-
-let sideLow = true
-
-const lowBtn = document.getElementById("lowBtn")
-const highBtn = document.getElementById("highBtn")
-const betBtn = document.getElementById("betBtn")
-const withdrawBtn = document.getElementById("withdrawBtn")
-
-function updateSide(){
-
-lowBtn.classList.toggle("selected",sideLow)
-highBtn.classList.toggle("selected",!sideLow)
-
-}
-
-lowBtn.onclick=()=>{
-
-sideLow=true
-updateSide()
-
-}
-
-highBtn.onclick=()=>{
-
-sideLow=false
-updateSide()
-
-}
-
-let tonConnect
-
-function initTonConnect(){
-
-try{
-
-tonConnect = new TON_CONNECT_UI.TonConnectUI({
-
-manifestUrl:
-"https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
-
-buttonRootId:"ton-connect"
-
-})
-
-console.log("TonConnect initialized")
-
-}catch(e){
-
-alert("TonConnect failed: "+e)
-
-}
-
-}
-
-initTonConnect()
-
-tonConnect.onStatusChange(wallet=>{
-
-if(wallet){
-
-const addr = wallet.account.address
-
-const url =
-location.origin+
-location.pathname+
-"?ref="+addr
-
-document.getElementById("refLink").innerText=url
-
-console.log("Wallet connected:",addr)
-
-}
-
-})
-
-async function buildPayload(){
-
-const tonweb = new TonWeb()
-
-const cell = new TonWeb.boc.Cell()
-
-cell.bits.writeUint(0xAAAABBBB,32)
-
-cell.bits.writeBit(sideLow?1:0)
-
-const params =
-new URLSearchParams(window.location.search)
-
-const ref = params.get("ref")
-
-if(ref){
-
-cell.bits.writeBit(1)
-
-const addr =
-new TonWeb.utils.Address(ref)
-
-cell.bits.writeAddress(addr)
-
-}else{
-
-cell.bits.writeBit(0)
-
-}
-
-return TonWeb.utils.bytesToBase64(
-await cell.toBoc()
-)
-
-}
-
-async function placeBet(){
-
-console.log("PLACE BET clicked")
-
-alert("Bet button pressed")
-
-if(!tonConnect.connected){
-
-alert("Connect wallet first")
-
-return
-}
-
-const bet =
-document.getElementById("betAmount").value
-
-console.log("Bet:",bet)
-
-const payload =
-await buildPayload()
-
-console.log("Payload built")
-
-await tonConnect.sendTransaction({
-
-validUntil:
-Math.floor(Date.now()/1000)+600,
-
-messages:[{
-
-address:CONTRACT,
-
-amount:
-TonWeb.utils.toNano(bet).toString(),
-
-payload:payload
-
-}]
-
-})
-
-}
-
-betBtn.onclick = placeBet
-
-withdrawBtn.onclick = async()=>{
-
-if(!tonConnect.connected){
-
-alert("Connect wallet first")
-return
-
-}
-
-alert("Withdraw request sent")
-
-await tonConnect.sendTransaction({
-
-validUntil:
-Math.floor(Date.now()/1000)+600,
-
-messages:[{
-
-address:CONTRACT,
-
-amount:
-TonWeb.utils.toNano("0.05").toString(),
-
-payload:
-TonWeb.utils.bytesToBase64(
-new TextEncoder().encode("WithdrawRef")
-)
-
-}]
-
-})
-
-}
-
-</script>
-
+    <header style="background:#020617; padding:20px; font-size:24px;">🎲 GOLDEN GAME V1.2</header>
+    <div id="ton-connect" style="margin:20px auto;"></div>
+
+    <div class="card">
+        <h3>Bet Amount (TON)</h3>
+        <input id="betAmount" type="number" value="0.2" step="0.1">
+        <h3>Pick Your Side</h3>
+        <button id="lowBtn" class="side-btn selected">LOW (1-49)</button>
+        <button id="highBtn" class="side-btn">HIGH (50-98)</button>
+        <button id="betBtn" class="bet-btn" style="margin-top:20px;">PLACE BET NOW</button>
+    </div>
+
+    <script>
+        const CONTRACT_ADDR = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+        let sideLow = true;
+        const tonweb = new TonWeb();
+
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect'
+        });
+
+        // UI Logic
+        document.getElementById('lowBtn').onclick = () => { sideLow = true; updateUI(); };
+        document.getElementById('highBtn').onclick = () => { sideLow = false; updateUI(); };
+        
+        function updateUI() {
+            document.getElementById('lowBtn').className = sideLow ? "side-btn selected" : "side-btn";
+            document.getElementById('highBtn').className = !sideLow ? "side-btn selected" : "side-btn";
+        }
+
+        async function sendBet() {
+            if (!tonConnectUI.connected) {
+                alert("Please connect your wallet first!");
+                return;
+            }
+
+            try {
+                const amount = document.getElementById('betAmount').value;
+                const cell = new TonWeb.boc.Cell();
+                
+                // 1. Opcode (0xAAAABBBB)
+                cell.bits.writeUint(0xAAAABBBB, 32);
+                // 2. sideLow (Bool)
+                cell.bits.writeBit(sideLow);
+                // 3. Referrer (Maybe Address) - Setting to '0' (None) to avoid encoding errors for now
+                cell.bits.writeBit(false); 
+
+                const bocBase64 = TonWeb.utils.bytesToBase64(await cell.toBoc());
+
+                const transaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 360,
+                    messages: [{
+                        address: CONTRACT_ADDR,
+                        amount: TonWeb.utils.toNano(amount).toString(),
+                        payload: bocBase64
+                    }]
+                };
+
+                await tonConnectUI.sendTransaction(transaction);
+                alert("Transaction sent to wallet!");
+            } catch (e) {
+                console.error(e);
+                alert("Error: " + e.message);
+            }
+        }
+
+        document.getElementById('betBtn').onclick = sendBet;
+    </script>
 </body>
 </html>
