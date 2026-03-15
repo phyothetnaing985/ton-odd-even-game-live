@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Game Pro V1.4</title>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
+    <title>Golden Game Pro V1.5</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tonweb/0.0.66/tonweb.min.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@2.0.2/dist/tonconnect-ui.min.js"></script>
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; margin: 0; padding-bottom: 40px; }
         .card { background: #1e293b; margin: 15px auto; padding: 20px; border-radius: 20px; max-width: 380px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
@@ -14,16 +14,14 @@
         .selected { background: #475569; color: white; border: 2px solid #fbbf24; }
         .place-bet-btn { background: #22c55e; color: white; font-size: 18px; }
         input { width: 80%; padding: 15px; border-radius: 10px; border: none; background: #0f172a; color: white; font-size: 18px; margin-bottom: 10px; }
-        #ton-connect { margin: 20px auto; }
-        .loading-text { font-size: 12px; color: #fbbf24; }
+        #ton-connect { margin: 20px auto; min-height: 40px; }
     </style>
 </head>
 <body>
 
-    <header style="background: #020617; padding: 15px; font-size: 22px; font-weight: bold;">🎲 GOLDEN GAME V1.4</header>
+    <header style="background: #020617; padding: 15px; font-size: 22px; font-weight: bold;">🎲 GOLDEN GAME V1.5</header>
     
     <div id="ton-connect"></div>
-    <div id="status" class="loading-text">Checking Libraries...</div>
 
     <div class="card">
         <h3>Bet Amount (TON)</h3>
@@ -42,28 +40,18 @@
         const CONTRACT_ADDRESS = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
         let sideLow = true;
 
-        // ၁။ TonWeb အဆင်သင့်ဖြစ်မဖြစ် စစ်ဆေးခြင်း
-        function checkLibraries() {
-            if (typeof TonWeb !== 'undefined' && typeof TON_CONNECT_UI !== 'undefined') {
-                document.getElementById('status').innerText = "✅ Systems Ready";
-                document.getElementById('status').style.color = "#22c55e";
-                return true;
-            } else {
-                document.getElementById('status').innerText = "⚠️ Loading Libraries... Please wait";
-                return false;
-            }
-        }
-
-        // ၂။ TonConnect ကို စိတ်ချရအောင် Initialize လုပ်ခြင်း
+        // TonConnect UI Init
         let tonConnectUI;
-        try {
-            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json',
-                buttonRootId: 'ton-connect'
-            });
-        } catch(e) { console.error("TonConnect Error", e); }
+        function initTon() {
+            try {
+                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                    manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json',
+                    buttonRootId: 'ton-connect'
+                });
+            } catch(e) { console.error(e); }
+        }
+        initTon();
 
-        // UI Logic
         const lowBtn = document.getElementById('lowBtn');
         const highBtn = document.getElementById('highBtn');
         const placeBetBtn = document.getElementById('placeBetBtn');
@@ -76,49 +64,43 @@
             highBtn.className = !sideLow ? "btn side-btn selected" : "btn side-btn";
         }
 
-        // ၃။ Bet လုပ်သည့် Function (အဓိက အပိုင်း)
         placeBetBtn.onclick = async () => {
-            if (!checkLibraries()) {
-                alert("Library များ Loading လုပ်နေတုန်းဖြစ်ပါသည်။ ခဏစောင့်ပြီး ပြန်နှိပ်ပါ။");
-                return;
-            }
-
-            if (!tonConnectUI.connected) {
-                alert("ကျေးဇူးပြု၍ Wallet ကို အရင် Connect လုပ်ပါ!");
+            if (!tonConnectUI || !tonConnectUI.connected) {
+                alert("ကျေးဇူးပြု၍ Wallet ကို Connect အရင်လုပ်ပါ။ (ခလုတ်မပေါ်သေးလျှင် Refresh လုပ်ပါ)");
                 return;
             }
 
             try {
-                const amount = document.getElementById('betAmount').value;
-                const tw = new window.TonWeb(); // window object မှ တိုက်ရိုက်ခေါ်ခြင်း
-                const cell = new tw.boc.Cell();
+                // TonWeb စစ်ဆေးခြင်း
+                if (typeof TonWeb === 'undefined') {
+                    alert("အင်တာနက်နှေးနေသဖြင့် Library မတက်သေးပါ။ ခဏစောင့်ပေးပါ။");
+                    return;
+                }
 
-                // Layout Fix for Tact Contract
+                const amount = document.getElementById('betAmount').value;
+                const tw = new TonWeb();
+                const cell = new TonWeb.boc.Cell();
+
+                // Failed ပြဿနာကို ဖြေရှင်းရန် တိကျသော Bits Layout
                 cell.bits.writeUint(0xAAAABBBB, 32); // Opcode
                 cell.bits.writeBit(sideLow);        // Side
-                cell.bits.writeBit(false);          // Referrer Null Flag (0)
+                cell.bits.writeBit(false);          // Referrer = Null (Flag 0)
 
-                const payloadBoc = tw.utils.bytesToBase64(await cell.toBoc());
+                const payloadBoc = TonWeb.utils.bytesToBase64(await cell.toBoc());
 
                 await tonConnectUI.sendTransaction({
                     validUntil: Math.floor(Date.now() / 1000) + 300,
                     messages: [{
                         address: CONTRACT_ADDRESS,
-                        amount: tw.utils.toNano(amount).toString(),
+                        amount: TonWeb.utils.toNano(amount).toString(),
                         payload: payloadBoc
                     }]
                 });
-
-                alert("လောင်းကြေး တင်သွင်းပြီးပါပြီ။ Tonkeeper တွင် Confirm လုပ်ပါ။");
 
             } catch (err) {
                 alert("Error: " + err.message);
             }
         };
-
-        // စာကြည့်တိုက်မှူးကို ၅ စက္ကန့်ခြား တစ်ခါ လှမ်းခေါ်ခြင်း
-        setInterval(checkLibraries, 2000);
-
     </script>
 </body>
 </html>
