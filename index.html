@@ -43,7 +43,7 @@ background:#22c55e;
 color:white;
 }
 
-button.side{
+.side{
 width:40%;
 background:#334155;
 }
@@ -72,16 +72,16 @@ border:none;
 
 <h3>Bet Amount</h3>
 
-<input id="betAmount" value="0.1">
+<input id="betAmount" value="0.2">
 
 <h3>Choose Side</h3>
 
-<button id="lowBtn" class="side">LOW (1-49)</button>
+<button id="lowBtn" class="side selected">LOW (1-49)</button>
 <button id="highBtn" class="side">HIGH (50-98)</button>
 
 <br>
 
-<button onclick="placeBet()">PLACE BET</button>
+<button id="betBtn">PLACE BET</button>
 
 </div>
 
@@ -89,34 +89,25 @@ border:none;
 
 <h3>Referral</h3>
 
-<div id="refLink">Connect wallet</div>
+<div id="refLink">Connect wallet first</div>
 
-<button onclick="withdrawRef()">Withdraw Referral</button>
+<button id="withdrawBtn">Withdraw Referral</button>
 
 </div>
 
 <script>
+
+console.log("GoldenGame UI loaded")
 
 const CONTRACT =
 "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI"
 
 let sideLow = true
 
-const tonConnect = new TON_CONNECT_UI.TonConnectUI({
-manifestUrl:
-"https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
-buttonRootId:"ton-connect"
-})
-
-document.getElementById("lowBtn").onclick=()=>{
-sideLow=true
-updateSide()
-}
-
-document.getElementById("highBtn").onclick=()=>{
-sideLow=false
-updateSide()
-}
+const lowBtn = document.getElementById("lowBtn")
+const highBtn = document.getElementById("highBtn")
+const betBtn = document.getElementById("betBtn")
+const withdrawBtn = document.getElementById("withdrawBtn")
 
 function updateSide(){
 
@@ -124,6 +115,47 @@ lowBtn.classList.toggle("selected",sideLow)
 highBtn.classList.toggle("selected",!sideLow)
 
 }
+
+lowBtn.onclick=()=>{
+
+sideLow=true
+updateSide()
+
+}
+
+highBtn.onclick=()=>{
+
+sideLow=false
+updateSide()
+
+}
+
+let tonConnect
+
+function initTonConnect(){
+
+try{
+
+tonConnect = new TON_CONNECT_UI.TonConnectUI({
+
+manifestUrl:
+"https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
+
+buttonRootId:"ton-connect"
+
+})
+
+console.log("TonConnect initialized")
+
+}catch(e){
+
+alert("TonConnect failed: "+e)
+
+}
+
+}
+
+initTonConnect()
 
 tonConnect.onStatusChange(wallet=>{
 
@@ -138,23 +170,22 @@ location.pathname+
 
 document.getElementById("refLink").innerText=url
 
+console.log("Wallet connected:",addr)
+
 }
 
 })
 
-async function buildBetPayload(){
+async function buildPayload(){
 
 const tonweb = new TonWeb()
 
 const cell = new TonWeb.boc.Cell()
 
-// opcode
 cell.bits.writeUint(0xAAAABBBB,32)
 
-// sideLow
 cell.bits.writeBit(sideLow?1:0)
 
-// referral parsing
 const params =
 new URLSearchParams(window.location.search)
 
@@ -183,6 +214,10 @@ await cell.toBoc()
 
 async function placeBet(){
 
+console.log("PLACE BET clicked")
+
+alert("Bet button pressed")
+
 if(!tonConnect.connected){
 
 alert("Connect wallet first")
@@ -193,8 +228,12 @@ return
 const bet =
 document.getElementById("betAmount").value
 
+console.log("Bet:",bet)
+
 const payload =
-await buildBetPayload()
+await buildPayload()
+
+console.log("Payload built")
 
 await tonConnect.sendTransaction({
 
@@ -216,9 +255,18 @@ payload:payload
 
 }
 
-async function withdrawRef(){
+betBtn.onclick = placeBet
 
-if(!tonConnect.connected)return
+withdrawBtn.onclick = async()=>{
+
+if(!tonConnect.connected){
+
+alert("Connect wallet first")
+return
+
+}
+
+alert("Withdraw request sent")
 
 await tonConnect.sendTransaction({
 
