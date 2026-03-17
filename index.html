@@ -1,80 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Game Pro V1.5</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tonweb/0.0.66/tonweb.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; margin: 0; }
-        .card { background: #1e293b; margin: 20px auto; padding: 25px; border-radius: 20px; max-width: 380px; }
-        .btn-main { width: 100%; padding: 18px; border-radius: 12px; background: #22c55e; color: white; border: none; font-size: 1.1rem; cursor: pointer; }
-        #ton-connect { margin: 20px auto; }
-        #status { color: #fbbf24; font-size: 14px; margin-bottom: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOLDEN GAME</title>
+
+<script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1220;
+    color: white;
+    text-align: center;
+}
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+}
+.card {
+    background: #1c2a3a;
+    padding: 20px;
+    border-radius: 12px;
+}
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 10px;
+}
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+.green { background: #22c55e; color: white; }
+.yellow { border: 2px solid gold; }
+.gray { background: #334155; color: white; }
+</style>
 </head>
+
 <body>
-    <header style="padding: 20px; font-size: 24px; font-weight: bold; background: #020617;">🎲 GOLDEN GAME V1.5</header>
-    <div id="ton-connect"></div>
-    <div id="status">Checking connection...</div>
 
-    <div class="card">
-        <h3>Bet Amount (0.2 TON)</h3>
-        <button id="betBtn" class="btn-main">PLACE BET NOW</button>
-    </div>
+<div class="container">
 
-    <script>
-        const CONTRACT_ADDRESS = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
-        let tonConnectUI;
+<h2>🎲 GOLDEN GAME</h2>
 
-        // ၁။ Library များ အဆင်သင့်ဖြစ်မဖြစ် စစ်ဆေးခြင်း
-        function checkReady() {
-            if (window.TonWeb && window.TON_CONNECT_UI) {
-                document.getElementById('status').innerText = "✅ Systems Ready";
-                document.getElementById('status').style.color = "#22c55e";
-                return true;
-            }
-            document.getElementById('status').innerText = "⏳ Loading Libraries... Please wait";
-            return false;
-        }
+<div id="wallet"></div>
 
-        // ၂။ TonConnect Initialize
-        try {
-            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json',
-                buttonRootId: 'ton-connect'
-            });
-        } catch (e) { console.error(e); }
+<div class="card">
+    <h3>Bet Amount</h3>
+    <input id="amount" value="0.2">
 
-        // ၃။ Bet ပြုလုပ်ခြင်း (Referrer Address မပါဘဲ ပို့ခြင်း - Failed မဖြစ်စေရန်)
-        document.getElementById('betBtn').onclick = async () => {
-            if (!checkReady()) return alert("Library မတက်သေးပါ။ ခဏစောင့်ပါ။");
-            if (!tonConnectUI.connected) return alert("Wallet ချိတ်ပေးပါ။");
+    <h3>Choose Side</h3>
+    <button id="lowBtn" class="yellow">LOW (1-49)</button>
+    <button id="highBtn" class="gray">HIGH (50-98)</button>
 
-            try {
-                const tw = new window.TonWeb();
-                const cell = new tw.boc.Cell();
+    <button class="green" onclick="placeBet()">PLACE BET</button>
+</div>
 
-                // Contract ဖတ်နိုင်မည့် ပုံစံအတိအကျ (Opcode + Side + No-Ref)
-                cell.bits.writeUint(0xAAAABBBB, 32); 
-                cell.bits.writeBit(true); // Side Low = true
-                cell.bits.writeBit(false); // Referrer = None (ဒါမှ Failed မဖြစ်မှာပါ)
+</div>
 
-                const payload = tw.utils.bytesToBase64(await cell.toBoc());
+<script type="module">
 
-                await tonConnectUI.sendTransaction({
-                    validUntil: Math.floor(Date.now() / 1000) + 300,
-                    messages: [{
-                        address: CONTRACT_ADDRESS,
-                        amount: tw.utils.toNano("0.2").toString(),
-                        payload: payload
-                    }]
-                });
-            } catch (err) { alert(err.message); }
+import { beginCell, toNano } from "https://esm.sh/@ton/core";
+
+const CONTRACT = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
+
+let sideLow = true;
+
+// UI toggle
+document.getElementById("lowBtn").onclick = () => {
+    sideLow = true;
+};
+document.getElementById("highBtn").onclick = () => {
+    sideLow = false;
+};
+
+// TonConnect init
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
+    buttonRootId: "wallet"
+});
+
+window.placeBet = async () => {
+    try {
+
+        const bet = document.getElementById("amount").value;
+
+        // 🔥 BUILD PAYLOAD (CORRECT FORMAT)
+        const cell = beginCell()
+            .storeUint(0xAAAABBBB, 32) // opcode
+            .storeBit(sideLow)         // sideLow
+            .storeBit(0)               // ❗ referrer = NONE
+            .endCell();
+
+        const boc = cell.toBoc();
+        const base64 = btoa(
+            String.fromCharCode(...new Uint8Array(boc))
+        );
+
+        const tx = {
+            validUntil: Math.floor(Date.now() / 1000) + 360,
+            messages: [
+                {
+                    address: CONTRACT,
+                    amount: toNano(bet).toString(),
+                    payload: base64
+                }
+            ]
         };
 
-        setInterval(checkReady, 2000);
-    </script>
+        console.log("TX:", tx);
+
+        // 🚀 SEND TRANSACTION
+        await tonConnectUI.sendTransaction(tx);
+
+    } catch (e) {
+        console.error(e);
+        alert("Transaction Failed: " + e.message);
+    }
+};
+
+</script>
+
 </body>
 </html>
