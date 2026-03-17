@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOLDEN GAME</title>
+<title>GOLDEN GAME V1.6</title>
 
 <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
 
@@ -42,6 +42,7 @@ button {
 .green { background: #22c55e; color: white; }
 .yellow { border: 2px solid gold; }
 .gray { background: #334155; color: white; }
+.active { border: 2px solid gold; }
 </style>
 </head>
 
@@ -58,7 +59,7 @@ button {
     <input id="amount" value="0.2">
 
     <h3>Choose Side</h3>
-    <button id="lowBtn" class="yellow">LOW (1-49)</button>
+    <button id="lowBtn" class="active">LOW (1-49)</button>
     <button id="highBtn" class="gray">HIGH (50-98)</button>
 
     <button class="green" onclick="placeBet()">PLACE BET</button>
@@ -68,21 +69,29 @@ button {
 
 <script type="module">
 
-import { beginCell, toNano } from "https://esm.sh/@ton/core";
+import { beginCell, toNano, Address } from "https://esm.sh/@ton/core";
 
 const CONTRACT = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
 
 let sideLow = true;
 
-// UI toggle
-document.getElementById("lowBtn").onclick = () => {
+// ✅ UI FIX (LOW / HIGH toggle)
+const lowBtn = document.getElementById("lowBtn");
+const highBtn = document.getElementById("highBtn");
+
+lowBtn.onclick = () => {
     sideLow = true;
-};
-document.getElementById("highBtn").onclick = () => {
-    sideLow = false;
+    lowBtn.classList.add("active");
+    highBtn.classList.remove("active");
 };
 
-// TonConnect init
+highBtn.onclick = () => {
+    sideLow = false;
+    highBtn.classList.add("active");
+    lowBtn.classList.remove("active");
+};
+
+// TonConnect
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
     buttonRootId: "wallet"
@@ -93,11 +102,14 @@ window.placeBet = async () => {
 
         const bet = document.getElementById("amount").value;
 
-        // 🔥 BUILD PAYLOAD (CORRECT FORMAT)
+        // ✅ GAS FIX (add 0.05 TON)
+        const amount = BigInt(toNano(bet)) + BigInt(toNano("0.05"));
+
+        // ✅ PAYLOAD FIX (Maybe Address standard)
         const cell = beginCell()
-            .storeUint(0xAAAABBBB, 32) // opcode
-            .storeBit(sideLow)         // sideLow
-            .storeBit(0)               // ❗ referrer = NONE
+            .storeUint(0xAAAABBBB, 32)
+            .storeBit(sideLow)
+            .storeMaybeAddress(null) // ✔ correct Tact compatible
             .endCell();
 
         const boc = cell.toBoc();
@@ -110,7 +122,7 @@ window.placeBet = async () => {
             messages: [
                 {
                     address: CONTRACT,
-                    amount: toNano(bet).toString(),
+                    amount: amount.toString(),
                     payload: base64
                 }
             ]
@@ -118,7 +130,6 @@ window.placeBet = async () => {
 
         console.log("TX:", tx);
 
-        // 🚀 SEND TRANSACTION
         await tonConnectUI.sendTransaction(tx);
 
     } catch (e) {
