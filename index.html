@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOLDEN GAME V1.6</title>
+<title>GOLDEN GAME V1.7</title>
 
+<script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
 
 <style>
@@ -40,9 +41,8 @@ button {
     font-size: 16px;
 }
 .green { background: #22c55e; color: white; }
-.yellow { border: 2px solid gold; }
-.gray { background: #334155; color: white; }
 .active { border: 2px solid gold; }
+.gray { background: #334155; color: white; }
 </style>
 </head>
 
@@ -67,15 +67,13 @@ button {
 
 </div>
 
-<script type="module">
-
-import { beginCell, toNano, Address } from "https://esm.sh/@ton/core";
+<script>
 
 const CONTRACT = "EQDRvvRCW_E_Qr8IEZLpR8L4LxD-w0Ar_8vkV6tB09AsvKOI";
 
 let sideLow = true;
 
-// ✅ UI FIX (LOW / HIGH toggle)
+// UI toggle
 const lowBtn = document.getElementById("lowBtn");
 const highBtn = document.getElementById("highBtn");
 
@@ -91,31 +89,33 @@ highBtn.onclick = () => {
     lowBtn.classList.remove("active");
 };
 
+// TonWeb init
+const tonweb = new TonWeb();
+
 // TonConnect
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
     buttonRootId: "wallet"
 });
 
-window.placeBet = async () => {
+async function placeBet() {
     try {
 
         const bet = document.getElementById("amount").value;
 
-        // ✅ GAS FIX (add 0.05 TON)
-        const amount = BigInt(toNano(bet)) + BigInt(toNano("0.05"));
+        // ✅ GAS FIX
+        const amount = TonWeb.utils.toNano(bet)
+            .add(TonWeb.utils.toNano("0.05"));
 
-        // ✅ PAYLOAD FIX (Maybe Address standard)
-        const cell = beginCell()
-            .storeUint(0xAAAABBBB, 32)
-            .storeBit(sideLow)
-            .storeMaybeAddress(null) // ✔ correct Tact compatible
-            .endCell();
+        // ✅ PAYLOAD (TonWeb compatible + Maybe Address NULL)
+        const cell = new TonWeb.boc.Cell();
 
-        const boc = cell.toBoc();
-        const base64 = btoa(
-            String.fromCharCode(...new Uint8Array(boc))
-        );
+        cell.bits.writeUint(0xAAAABBBB, 32); // opcode
+        cell.bits.writeBit(sideLow);         // side
+        cell.bits.writeBit(0);               // ❗ Maybe Address = null (correct flag)
+
+        const boc = await cell.toBoc(false);
+        const base64 = TonWeb.utils.bytesToBase64(boc);
 
         const tx = {
             validUntil: Math.floor(Date.now() / 1000) + 360,
@@ -136,7 +136,7 @@ window.placeBet = async () => {
         console.error(e);
         alert("Transaction Failed: " + e.message);
     }
-};
+}
 
 </script>
 
