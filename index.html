@@ -99,12 +99,12 @@ const CONTRACT = "EQCvX-jYteyWju6LGfig1MWEGjU9PVBxDErJBdd8LEzVRxiI";
 
 let sideLow = true;
 let referrer = null;
+let userAddress = null;
 
 // ✅ REFERRAL AUTO DETECT
 const params = new URLSearchParams(window.location.search);
 if (params.get("ref")) {
     referrer = params.get("ref");
-    console.log("Referrer:", referrer);
 }
 
 // UI buttons
@@ -128,12 +128,23 @@ function updateTotal(){
     document.getElementById("total").innerText = (bet + 0.05).toFixed(2);
 }
 
-// TON setup
-const tonweb = new TonWeb();
+// ✅ TON PROVIDER (IMPORTANT)
+const tonweb = new TonWeb(
+    new TonWeb.HttpProvider("https://toncenter.com/api/v2/jsonRPC")
+);
 
+// TON CONNECT
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
     buttonRootId: "wallet"
+});
+
+// ✅ WALLET CONNECT → AUTO LOAD
+tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet) {
+        userAddress = wallet.account.address;
+        await loadPending();
+    }
 });
 
 // 🎯 PLACE BET
@@ -147,7 +158,6 @@ async function placeBet() {
 
         const cell = new TonWeb.boc.Cell();
 
-        // ✅ EXACT TACT FORMAT
         cell.bits.writeUint(0xAAAABBBB, 32);
         cell.bits.writeBit(sideLow);
 
@@ -172,6 +182,9 @@ async function placeBet() {
         };
 
         await tonConnectUI.sendTransaction(tx);
+
+        // ⏳ Wait then refresh pending
+        setTimeout(loadPending, 4000);
 
     } catch (e) {
         alert("Bet Failed: " + e.message);
@@ -201,15 +214,41 @@ async function claimWin() {
 
         await tonConnectUI.sendTransaction(tx);
 
+        // ⏳ Refresh after claim
+        setTimeout(loadPending, 4000);
+
     } catch (e) {
         alert("Claim Failed: " + e.message);
     }
 }
 
-// 🔄 OPTIONAL: SIMPLE REFRESH (manual)
-async function refreshPending(){
-    document.getElementById("pending").innerText = "...";
+// 🔥 CORE: LOAD PENDING WIN
+async function loadPending() {
+    try {
+
+        if (!userAddress) return;
+
+        const addr = new TonWeb.utils.Address(userAddress);
+
+        const result = await tonweb.provider.call2(
+            CONTRACT,
+            "pendingWin",
+            [["tvm.Slice", addr.toString(true, true, true)]]
+        );
+
+        let pending = result[0];
+
+        let ton = TonWeb.utils.fromNano(pending);
+
+        document.getElementById("pending").innerText = ton;
+
+    } catch (e) {
+        console.error("Pending error:", e);
+    }
 }
+
+// 🔄 AUTO REFRESH
+setInterval(loadPending, 5000);
 
 updateTotal();
 
