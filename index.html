@@ -3,58 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOLDEN GAME V2.2 PRO</title>
+    <title>GOLDEN GAME MASTER V3</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
     <style>
-        :root { --gold:#f1c40f; --dark:#0f172a; --card:#1e293b; --green:#2ecc71; --blue:#3498db; }
-        body { font-family: 'Segoe UI', Arial; background: radial-gradient(circle,#1e293b,#0f172a); color:white; text-align:center; margin:0; padding:20px; }
-        .container { max-width:420px; margin:auto; }
-        .card { background:var(--card); padding:25px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:1px solid rgba(241,196,15,0.1); }
-        .winbox { background:rgba(0,0,0,0.3); border:1px solid var(--gold); border-radius:15px; padding:15px; margin-bottom:20px; }
-        .winbox span { font-size:24px; color:var(--gold); font-weight:bold; }
-        .input-group { margin-bottom:20px; }
-        input { width:80%; padding:12px; border-radius:10px; border:none; background:#0f172a; color:var(--gold); text-align:center; font-size:18px; font-weight:bold; }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:15px; }
-        button { cursor:pointer; font-weight:bold; transition: 0.3s; border:none; border-radius:12px; padding:15px; }
-        .toggle-btn { background:#334155; color:#94a3b8; }
-        .toggle-btn.active { background:var(--gold); color:black; box-shadow:0 0 15px var(--gold); }
-        .main-btn { width:100%; font-size:16px; margin-top:10px; color:white; }
-        .green { background:var(--green); }
-        .blue { background:var(--blue); }
-        .ref-box { font-size:12px; margin-top:15px; color:#94a3b8; }
+        :root { --gold:#f1c40f; --dark:#0f172a; --card:#1e293b; --green:#2ecc71; --blue:#3498db; --text:#94a3b8; }
+        body { background: radial-gradient(circle, #1e293b, #0f172a); color: white; text-align: center; font-family: 'Segoe UI', Arial; margin: 0; padding: 20px; }
+        .container { max-width: 420px; margin: auto; }
+        .card { background: var(--card); padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(241,196,15,0.1); }
+        .winbox { background: rgba(0,0,0,0.3); border: 2px solid var(--gold); padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        .winbox b { font-size: 28px; color: var(--gold); }
+        .stat-row { display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px; color: var(--text); }
+        input { width: 90%; padding: 15px; margin: 15px 0; border-radius: 12px; border: none; background: #0f172a; color: var(--gold); text-align: center; font-size: 20px; font-weight: bold; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        button { cursor: pointer; border: none; font-weight: bold; transition: 0.3s; border-radius: 12px; }
+        .side-btn { padding: 15px; background: #334155; color: var(--text); }
+        .side-btn.active { background: var(--gold); color: black; box-shadow: 0 0 20px rgba(241,196,15,0.4); }
+        .main-btn { width: 100%; padding: 18px; margin-top: 10px; font-size: 16px; color: white; }
+        .green { background: var(--green); }
+        .blue { background: var(--blue); }
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 style="color:var(--gold); margin-bottom:5px;">🎲 GOLDEN GAME</h1>
-    <p style="font-size:12px; color:#94a3b8; margin-bottom:20px;">The Most Secure TON Casino</p>
-
+    <h1 style="color:var(--gold); margin-bottom:10px;">🎰 GOLDEN GAME PRO</h1>
     <div id="wallet" style="margin-bottom:20px;"></div>
 
     <div class="card">
         <div class="winbox">
-            Pending Win<br>
-            <span id="pending">0.000</span> <small>TON</small>
+            <span style="font-size:14px; color:var(--text)">PENDING WINNINGS</span><br>
+            <b id="pending">0.000</b> <small style="color:var(--gold)">TON</small>
+            <div class="stat-row">
+                <span>Referral: <span id="ref" style="color:white">0.000</span> TON</span>
+            </div>
         </div>
 
-        <div class="input-group">
-            <label style="display:block; margin-bottom:8px; font-size:14px;">BET AMOUNT (TON)</label>
-            <input type="number" id="amount" value="0.2" step="0.1">
-        </div>
+        <label style="font-size:12px; color:var(--text)">BET AMOUNT (0.1 - 1.0 TON)</label><br>
+        <input type="number" id="amount" value="0.2" step="0.1">
 
         <div class="btn-grid">
-            <button id="lowBtn" class="toggle-btn active" onclick="setSide(true)">LOW (1-49)</button>
-            <button id="highBtn" class="toggle-btn" onclick="setSide(false)">HIGH (50-98)</button>
+            <button id="lowBtn" class="side-btn active" onclick="setSide(true)">LOW (1-49)</button>
+            <button id="highBtn" class="side-btn" onclick="setSide(false)">HIGH (50-98)</button>
         </div>
 
         <button class="main-btn green" onclick="placeBet()">🎯 PLACE BET</button>
         <button class="main-btn blue" onclick="claimWin()">💸 CLAIM WINNINGS</button>
-
-        <div class="ref-box">
-            Referral Commission: <span id="refBal" style="color:white">0.000</span> TON
-        </div>
     </div>
 </div>
 
@@ -72,8 +67,8 @@
 
     function setSide(side) {
         isLow = side;
-        document.getElementById('lowBtn').className = side ? 'toggle-btn active' : 'toggle-btn';
-        document.getElementById('highBtn').className = side ? 'toggle-btn' : 'toggle-btn active';
+        document.getElementById('lowBtn').className = side ? 'side-btn active' : 'side-btn';
+        document.getElementById('highBtn').className = side ? 'side-btn' : 'side-btn active';
     }
 
     tonConnectUI.onStatusChange(wallet => {
@@ -83,23 +78,39 @@
         }
     });
 
-    async function loadData() {
-        if (!userAddress) return;
+    // 🔥 အဓိကပြင်ဆင်လိုက်သော Getter Function (Pending ကို မှန်စေမည့်အပိုင်း)
+    async function fetchFromContract(method) {
+        if (!userAddress) return "0";
         try {
             const addr = new TonWeb.utils.Address(userAddress);
             const cell = new TonWeb.boc.Cell();
-            cell.bits.writeAddress(addr);
+            
+            // CGPT အကြံပြုထားသည့်အတိုင်း Raw Address Slice တည်ဆောက်ခြင်း
+            cell.bits.writeInt(addr.wc, 8);
+            cell.bits.writeBytes(addr.hashPart);
+
             const boc = await cell.toBoc(false);
             const sliceB64 = TonWeb.utils.bytesToBase64(boc);
 
-            const call = async (method) => {
-                const res = await tonweb.provider.call2(CONTRACT, method, [["tvm.Slice", sliceB64]]);
-                return TonWeb.utils.fromNano(res.stack[0][1] || "0");
-            };
+            const res = await tonweb.provider.call2(CONTRACT, method, [["tvm.Slice", sliceB64]]);
+            
+            if (!res || !res.stack || res.stack.length === 0) return "0";
+            
+            // BigInt သုံးပြီး တိကျစွာပြောင်းလဲခြင်း
+            const rawVal = res.stack[0][1];
+            const bigIntVal = BigInt(rawVal);
+            return TonWeb.utils.fromNano(bigIntVal.toString());
+        } catch (e) {
+            console.error(method + " Error:", e);
+            return "0";
+        }
+    }
 
-            document.getElementById('pending').innerText = parseFloat(await call("pendingWin")).toFixed(4);
-            document.getElementById('refBal').innerText = parseFloat(await call("referralBalance")).toFixed(4);
-        } catch (e) { console.error("Getter Error:", e); }
+    async function loadData() {
+        const pWin = await fetchFromContract("pendingWin");
+        const rBal = await fetchFromContract("referralBalance");
+        document.getElementById('pending').innerText = parseFloat(pWin).toFixed(4);
+        document.getElementById('ref').innerText = parseFloat(rBal).toFixed(4);
     }
 
     async function placeBet() {
@@ -111,7 +122,7 @@
             const cell = new TonWeb.boc.Cell();
             cell.bits.writeUint(0xAAAABBBB, 32);
             cell.bits.writeBit(isLow);
-            cell.bits.writeAddress(null); // No referrer for this test
+            cell.bits.writeAddress(null); 
 
             const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
 
@@ -120,7 +131,7 @@
                 messages: [{ address: CONTRACT, amount: totalAmount.toString(), payload: payload }]
             });
             setTimeout(loadData, 5000);
-        } catch (e) { alert("Transaction Cancelled or Error: " + e.message); }
+        } catch (e) { alert("Error: " + e.message); }
     }
 
     async function claimWin() {
@@ -134,12 +145,11 @@
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{ address: CONTRACT, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
             });
-            document.getElementById('pending').innerText = "0.0000";
             setTimeout(loadData, 6000);
         } catch (e) { alert(e.message); }
     }
 
-    setInterval(loadData, 7000);
+    setInterval(loadData, 8000);
 </script>
 </body>
 </html>
