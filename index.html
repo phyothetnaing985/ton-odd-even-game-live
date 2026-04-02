@@ -3,51 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOLDEN GAME - DEBUG MASTER</title>
+    <title>GGG MASTER - TESTING PHASE</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
     <style>
-        :root { --gold:#f1c40f; --dark:#0f172a; --card:#1e293b; --green:#2ecc71; --blue:#3498db; }
-        body { background: #0f172a; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 20px; }
+        :root { --gold:#f1c40f; --dark:#0f172a; --card:#1e293b; --green:#2ecc71; --red:#e74c3c; --blue:#3498db; }
+        body { background: var(--dark); color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 20px; }
         .container { max-width: 420px; margin: auto; }
-        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid rgba(241,196,15,0.3); }
-        .winbox { background: rgba(0,0,0,0.2); border: 2px solid var(--gold); padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        b { font-size: 24px; color: var(--gold); }
-        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; text-align: center; font-size: 18px; }
-        button { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .low.active, .high.active { background: var(--gold); color: black; }
-        .low, .high { background: #334155; color: #94a3b8; }
-        .green { background: var(--green); color: white; }
-        .blue { background: var(--blue); color: white; }
-        #debug-log { font-size: 10px; color: #64748b; margin-top: 20px; text-align: left; background: #000; padding: 10px; border-radius: 5px; overflow-x: auto; display: none; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(241,196,15,0.2); }
+        b { color: var(--gold); font-size: 20px; }
+        button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-low { background: #334155; color: white; }
+        .btn-low.active { background: var(--gold); color: black; }
+        .btn-bet { background: var(--green); color: white; }
+        .btn-claim { background: var(--blue); color: white; }
+        .history-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #334155; }
+        .win { color: var(--green); font-weight: bold; }
+        .lose { color: var(--red); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🎰 GOLDEN GAME V5</h2>
-    <div id="wallet" style="margin-bottom: 20px;"></div>
+    <h2>🎰 GGG TESTING V1</h2>
+    <div id="wallet" style="margin-bottom: 15px;"></div>
 
     <div class="card">
-        <div class="winbox">
-            PENDING: <b id="pending">0.00</b> TON<br>
-            <small>Referral: <span id="ref">0.00</span> TON</small>
-        </div>
-
-        <input type="number" id="amount" value="0.2" step="0.1">
-
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button id="lowBtn" class="low active" onclick="setSide(true)">LOW</button>
-            <button id="highBtn" class="high" onclick="setSide(false)">HIGH</button>
-        </div>
-
-        <button class="green" onclick="placeBet()">PLACE BET</button>
-        <button class="blue" onclick="claimWin()">CLAIM WINNINGS</button>
+        <div>PENDING: <b id="pending">0.00</b> TON</div>
+        <div>REFERRAL: <b id="ref">0.00</b> TON</div>
+        <input type="number" id="amount" value="0.2" style="width:80%; padding:10px; margin:10px; text-align:center;">
         
-        <p style="font-size: 12px; color: #94a3b8; cursor: pointer;" onclick="document.getElementById('debug-log').style.display='block'">Show Debug Log</p>
+        <div style="display:flex; gap:10px;">
+            <button id="lowBtn" class="btn-low active" onclick="setSide(true)">LOW</button>
+            <button id="highBtn" class="btn-low" onclick="setSide(false)">HIGH</button>
+        </div>
+        
+        <button class="btn-bet" onclick="placeBet()">PLACE BET</button>
+        <button class="btn-claim" onclick="claimWin()">CLAIM WINNINGS</button>
+        <button style="background:#94a3b8;" onclick="withdrawRef()">WITHDRAW REFERRAL</button>
     </div>
 
-    <pre id="debug-log"></pre>
+    <div class="card">
+        <h4>🔗 INVITE LINK</h4>
+        <input id="refLink" readonly style="width:90%; background:#000; color:var(--gold); border:none; padding:8px; font-size:12px; text-align:center;">
+        <button style="background:var(--gold); color:black;" onclick="copyRef()">COPY LINK</button>
+    </div>
+
+    <div class="card">
+        <h4>🕒 LAST 5 GAMES</h4>
+        <div id="historyList">Loading history...</div>
+    </div>
 </div>
 
 <script>
@@ -62,21 +67,41 @@
 
     let userAddress = null;
     let isSideLow = true;
+    let referrerAddress = null;
 
-    function setSide(s) {
-        isSideLow = s;
-        document.getElementById('lowBtn').className = s ? 'low active' : 'low';
-        document.getElementById('highBtn').className = s ? 'high' : 'high active';
+    // URL ကနေ Ref ဖတ်ခြင်း
+    function checkReferrer() {
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if (ref) {
+            referrerAddress = ref;
+            console.log("Referrer detected:", referrerAddress);
+        }
     }
 
     tonConnectUI.onStatusChange(w => {
         if (w) {
             userAddress = w.account.address;
+            updateRefLink();
             loadData();
+            loadHistory();
         }
     });
 
-    // အမတ်ကြီး၏ အထူးစီရင်ထားသော တိုက်ရိုက် RPC ခေါ်ဆိုမှု
+    function updateRefLink() {
+        if (userAddress) {
+            const link = window.location.origin + window.location.pathname + "?ref=" + userAddress;
+            document.getElementById('refLink').value = link;
+        }
+    }
+
+    function copyRef() {
+        const copyText = document.getElementById("refLink");
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+        alert("Link copied! Share it to Telegram.");
+    }
+
     async function callGetter(method) {
         if (!userAddress) return "0";
         try {
@@ -90,32 +115,52 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    "id": 1,
-                    "jsonrpc": "2.0",
-                    "method": "runGetMethod",
+                    "id": 1, "jsonrpc": "2.0", "method": "runGetMethod",
                     "params": { "address": CONTRACT, "method": method, "stack": [["tvm.Slice", b64]] }
                 })
             });
-
             const data = await response.json();
-            document.getElementById('debug-log').innerText += `\n[${method}] Response: ` + JSON.stringify(data);
-
-            if (data.result && data.result.stack && data.result.stack.length > 0) {
-                let hexVal = data.result.stack[0][1];
-                return TonWeb.utils.fromNano(BigInt(hexVal).toString());
+            if (data.result?.stack?.length > 0) {
+                return TonWeb.utils.fromNano(BigInt(data.result.stack[0][1]).toString());
             }
             return "0";
-        } catch (e) {
-            console.error(e);
-            return "0";
-        }
+        } catch (e) { return "0"; }
     }
 
     async function loadData() {
-        const p = await callGetter("pendingWin");
-        const r = await callGetter("referralBalance");
-        document.getElementById('pending').innerText = parseFloat(p).toFixed(3);
-        document.getElementById('ref').innerText = parseFloat(r).toFixed(3);
+        document.getElementById('pending').innerText = (await callGetter("pendingWin")).slice(0,6);
+        document.getElementById('ref').innerText = (await callGetter("referralBalance")).slice(0,6);
+    }
+
+    async function loadHistory() {
+        if (!userAddress) return;
+        try {
+            const url = `https://toncenter.com/api/v2/getTransactions?address=${CONTRACT}&limit=20`;
+            const res = await fetch(url);
+            const data = await res.json();
+            let html = "";
+            let count = 0;
+
+            for (let tx of data.result) {
+                if (count >= 5) break;
+                // Player ဆီက ပို့တဲ့ Transaction ဖြစ်ရမယ်
+                if (tx.in_msg.source === userAddress) {
+                    let isWin = tx.out_msgs.length > 0;
+                    html += `<div class="history-item">
+                                <span>Game #${count+1}</span>
+                                <span class="${isWin ? 'win' : 'lose'}">${isWin ? 'WON' : 'LOST'}</span>
+                             </div>`;
+                    count++;
+                }
+            }
+            document.getElementById('historyList').innerHTML = html || "No games yet";
+        } catch (e) { console.error(e); }
+    }
+
+    function setSide(s) {
+        isSideLow = s;
+        document.getElementById('lowBtn').className = s ? 'btn-low active' : 'btn-low';
+        document.getElementById('highBtn').className = s ? 'btn-low' : 'btn-low active';
     }
 
     async function placeBet() {
@@ -125,14 +170,20 @@
             const cell = new TonWeb.boc.Cell();
             cell.bits.writeUint(0xAAAABBBB, 32);
             cell.bits.writeBit(isSideLow);
-            cell.bits.writeAddress(null);
-            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
+            
+            // Referral Address ထည့်သွင်းခြင်း
+            if (referrerAddress) {
+                cell.bits.writeAddress(new TonWeb.utils.Address(referrerAddress));
+            } else {
+                cell.bits.writeAddress(null);
+            }
 
+            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{ address: CONTRACT, amount: total.toString(), payload: payload }]
             });
-            setTimeout(loadData, 5000);
+            setTimeout(() => { loadData(); loadHistory(); }, 7000);
         } catch (e) { alert(e.message); }
     }
 
@@ -142,17 +193,30 @@
             cell.bits.writeUint(0, 32);
             cell.bits.writeString("Claim");
             const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
-
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{ address: CONTRACT, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
             });
-            setTimeout(loadData, 6000);
+            setTimeout(loadData, 7000);
         } catch (e) { alert(e.message); }
     }
 
+    async function withdrawRef() {
+        try {
+            const cell = new TonWeb.boc.Cell();
+            cell.bits.writeUint(0, 32);
+            cell.bits.writeString("WithdrawRef");
+            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
+            await tonConnectUI.sendTransaction({
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{ address: CONTRACT, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
+            });
+            setTimeout(loadData, 7000);
+        } catch (e) { alert(e.message); }
+    }
+
+    checkReferrer();
     setInterval(loadData, 10000);
 </script>
-
 </body>
 </html>
