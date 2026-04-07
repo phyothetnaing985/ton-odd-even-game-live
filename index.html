@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GGG MASTER V2.4 - FINAL HISTORY</title>
+    <title>GGG MASTER V2.5 - HISTORY FIXED</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
     <style>
@@ -13,9 +13,8 @@
         .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(241,196,15,0.2); }
         b { color: var(--gold); font-size: 20px; }
         button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.97); }
         .btn-bet { background: var(--green); color: white; }
-        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #334155; font-size: 14px; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #334155; font-size: 13px; }
         .status-placed { color: var(--gold); font-weight: bold; }
         input { width: 85%; padding: 12px; margin: 10px; text-align: center; border-radius: 10px; border: none; font-size: 16px; background: #0f172a; color: white; }
     </style>
@@ -23,12 +22,12 @@
 <body>
 
 <div class="container">
-    <h2>🎰 GGG MASTER V2.4</h2>
+    <h2>🎰 GGG MASTER V2.5</h2>
     <div id="wallet" style="margin-bottom: 15px;"></div>
 
     <div class="card">
-        <div>PENDING: <b id="pending">0.00</b> TON</div>
-        <div>REFERRAL: <b id="ref">0.00</b> TON</div>
+        <div>PENDING: <b id="pending">0.000</b> TON</div>
+        <div>REFERRAL: <b id="ref">0.000</b> TON</div>
         <input type="number" id="amount" value="0.2" step="0.1">
         
         <div style="display:flex; gap:10px;">
@@ -42,37 +41,35 @@
     </div>
 
     <div class="card">
-        <h4>🔗 INVITE LINK</h4>
-        <input id="refLink" readonly style="background:#000; color:var(--gold); font-size: 11px;">
-        <button id="copyBtn" style="background:var(--gold); color:black;" onclick="copyRef()">COPY LINK</button>
-    </div>
-
-    <div class="card">
-        <h4>🕒 LAST 5 GAMES (HISTORY)</h4>
-        <div id="historyList">Loading history...</div>
+        <h4>🕒 RECENT BETS</h4>
+        <div id="historyList">Loading bets...</div>
     </div>
 </div>
 
 <script>
-    const CONTRACT = "EQCvX-jYteyWju6LGfig1MWEGjU9PVBxDErJBdd8LEzVRxiI";
+    const CONTRACT_ADDR = "EQCvX-jYteyWju6LGfig1MWEGjU9PVBxDErJBdd8LEzVRxiI";
     const API = "https://toncenter.com/api/v2";
     const tonweb = new TonWeb();
     let userAddress = null;
     let isSideLow = true;
+    
+    // Flicker ကာကွယ်ရန်
+    let cachePending = "0.000";
+    let cacheRef = "0.000";
 
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
         buttonRootId: "wallet"
     });
 
-    function normalize(addr) {
-        try { return new TonWeb.utils.Address(addr).toRawString(); } catch(e) { return addr; }
+    // Address ကို Raw Format (0:...) ပြောင်းတဲ့ function
+    function toRaw(addr) {
+        try { return new TonWeb.utils.Address(addr).toRawString().toLowerCase(); } catch(e) { return ""; }
     }
 
     tonConnectUI.onStatusChange(w => {
         if (w) {
             userAddress = w.account.address;
-            document.getElementById('refLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;
             loadData();
             loadHistory();
         }
@@ -89,18 +86,26 @@
             const fetchGetter = async (method) => {
                 const r = await fetch(`${API}/runGetMethod`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ "address": CONTRACT, "method": method, "stack": [["tvm.Slice", b64]] })
+                    body: JSON.stringify({ "address": CONTRACT_ADDR, "method": method, "stack": [["tvm.Slice", b64]] })
                 });
                 const d = await r.json();
-                return d.result?.stack?.length > 0 ? TonWeb.utils.fromNano(BigInt(d.result.stack[0][1]).toString()) : "0";
+                if (d.result?.stack?.length > 0) {
+                    return TonWeb.utils.fromNano(BigInt(d.result.stack[0][1]).toString());
+                }
+                return null;
             };
 
-            document.getElementById('pending').innerText = parseFloat(await fetchGetter("pendingWin")).toFixed(3);
-            document.getElementById('ref').innerText = parseFloat(await fetchGetter("referralBalance")).toFixed(3);
+            const p = await fetchGetter("pendingWin");
+            const r = await fetchGetter("referralBalance");
+
+            if (p !== null) cachePending = parseFloat(p).toFixed(3);
+            if (r !== null) cacheRef = parseFloat(r).toFixed(3);
+
+            document.getElementById('pending').innerText = cachePending;
+            document.getElementById('ref').innerText = cacheRef;
         } catch (e) { console.error(e); }
     }
 
-    // 🔥 CGPT ညွှန်ကြားချက်အတိုင်း ပြင်ဆင်ထားသော History Logic
     async function loadHistory() {
         if (!userAddress) return;
         const historyEl = document.getElementById('historyList');
@@ -110,30 +115,28 @@
             
             let html = "";
             let count = 0;
-            const contractRaw = normalize(CONTRACT);
+            const targetRaw = toRaw(CONTRACT_ADDR);
 
             for (let tx of data.result) {
                 if (count >= 5) break;
-                const msg = tx.in_msg;
-                if (!msg || !msg.destination) continue;
+                if (!tx.in_msg || !tx.in_msg.destination) continue;
 
-                // User ဆီကထွက်ပြီး Contract ဆီရောက်တဲ့ Tx မှန်သမျှ Bet လို့သတ်မှတ်မယ်
-                if (normalize(msg.destination) === contractRaw) {
-                    if (!msg.value || msg.value === "0") continue;
-                    
-                    const tonAmount = parseFloat(TonWeb.utils.fromNano(msg.value)).toFixed(2);
+                // API ကလာတဲ့ destination ကို Raw format ပြောင်းပြီးတိုက်စစ်မယ်
+                const destRaw = toRaw(tx.in_msg.destination);
+                
+                if (destRaw === targetRaw) {
+                    const val = TonWeb.utils.fromNano(tx.in_msg.value || "0");
+                    if (parseFloat(val) < 0.09) continue; // Gas fee တွေကို ဖယ်ထုတ်မယ်
+
                     html += `<div class="history-item">
-                                <span>${tonAmount} TON</span>
+                                <span>${parseFloat(val).toFixed(2)} TON</span>
                                 <span class="status-placed">BET PLACED ✅</span>
                              </div>`;
                     count++;
                 }
             }
             historyEl.innerHTML = html || "No bets found yet";
-        } catch (e) { 
-            console.error(e);
-            historyEl.innerText = "Error loading history";
-        }
+        } catch (e) { historyEl.innerText = "Error loading history"; }
     }
 
     function setSide(s) {
@@ -152,6 +155,7 @@
             cell.bits.writeUint(0xAAAABBBB, 32);
             cell.bits.writeBit(isSideLow);
             
+            // URL ကနေ referralAddress ရှာမယ်
             const params = new URLSearchParams(window.location.search);
             const ref = params.get('ref');
             if (ref) cell.bits.writeAddress(new TonWeb.utils.Address(ref));
@@ -160,20 +164,20 @@
             const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
             await tonConnectUI.sendTransaction({
                 validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{ address: CONTRACT, amount: total.toString(), payload: payload }]
+                messages: [{ address: CONTRACT_ADDR, amount: total.toString(), payload: payload }]
             });
-            // Bet ပြီးနောက် 8 စက္ကန့်နေလျှင် Refresh လုပ်မယ်
             setTimeout(() => { loadData(); loadHistory(); }, 8000);
         } catch (e) { alert(e.message); }
     }
 
+    // Claim နှင့် Withdraw functions များ (အရင်အတိုင်း)
     async function claimWin() {
         const cell = new TonWeb.boc.Cell();
         cell.bits.writeUint(0, 32); cell.bits.writeString("Claim");
         const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
         await tonConnectUI.sendTransaction({
             validUntil: Math.floor(Date.now() / 1000) + 300,
-            messages: [{ address: CONTRACT, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
+            messages: [{ address: CONTRACT_ADDR, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
         });
         setTimeout(loadData, 8000);
     }
@@ -184,20 +188,13 @@
         const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
         await tonConnectUI.sendTransaction({
             validUntil: Math.floor(Date.now() / 1000) + 300,
-            messages: [{ address: CONTRACT, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
+            messages: [{ address: CONTRACT_ADDR, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
         });
         setTimeout(loadData, 8000);
     }
 
-    function copyRef() {
-        const text = document.getElementById("refLink").value;
-        navigator.clipboard.writeText(text);
-        const btn = document.getElementById("copyBtn");
-        btn.innerText = "Copied ✅";
-        setTimeout(() => btn.innerText = "COPY LINK", 1500);
-    }
-
-    setInterval(loadData, 15000);
+    setInterval(loadData, 10000);
 </script>
 </body>
 </html>
+l
