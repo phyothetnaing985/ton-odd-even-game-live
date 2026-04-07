@@ -3,47 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GGG MASTER V2.6 - WIN/LOSE HISTORY</title>
+    <title>GGG MASTER V2.7 - LIVE TRACKING</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
     <style>
         :root { --gold:#f1c40f; --dark:#0f172a; --card:#1e293b; --green:#2ecc71; --red:#ff4757; --blue:#3498db; }
-        body { background: var(--dark); color: white; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 420px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(241,196,15,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        b { color: var(--gold); font-size: 20px; }
-        button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-bet { background: var(--green); color: white; font-size: 16px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        .win { color: var(--green); font-weight: bold; }
-        .lose { color: var(--red); font-weight: bold; }
-        .pending-text { color: var(--gold); font-style: italic; font-size: 11px; }
-        input { width: 85%; padding: 12px; margin: 10px; text-align: center; border-radius: 10px; border: none; font-size: 18px; background: #0f172a; color: white; border: 1px solid #334155; }
+        body { background: var(--dark); color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(241,196,15,0.2); }
+        b { color: var(--gold); font-size: 22px; }
+        button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-bet { background: var(--green); color: white; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .win { color: var(--green); }
+        .lose { color: var(--red); }
+        .waiting { color: var(--gold); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        input { width: 80%; padding: 10px; margin: 10px; border-radius: 8px; border: none; text-align: center; font-size: 18px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="color:var(--gold);">🎰 GGG MASTER V2.6</h2>
-    <div id="wallet" style="margin-bottom: 15px;"></div>
+    <h2 style="color:var(--gold);">🎰 GGG MASTER V2.7</h2>
+    <div id="wallet"></div>
 
     <div class="card">
         <div>PENDING: <b id="pending">0.000</b> TON</div>
-        <div style="font-size: 12px; opacity: 0.7;">REFERRAL: <span id="ref" style="color:var(--gold);">0.000</span> TON</div>
         <input type="number" id="amount" value="0.1" step="0.1">
-        
         <div style="display:flex; gap:10px;">
-            <button id="lowBtn" style="background:var(--gold); color:black" onclick="setSide(true)">LOW</button>
-            <button id="highBtn" style="background:#334155; color:white" onclick="setSide(false)">HIGH</button>
+            <button id="lowBtn" style="background:var(--gold);" onclick="setSide(true)">LOW</button>
+            <button id="highBtn" style="background:#334155; color:white;" onclick="setSide(false)">HIGH</button>
         </div>
-        
         <button class="btn-bet" onclick="placeBet()">PLACE BET</button>
-        <button style="background:var(--blue); color:white" onclick="claimWin()">CLAIM WINNINGS</button>
+        <button style="background:var(--blue); color:white;" onclick="claimWin()">CLAIM WINNINGS</button>
     </div>
 
     <div class="card">
-        <h4 style="margin-top:0; color:var(--gold);">🕒 LAST 5 GAMES</h4>
-        <div id="historyList">Loading history...</div>
+        <h4 style="margin:0; color:var(--gold);">🕒 SESSION HISTORY</h4>
+        <div id="historyList">No bets in this session.</div>
     </div>
 </div>
 
@@ -53,26 +51,17 @@
     const tonweb = new TonWeb();
     let userAddress = null;
     let isSideLow = true;
-    let lastPendingAmount = 0;
+    let currentPending = 0;
 
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: "https://phyothetnaing985.github.io/ton-odd-even-game-live/tonconnect-manifest.json",
         buttonRootId: "wallet"
     });
 
-    function toRaw(addr) {
-        try { return new TonWeb.utils.Address(addr).toRawString().toLowerCase(); } catch(e) { return ""; }
-    }
+    tonConnectUI.onStatusChange(w => { if (w) { userAddress = w.account.address; loadData(); } });
 
-    tonConnectUI.onStatusChange(w => {
-        if (w) {
-            userAddress = w.account.address;
-            loadData();
-            loadHistory();
-        }
-    });
-
-    async function fetchGetter(method) {
+    async function loadData() {
+        if (!userAddress) return;
         try {
             const addr = new TonWeb.utils.Address(userAddress);
             const cell = new TonWeb.boc.Cell();
@@ -81,104 +70,82 @@
             
             const r = await fetch(`${API}/runGetMethod`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ "address": CONTRACT_ADDR, "method": method, "stack": [["tvm.Slice", b64]] })
+                body: JSON.stringify({ "address": CONTRACT_ADDR, "method": "pendingWin", "stack": [["tvm.Slice", b64]] })
             });
             const d = await r.json();
-            return d.result?.stack?.[0]?.[1] ? TonWeb.utils.fromNano(BigInt(d.result.stack[0][1]).toString()) : "0";
-        } catch(e) { return "0"; }
-    }
-
-    async function loadData() {
-        if (!userAddress) return;
-        const p = await fetchGetter("pendingWin");
-        const r = await fetchGetter("referralBalance");
-        
-        lastPendingAmount = parseFloat(p);
-        document.getElementById('pending').innerText = lastPendingAmount.toFixed(3);
-        document.getElementById('ref').innerText = parseFloat(r).toFixed(3);
-    }
-
-    async function loadHistory() {
-        if (!userAddress) return;
-        const historyEl = document.getElementById('historyList');
-        try {
-            const res = await fetch(`${API}/getTransactions?address=${userAddress}&limit=25`);
-            const data = await res.json();
-            const contractRaw = toRaw(CONTRACT_ADDR);
-            let html = "";
-            let count = 0;
-
-            for (let tx of data.result) {
-                if (count >= 5) break;
-                const msg = tx.in_msg;
-                if (!msg || !msg.destination) continue;
-
-                if (toRaw(msg.destination) === contractRaw) {
-                    const body = (msg.msg_data?.body || "").toLowerCase();
-                    // Opcode aaaabbbb ပါမှ စစ်မယ်
-                    if (body.includes("aaaabbbb") || body.includes("qqqrvw==")) { 
-                        const val = TonWeb.utils.fromNano(msg.value);
-                        if (parseFloat(val) < 0.05) continue;
-
-                        // Tact V2 အတွက် Win/Lose ခန့်မှန်းချက် Logic
-                        // လောင်းကြေးထက် Pending ပိုများနေရင် Win လို့ပြမယ်
-                        let statusHtml = "";
-                        if (lastPendingAmount > 0) {
-                            statusHtml = `<span class="win">WIN 🟢</span>`;
-                        } else {
-                            statusHtml = `<span class="lose">LOSE 🔴</span>`;
-                        }
-
-                        html += `<div class="history-item">
-                                    <span>${parseFloat(val).toFixed(2)} TON</span>
-                                    ${statusHtml}
-                                 </div>`;
-                        count++;
-                    }
-                }
+            if (d.result?.stack?.[0]?.[1]) {
+                currentPending = parseFloat(TonWeb.utils.fromNano(BigInt(d.result.stack[0][1]).toString()));
+                document.getElementById('pending').innerText = currentPending.toFixed(3);
             }
-            historyEl.innerHTML = html || "No bets found yet";
-        } catch (e) { historyEl.innerText = "History Error"; }
+        } catch(e) { console.error(e); }
+    }
+
+    function addHistoryRow(id, amount) {
+        const historyEl = document.getElementById('historyList');
+        if (historyEl.innerText.includes("No bets")) historyEl.innerHTML = "";
+        
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        row.id = `bet-${id}`;
+        row.innerHTML = `<span>${amount} TON</span> <span class="waiting">RESULT PENDING...</span>`;
+        historyEl.prepend(row);
+    }
+
+    function updateHistoryRow(id, isWin) {
+        const row = document.getElementById(`bet-${id}`);
+        if (row) {
+            row.querySelector('.waiting').className = isWin ? 'win' : 'lose';
+            row.querySelector(isWin ? '.win' : '.lose').innerText = isWin ? 'WIN 🟢' : 'LOSE 🔴';
+        }
+    }
+
+    async function placeBet() {
+        if (!userAddress) return alert("Connect Wallet!");
+        const amount = document.getElementById('amount').value;
+        const betId = Date.now();
+        const beforeBetPending = currentPending;
+
+        try {
+            const total = TonWeb.utils.toNano(amount).add(TonWeb.utils.toNano("0.05"));
+            const cell = new TonWeb.boc.Cell();
+            cell.bits.writeUint(0xAAAABBBB, 32);
+            cell.bits.writeBit(isSideLow);
+            cell.bits.writeAddress(null);
+
+            await tonConnectUI.sendTransaction({
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{ address: CONTRACT_ADDR, amount: total.toString(), payload: TonWeb.utils.bytesToBase64(await cell.toBoc(false)) }]
+            });
+
+            // မှတ်တမ်းထဲ WAITING အရင်ထည့်မယ်
+            addHistoryRow(betId, amount);
+
+            // ၈ စက္ကန့်နေရင် ရလဒ်စစ်မယ်
+            setTimeout(async () => {
+                await loadData();
+                const isWin = currentPending > beforeBetPending;
+                updateHistoryRow(betId, isWin);
+            }, 8000);
+
+        } catch (e) { alert("Transaction Cancelled"); }
     }
 
     function setSide(s) {
         isSideLow = s;
         document.getElementById('lowBtn').style.background = s ? 'var(--gold)' : '#334155';
-        document.getElementById('lowBtn').style.color = s ? 'black' : 'white';
         document.getElementById('highBtn').style.background = s ? '#334155' : 'var(--gold)';
-        document.getElementById('highBtn').style.color = s ? 'white' : 'black';
-    }
-
-    async function placeBet() {
-        try {
-            const val = document.getElementById('amount').value;
-            const total = TonWeb.utils.toNano(val).add(TonWeb.utils.toNano("0.05"));
-            const cell = new TonWeb.boc.Cell();
-            cell.bits.writeUint(0xAAAABBBB, 32);
-            cell.bits.writeBit(isSideLow);
-            cell.bits.writeAddress(null); // Ref format simplify
-
-            const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
-            await tonConnectUI.sendTransaction({
-                validUntil: Math.floor(Date.now() / 1000) + 300,
-                messages: [{ address: CONTRACT_ADDR, amount: total.toString(), payload: payload }]
-            });
-            setTimeout(() => { loadData(); loadHistory(); }, 7000);
-        } catch (e) { alert(e.message); }
     }
 
     async function claimWin() {
         const cell = new TonWeb.boc.Cell();
         cell.bits.writeUint(0, 32); cell.bits.writeString("Claim");
-        const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
         await tonConnectUI.sendTransaction({
             validUntil: Math.floor(Date.now() / 1000) + 300,
-            messages: [{ address: CONTRACT_ADDR, amount: TonWeb.utils.toNano("0.05").toString(), payload: payload }]
+            messages: [{ address: CONTRACT_ADDR, amount: TonWeb.utils.toNano("0.05").toString(), payload: TonWeb.utils.bytesToBase64(await cell.toBoc(false)) }]
         });
-        setTimeout(loadData, 7000);
     }
 
-    setInterval(loadData, 15000);
+    setInterval(loadData, 10000);
 </script>
 </body>
 </html>
