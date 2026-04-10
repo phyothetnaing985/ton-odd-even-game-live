@@ -2,66 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GGG MASTER V2.9 - GLOBAL PRE-LAUNCH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>GGG MASTER V3.0 - ELITE PRE-LAUNCH</title>
     <script src="https://unpkg.com/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@2.0.0/dist/tonconnect-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold:#f1c40f; --dark:#0f172a; --card:#1e293b; --green:#2ecc71; --red:#ff4757; --blue:#3498db; }
-        body { background: var(--dark); color: white; text-align: center; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 420px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 18px; margin-bottom: 15px; border: 1px solid rgba(241,196,15,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        b { color: var(--gold); font-size: 24px; }
-        button { width: 100%; padding: 14px; margin-top: 10px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 15px; }
-        button:active { transform: scale(0.96); }
-        .btn-bet { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        :root { --bg: #0b0e11; --card: #161b22; --accent: #f1c40f; --green: #2ecc71; --text: #eaecef; --nav: #161b22; --btn: #2b3139; --glass: rgba(255, 255, 255, 0.05); }
+        .light-mode { --bg: #f5f7f9; --card: #ffffff; --accent: #d4af37; --green: #27ae60; --text: #1e2329; --nav: #ffffff; --btn: #e4e6eb; --glass: rgba(0, 0, 0, 0.05); }
+
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 80px; transition: 0.3s; overflow-x: hidden; }
+        
+        /* Background Overlay for Lobby */
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: url('https://i.ibb.co/FbrzsJ9J/Screenshot-2026-04-10-17-14-06-636-com-google-android-googlequicksearchbox-edit.jpg') center/cover no-repeat; opacity: 0.15; filter: grayscale(50%); }
+
+        .header { display: flex; justify-content: space-between; padding: 15px; background: var(--card); align-items: center; border-bottom: 1px solid var(--glass); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        
+        .screen { display: none; flex-direction: column; align-items: center; padding: 15px; width: 100%; box-sizing: border-box; animation: fadeIn 0.4s; }
+        .active-screen { display: flex; }
+
+        /* Lobby UI */
+        .game-selector-card { background: var(--card); width: 100%; max-width: 400px; border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(241, 196, 15, 0.3); margin-top: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .game-thumb { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; border: 1px solid var(--accent); }
+
+        /* Play Screen UI */
+        .visual-area { width: 100%; max-width: 400px; height: 220px; border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(241, 196, 15, 0.2); }
+        .game-bg-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .control-panel { background: var(--card); width: 100%; max-width: 400px; padding: 20px; border-radius: 25px; border: 1px solid var(--glass); box-sizing: border-box; }
+        
+        /* Slider Styling */
+        .slider-box { margin: 20px 0; }
+        .bet-slider { width: 100%; height: 8px; border-radius: 5px; background: #334155; outline: none; -webkit-appearance: none; accent-color: var(--accent); }
+        
+        .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .stat-item { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--glass); text-align: center; }
+        .stat-item span { font-size: 10px; color: #94a3b8; display: block; text-transform: uppercase; }
+        .stat-item b { font-size: 16px; color: var(--accent); }
+
+        .side-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .side-btn { padding: 15px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .side-btn.active { background: var(--accent); color: black; border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(241,196,15,0.3); }
+
+        .btn-main { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--green); color: white; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); }
+
+        /* History Table */
+        .history-card { width: 100%; max-width: 400px; margin-top: 25px; background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .history-table th { background: rgba(255,255,255,0.03); padding: 12px; text-align: center; color: var(--accent); }
+        .history-table td { padding: 12px; text-align: center; border-top: 1px solid var(--glass); }
+
+        /* Footer Nav */
+        .footer { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--nav); display: flex; border-top: 1px solid var(--glass); box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #848e9c; font-size: 12px; cursor: pointer; gap: 5px; }
+        .nav-item.active { color: var(--accent); font-weight: bold; }
+        .nav-item i { font-size: 20px; }
+
+        /* Modal Info */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; padding:20px; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid var(--accent); max-width: 400px; text-align: left; }
+
         .status-win { color: var(--green); font-weight: bold; }
-        .status-lose { color: var(--red); font-weight: bold; }
-        .status-waiting { color: var(--gold); animation: blink 1s infinite; font-weight: bold; }
-        .time-label { color: #94a3b8; font-size: 11px; display: block; text-align: left; }
+        .status-lose { color: #ff4757; font-weight: bold; }
+        .status-waiting { color: var(--accent); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.4; } }
-        input { width: 85%; padding: 12px; margin: 10px; border-radius: 10px; border: 1px solid #334155; text-align: center; font-size: 18px; background: #0f172a; color: white; }
-        .ref-box { background: #000; padding: 10px; border-radius: 8px; font-size: 11px; color: var(--gold); word-break: break-all; margin-top: 10px; border: 1px solid #334155; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2 style="color:var(--gold); letter-spacing: 2px;">🎰 GGG MASTER V2.9</h2>
-    <div id="wallet" style="margin-bottom: 20px;"></div>
+<div class="bg-overlay"></div>
 
-    <div class="card">
-        <div style="margin-bottom:10px;">PENDING: <b id="pending">0.000</b> TON</div>
-        <div style="font-size: 13px; opacity: 0.8;">REFERRAL: <span id="ref" style="color:var(--gold); font-weight:bold;">0.000</span> TON</div>
+<div id="info-modal" class="modal">
+    <div class="modal-content">
+        <h3 style="color:var(--accent); text-align:center;">TRUST PROTOCOL</h3>
+        <p style="font-size: 13px; line-height: 1.6; opacity: 0.9;">
+            <b>1. Fair Play:</b> All outcomes are determined by on-chain hash entropy. Impossible to manipulate.<br><br>
+            <b>2. Non-Custodial:</b> Your funds are locked in the GGG MASTER Smart Contract until you claim them.<br><br>
+            <b>3. Rule:</b> Low (1-49), High (50-98). 99-100 are House Edge/Refund events. Winnings are 1.85x.
+        </p>
+        <button class="btn-main" style="background:var(--accent); color:black;" onclick="closeModal()">I UNDERSTAND</button>
+    </div>
+</div>
+
+<div class="header">
+    <div id="wallet"></div>
+    <div onclick="toggleMode()" style="cursor:pointer; font-size: 20px; color: var(--accent);"><i class="fas fa-moon" id="theme-icon"></i></div>
+</div>
+
+<div id="lobby-screen" class="screen active-screen">
+    <div class="game-selector-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <img src="https://i.ibb.co/JjLp1zJ8/file-00000000740871fa81847d4e88a5158b.png" class="game-thumb">
+            <div>
+                <div style="font-weight:bold; font-size:16px;">LOW HIGH</div>
+                <div style="font-size:11px; color:var(--accent);">Win up to 1.85x</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i class="far fa-file-alt" style="font-size:22px; color:var(--accent); cursor:pointer;" onclick="openModal()"></i>
+            <button onclick="showScreen('play-screen')" style="background:var(--green); border:none; padding:10px 20px; border-radius:10px; color:white; font-weight:bold; cursor:pointer;">PLAY</button>
+        </div>
+    </div>
+    <div style="margin-top:40px; opacity:0.3; font-size:12px;">MORE GAMES COMING SOON...</div>
+</div>
+
+<div id="play-screen" class="screen">
+    <div class="visual-area">
+        <img src="https://i.ibb.co/HfV9cGL0/IMG-20260407-222820.png" class="game-bg-img">
+    </div>
+
+    <div class="control-panel">
+        <div style="text-align:center; margin-bottom:10px; font-size:13px; opacity:0.7;">SELECT STAKE AMOUNT</div>
+        <div style="font-size:28px; font-weight:900; text-align:center; color:var(--accent);"><span id="display-amt">0.10</span> <small style="font-size:14px;">TON</small></div>
         
-        <input type="number" id="amount" value="0.1" step="0.1" min="0.05">
-        
+        <div class="slider-box">
+            <input type="range" min="0.1" max="0.9" step="0.1" value="0.1" class="bet-slider" id="amount-slider" oninput="updateBetUI(this.value)">
+        </div>
+
+        <div class="stat-row">
+            <div class="stat-item"><span>EST. PAYOUT</span><b id="est-payout">0.185</b></div>
+            <div class="stat-item"><span>FEE (GAS)</span><b>0.05</b></div>
+        </div>
+
+        <div class="side-btns">
+            <button id="lowBtn" class="side-btn active" onclick="setSide(true)">LOW (1-49)</button>
+            <button id="highBtn" class="side-btn" onclick="setSide(false)">HIGH (50-98)</button>
+        </div>
+
+        <button class="btn-main" onclick="placeBet()">PLACE BET NOW</button>
+
+        <div class="stat-row" style="margin-top:20px;">
+            <div class="stat-item"><span>PENDING</span><b id="pending">0.00</b></div>
+            <div class="stat-item"><span>REFERRAL</span><b id="ref">0.00</b></div>
+        </div>
+
         <div style="display:flex; gap:10px;">
-            <button id="lowBtn" style="background:var(--gold); color:black" onclick="setSide(true)">LOW (Even)</button>
-            <button id="highBtn" style="background:#334155; color:white" onclick="setSide(false)">HIGH (Odd)</button>
-        </div>
-        
-        <button class="btn-bet" onclick="placeBet()">PLACE BET</button>
-        
-        <div style="display:flex; gap:10px;">
-            <button style="background:var(--blue); color:white;" onclick="claimWin()">CLAIM WIN</button>
-            <button style="background:#475569; color:white;" onclick="withdrawRef()">REF WITHDRAW</button>
+            <button onclick="claimWin()" style="flex:1; background:var(--btn); color:var(--text); border:none; padding:12px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer;">WITHDRAW WIN</button>
+            <button onclick="withdrawRef()" style="flex:1; background:var(--btn); color:var(--text); border:none; padding:12px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer;">WITHDRAW REF</button>
         </div>
     </div>
 
-    <div class="card">
-        <h4 style="margin:0; color:var(--gold);">🔗 INVITE FRIENDS (10%)</h4>
-        <div id="refLink" class="ref-box">Connect wallet to get link...</div>
-        <button id="copyBtn" style="background:var(--gold); color:black; padding:8px; display:none;" onclick="copyLink()">COPY INVITE LINK</button>
+    <div class="history-card">
+        <table class="history-table">
+            <thead><tr><th>TIME</th><th>AMOUNT</th><th>SIDE</th><th>STATUS</th></tr></thead>
+            <tbody id="historyList"><tr><td colspan="4" style="opacity:0.5; padding:20px;">No bets yet</td></tr></tbody>
+        </table>
     </div>
+</div>
 
-    <div class="card">
-        <h4 style="margin:0; color:var(--gold); border-bottom: 1px solid #334155; padding-bottom: 8px;">🕒 SESSION HISTORY</h4>
-        <div id="historyList">
-            <div style="padding: 20px; opacity: 0.5;">No bets in this session.</div>
+<div id="invite-screen" class="screen">
+    <div class="control-panel" style="text-align:center;">
+        <i class="fas fa-crown" style="font-size:50px; color:var(--accent); margin-bottom:15px;"></i>
+        <h2>GGG MASTER POWER</h2>
+        <p style="font-size:13px; opacity:0.8; line-height:1.6;">Build your own betting empire. Earn <b>10% instant commission</b> from every winning bet made by your referrals. GGG Protocol is decentralized and unstoppable.</p>
+        
+        <div style="background:rgba(0,0,0,0.2); padding:15px; border-radius:15px; margin-top:20px; border:1px dashed var(--accent);">
+            <div style="font-size:10px; color:var(--accent); margin-bottom:8px; letter-spacing:1px;">YOUR REFERRAL LINK</div>
+            <div id="refLink" style="font-size:11px; word-break:break-all; margin-bottom:15px; opacity:0.7;">Connect wallet to generate link</div>
+            <button id="copyBtn" onclick="copyLink()" style="background:var(--accent); border:none; color:black; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; display:none;">COPY LINK</button>
         </div>
     </div>
+</div>
+
+<div class="footer">
+    <div class="nav-item active" onclick="showScreen('lobby-screen')"><i class="fas fa-th-large"></i>Lobby</div>
+    <div class="nav-item" onclick="showScreen('invite-screen')"><i class="fas fa-users"></i>Invite</div>
 </div>
 
 <script>
@@ -71,7 +177,6 @@
     let userAddress = null;
     let isSideLow = true;
     let lastKnownPending = 0;
-    let lastKnownRef = 0;
     let gameHistory = [];
 
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -87,21 +192,51 @@
         }
     });
 
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(id).classList.add('active-screen');
+        document.querySelectorAll('.nav-item').forEach(n => {
+            n.classList.toggle('active', n.innerText.toLowerCase() === id.split('-')[0]);
+        });
+    }
+
+    function toggleMode() {
+        document.body.classList.toggle('light-mode');
+        const icon = document.getElementById('theme-icon');
+        icon.classList.toggle('fa-moon');
+        icon.classList.toggle('fa-sun');
+    }
+
+    function openModal() { document.getElementById('info-modal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('info-modal').style.display = 'none'; }
+
+    function updateBetUI(val) {
+        document.getElementById('display-amt').innerText = parseFloat(val).toFixed(2);
+        document.getElementById('est-payout').innerText = (parseFloat(val) * 1.85).toFixed(3);
+    }
+
+    function setSide(s) {
+        isSideLow = s;
+        document.getElementById('lowBtn').classList.toggle('active', s);
+        document.getElementById('highBtn').classList.toggle('active', !s);
+    }
+
     function updateRefUI() {
         if (!userAddress) return;
         const link = window.location.origin + window.location.pathname + "?ref=" + userAddress;
         document.getElementById("refLink").innerText = link;
-        document.getElementById("copyBtn").style.display = "block";
+        document.getElementById("copyBtn").style.display = "inline-block";
     }
 
     function copyLink() {
         const text = document.getElementById("refLink").innerText;
         navigator.clipboard.writeText(text);
         const btn = document.getElementById("copyBtn");
-        btn.innerText = "COPIED ✅";
-        setTimeout(() => { btn.innerText = "COPY INVITE LINK"; }, 2000);
+        btn.innerHTML = "COPIED ✅";
+        setTimeout(() => { btn.innerText = "COPY LINK"; }, 2000);
     }
 
+    // --- Core Logic (V2.9 Based) ---
     async function fetchGetter(method) {
         if (!userAddress) return null;
         try {
@@ -121,36 +256,32 @@
     async function loadData() {
         const p = await fetchGetter("pendingWin");
         const r = await fetchGetter("referralBalance");
-        
-        // Flicker Protection: null မဟုတ်မှသာ update လုပ်မယ်
         if (p !== null) {
             lastKnownPending = parseFloat(p);
             document.getElementById('pending').innerText = lastKnownPending.toFixed(3);
         }
-        if (r !== null) {
-            lastKnownRef = parseFloat(r);
-            document.getElementById('ref').innerText = lastKnownRef.toFixed(3);
-        }
+        if (r !== null) document.getElementById('ref').innerText = parseFloat(r).toFixed(3);
     }
 
     function renderHistory() {
         const el = document.getElementById("historyList");
         if (gameHistory.length === 0) return;
         el.innerHTML = gameHistory.slice().reverse().map(g => `
-            <div class="history-item">
-                <div><span class="time-label">${g.time}</span><span>${g.amount} TON</span></div>
-                <span class="${g.statusClass}">${g.status}</span>
-            </div>
+            <tr>
+                <td style="font-size:10px; opacity:0.6;">${g.time}</td>
+                <td><b>${g.amount}</b></td>
+                <td><span style="font-size:10px;">${g.side}</span></td>
+                <td><span class="${g.statusClass}">${g.status}</span></td>
+            </tr>
         `).join("");
     }
 
     async function placeBet() {
         if (!userAddress) return alert("Please connect wallet!");
-        const val = document.getElementById('amount').value;
-        const betAmount = parseFloat(val).toFixed(2);
-        const betId = Date.now();
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const val = document.getElementById('amount-slider').value;
         const beforePending = lastKnownPending;
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const betId = Date.now();
 
         try {
             const total = TonWeb.utils.toNano(val).add(TonWeb.utils.toNano("0.05"));
@@ -160,15 +291,11 @@
             
             const params = new URLSearchParams(window.location.search);
             const ref = params.get('ref');
-            if (ref) {
-                try { cell.bits.writeAddress(new TonWeb.utils.Address(ref)); } 
-                catch(e) { cell.bits.writeAddress(null); }
-            } else {
-                cell.bits.writeAddress(null);
-            }
+            if (ref) { cell.bits.writeAddress(new TonWeb.utils.Address(ref)); } 
+            else { cell.bits.writeAddress(null); }
 
             const payload = TonWeb.utils.bytesToBase64(await cell.toBoc(false));
-            const gameEntry = { id: betId, time: timeStr, amount: betAmount, status: "WAITING...", statusClass: "status-waiting" };
+            const gameEntry = { id: betId, time: timeStr, amount: val, side: isSideLow?'LOW':'HIGH', status: "WAITING", statusClass: "status-waiting" };
             gameHistory.push(gameEntry);
             renderHistory();
 
@@ -187,19 +314,11 @@
                     gameEntry.statusClass = "status-lose";
                 }
                 renderHistory();
-            }, 10000);
+            }, 12000);
         } catch (e) {
             gameHistory = gameHistory.filter(g => g.id !== betId);
             renderHistory();
         }
-    }
-
-    function setSide(s) {
-        isSideLow = s;
-        document.getElementById('lowBtn').style.background = s ? 'var(--gold)' : '#334155';
-        document.getElementById('lowBtn').style.color = s ? 'black' : 'white';
-        document.getElementById('highBtn').style.background = s ? '#334155' : 'var(--gold)';
-        document.getElementById('highBtn').style.color = s ? 'white' : 'black';
     }
 
     async function claimWin() {
@@ -224,3 +343,4 @@
 </script>
 </body>
 </html>
+
